@@ -1,5 +1,5 @@
 .PHONY: run
-run:
+run: env
 	./run.py
 
 env: python-requirements
