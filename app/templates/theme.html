@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <meta charset="utf-8"/>
+    {% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+      {% block footer %}
+      {{ VERSION.string }}
+      {% endblock %}
+    </footer>
+  </body>
+</html>
