@@ -1,8 +1,14 @@
-.PHONY: run
-run: env
-	env/bin/python -m app
+.PHONY: env run dist
 
-env: python-requirements
+env:
 	python3 -m venv env
-	env/bin/pip install --requirement python-requirements
-	touch env
+
+run: env
+	env/bin/python3 setup.py install
+	env/bin/python -m collegejump
+
+dist: env
+	env/bin/python3 setup.py dist
+
+clean-dist:
+	@rm -rf dist/

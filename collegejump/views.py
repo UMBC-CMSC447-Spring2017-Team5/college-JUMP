@@ -1,4 +1,4 @@
-from app import app
+from collegejump import app
 import flask
 
 @app.route('/')

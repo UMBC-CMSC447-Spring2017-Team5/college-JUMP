@@ -9,7 +9,7 @@ import werkzeug
 from werkzeug.wsgi import DispatcherMiddleware
 
 def main(args):
-    from app import app
+    from collegejump import app
 
     # Prepare logging.
     level = logging.INFO
