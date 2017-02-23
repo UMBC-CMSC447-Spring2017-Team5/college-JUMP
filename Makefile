@@ -8,7 +8,7 @@ run: env
 	env/bin/python -m collegejump
 
 dist: env
-	env/bin/python3 setup.py dist
+	env/bin/python3 setup.py sdist
 
 clean-dist:
 	@rm -rf dist/
