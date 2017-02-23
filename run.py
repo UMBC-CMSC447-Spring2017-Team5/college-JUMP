@@ -5,6 +5,9 @@ import logging
 import subprocess
 import sys
 
+import werkzeug
+from werkzeug.wsgi import DispatcherMiddleware
+
 def main(args):
     from app import app
 
@@ -28,6 +31,17 @@ def main(args):
     app.logger.info("Starting College JUMP Website version '{}'" \
             .format(version.get("string")))
     app.config["VERSION"] = version
+
+    # If the application is prefixed, such as behind a web proxy, then we need
+    # middleware to rewrite urls. Otherwise, do no such rewriting.
+    if args.prefix:
+        app.config["APPLICATION_ROOT"] = args.prefix
+        app.wsgi_app = werkzeug.wsgi.DispatcherMiddleware(
+                werkzeug.utils.redirect(app.config["APPLICATION_ROOT"], 301),
+                {app.config["APPLICATION_ROOT"]: app.wsgi_app})
+    else:
+        app.config["APPLICATION_ROOT"] = '/'
+
     app.run(host=args.host, port=args.port, debug=args.debug)
 
 # Decode command line arguments using argparse
@@ -35,6 +49,7 @@ def parse(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='127.0.0.1')
     parser.add_argument('--port', default=8088, type=int)
+    parser.add_argument('--prefix', default=None)
     parser.add_argument('--debug', action='store_true', default=True)
     return parser.parse_args(argv)
 
