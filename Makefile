@@ -1,11 +1,13 @@
-.PHONY: env run dist
+.PHONY: env install run dist
 
 env:
 	python3 -m venv env
 
-run: env
-	env/bin/python3 setup.py install
-	env/bin/python -m collegejump
+install: env
+	env/bin/python3 setup.py install --force
+
+run: install
+	env/bin/python3 -m collegejump
 
 dist: env
 	env/bin/python3 setup.py sdist
