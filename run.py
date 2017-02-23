@@ -33,8 +33,8 @@ def main(args):
 # Decode command line arguments using argparse
 def parse(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--host', default='0.0.0.0')
-    parser.add_argument('--port', default=8080, type=int)
+    parser.add_argument('--host', default='127.0.0.1')
+    parser.add_argument('--port', default=8088, type=int)
     parser.add_argument('--debug', action='store_true', default=True)
     return parser.parse_args(argv)
 
