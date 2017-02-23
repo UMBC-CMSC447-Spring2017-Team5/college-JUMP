@@ -1,6 +1,6 @@
 .PHONY: run
 run: env
-	./run.py
+	env/bin/python -m app
 
 env: python-requirements
 	python3 -m venv env
