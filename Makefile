@@ -1,16 +1,23 @@
-.PHONY: env install run dist
+.PHONY: env install run dist clean-dist
+
+dist: env
+	env/bin/python3 setup.py sdist
+
+install: dist
+	pip3 install --force "dist/$(shell env/bin/python3 setup.py --fullname).tar.gz"
 
 env:
 	python3 -m venv env
 
-install: env
-	env/bin/python3 setup.py install --force
-
 run: install
-	env/bin/python3 -m collegejump
+	python3 -m collegejump
 
-dist: env
-	env/bin/python3 setup.py sdist
+vrun:
+	vagrant up --provision
+	vagrant ssh --command "python3 -m collegejump --host 0.0.0.0"
+
+vhalt:
+	vagrant halt
 
 clean-dist:
 	@rm -rf dist/

@@ -4,13 +4,11 @@ import subprocess
 
 try:
     version = subprocess.check_output(
-            ['git', 'describe', '--always', '--dirty=+']) \
+            ['git', 'describe', '--always', '--dirty=-plus']) \
             .decode('UTF-8').strip()
 except Exception as e:
     print("Could not get version: {}", repr(e))
     version = None
-
-print("SETUP: College JUMP Website ({})".format(version))
 
 setup(
     name='College JUMP Website',

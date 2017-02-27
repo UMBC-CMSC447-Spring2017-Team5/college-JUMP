@@ -9,6 +9,26 @@ Developing and running the site requires Python3 and Flask, and other
 software requirements which may be installed using `pip` inside of a Python
 virtual environment.
 
+### Vagrant
+
+The website may be developed completely within a virtual environment known as
+Vagrant. This allows us to build and run the website on a standard virtual
+interface. To do so, download and install
+[Vagrant](https://www.vagrantup.com/downloads.html)
+for your operating system.
+
+To start or update the website, run the following command (if you are on a Unix
+environment, and have `make`). The first time, this will take a while.
+```
+make vrun
+```
+
+Keeping Vagrant running will consume some resources, so to stop the virtual
+machine, run the following.
+```
+make vhalt
+```
+
 ### Makefile
 
 Make is not necessary to run the website, but it is a handy tool that lets us
@@ -30,7 +50,7 @@ If your Python executable is not called `python3`, it may be called `python` or
 `Python`.
 Once prepared, execute this to install requirements,
 ```
-env/bin/pip install -r python-requirements
+env/bin/pip install --force .
 ```
 
 ### Flask Itself
