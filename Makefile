@@ -1,4 +1,9 @@
 .PHONY: env install run dist clean-dist
+# Test things
+results.xml: env
+	env/bin/python3 test.py
+
+test: results.xml
 
 # Run the module inside a vagrant instance. (Remember to vhalt afterward.)
 vrun:
