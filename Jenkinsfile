@@ -9,7 +9,7 @@ node {
 
     stage('Distribution') {
         // Build the source package
-        def fullname = sh "python3 setup.py --fullname"
+        def fullname = sh "env/bin/python3 setup.py --fullname"
         sh "make dist"
         archiveArtifacts 'dist/${fullname}.tar.gz'
     }
