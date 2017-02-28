@@ -7,5 +7,6 @@ except ImportError:
     __version__ = "development"
 
 app = Flask(__name__)
+app.config['VERSION'] = __version__
 
 from collegejump import views
