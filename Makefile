@@ -8,7 +8,7 @@ install: dist
 
 env:
 	python3 -m venv env
-	env/bin/pip3 install --editable .
+	env/bin/python3 env/bin/pip3 install --editable .
 
 run: env
 	env/bin/python3 -m collegejump
