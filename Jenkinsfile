@@ -12,4 +12,8 @@ node {
         sh "make clean-dist dist"
         archiveArtifacts 'dist/**.tar.gz'
     }
+
+    stage('Testing') {
+        sh "make test"
+    }
 }

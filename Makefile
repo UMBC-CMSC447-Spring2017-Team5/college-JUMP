@@ -1,9 +1,15 @@
-.PHONY: env install run dist clean-dist
-# Test things
-results.xml: env
-	env/bin/python3 test.py
+.PHONY: env run test vrun vhalt install user_run dist clean-dist
 
-test: results.xml
+env:
+	python3 -m venv env
+	env/bin/python3 env/bin/pip3 install --editable .
+
+run: env
+	env/bin/python3 -m collegejump
+
+# Test things
+test: env
+	env/bin/python3 test.py
 
 # Run the module inside a vagrant instance. (Remember to vhalt afterward.)
 vrun:
@@ -15,13 +21,6 @@ vhalt:
 
 install: dist
 	pip3 install --force "dist/$(shell env/bin/python3 setup.py --fullname).tar.gz"
-
-env:
-	python3 -m venv env
-	env/bin/python3 env/bin/pip3 install --editable .
-
-run: env
-	env/bin/python3 -m collegejump
 
 # Install dependencies user-wide and run the module from the current directory.
 user_run:
