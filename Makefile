@@ -22,7 +22,7 @@ user_run:
 # Run the module inside a vagrant instance. (Remember to vhalt afterward.)
 vrun:
 	vagrant up
-	vagrant ssh --command "cd /vagrant && make user_run"
+	vagrant ssh --command "cd collegejump && make user_run"
 
 vhalt:
 	vagrant halt
