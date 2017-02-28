@@ -68,10 +68,4 @@ Vagrant.configure("2") do |config|
     apt-get update
     apt-get install -y python3 python3-pip python3-venv make
   SHELL
-  config.vm.provision "shell", privileged: false, inline: <<-SHELL
-    cd /vagrant && make clean-dist dist
-  SHELL
-  config.vm.provision "shell", inline: <<-SHELL
-    cd /vagrant && make install
-  SHELL
 end
