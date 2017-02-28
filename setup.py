@@ -31,6 +31,9 @@ except Exception as e:
     print("Could not get version: {}", repr(e))
     version = None
 
+with open('collegejump/_version.py', 'w') as f:
+    f.write('__version__ = \'{}\''.format(version))
+
 setup(
     name='College JUMP Website',
     version=version,
@@ -38,6 +41,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Flask >= 0.12',
+        'Flask >= 0.12'
     ]
 )

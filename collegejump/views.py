@@ -5,10 +5,10 @@ import flask
 @app.route('/index.html')
 def front_page():
     return flask.render_template('index.html',
-                                 VERSION=app.config["VERSION"])
+                                 __version__=app.config["VERSION"])
     
 @app.route('/calendar.html')
 def calendar_page():
     return flask.render_template('calendar.html',
-                                 VERSION=app.config["VERSION"], 
+                                 __version__=app.config["VERSION"],
                                  gcal_link="dummylink")

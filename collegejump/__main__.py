@@ -2,14 +2,17 @@
 
 import argparse
 import logging
-import subprocess
 import sys
 
 import werkzeug
 from werkzeug.wsgi import DispatcherMiddleware
 
 def main(args):
-    from collegejump import app
+    from collegejump import app, __version__
+
+    if(args.version):
+        print(__version__)
+        return 0
 
     # Prepare logging.
     level = logging.INFO
@@ -17,20 +20,8 @@ def main(args):
         level = logging.DEBUG
     app.logger.setLevel(level)
 
-    version = {}
-    try:
-        version["string"] = subprocess.check_output(
-                ['git', 'describe', '--always', '--dirty=+']).decode('UTF-8').strip()
-
-        # Note that the version was from the version control system
-        version["from_vcs"] = True
-    except (FileNotFoundError, subprocess.CalledProcessError) as e:
-        app.logger.warn("Could not get version info: {}".format(repr(e)))
-        pass
-
-    app.logger.info("Starting College JUMP Website version '{}'" \
-            .format(version.get("string")))
-    app.config["VERSION"] = version
+    app.config["VERSION"] = __version__
+    app.logger.info("Starting College JUMP Website version '{}'".format(__version__))
 
     # If the application is prefixed, such as behind a web proxy, then we need
     # middleware to rewrite urls. Otherwise, do no such rewriting.
@@ -51,6 +42,7 @@ def parse(argv):
     parser.add_argument('--port', default=8088, type=int)
     parser.add_argument('--prefix', default=None)
     parser.add_argument('--debug', action='store_true', default=True)
+    parser.add_argument('--version', action='store_true')
     return parser.parse_args(argv)
 
 # If running this as a script, execute the main function. This is just a
