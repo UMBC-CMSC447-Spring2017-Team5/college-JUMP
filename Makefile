@@ -11,7 +11,6 @@ env:
 	env/bin/pip3 install --editable .
 
 run: env
-	python3 -m collegejump
 	env/bin/python3 -m collegejump
 
 # Install dependencies user-wide and run the module from the current directory.
