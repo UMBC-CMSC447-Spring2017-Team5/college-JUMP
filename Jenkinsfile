@@ -20,6 +20,10 @@ node {
     }
 
     stage('Testing') {
-        sh "make test"
+        try {
+            sh "make test"
+        } catch (Exception e) {
+            currentBuild.result = 'UNSTABLE'
+        }
     }
 }
