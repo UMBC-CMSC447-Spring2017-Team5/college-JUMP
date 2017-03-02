@@ -1,5 +1,8 @@
 // vim: ft=groovy
 node {
+    def pkgVersion
+    def pkgFullname
+
     stage('Preparation') {
         // Get some code from the GitHub repository
         git 'https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP.git'
@@ -7,11 +10,11 @@ node {
         sh "make env"
 
         // Set the build name
-        def pkgVersion = sh (
+        pkgVersion = sh (
             script: "env/bin/python3 setup.py --version",
             returnStdout: true
         ).trim()
-        def pkgFullname = sh (
+        pkgFullname = sh (
             script: "env/bin/python3 setup.py --fullname",
             returnStdout: true
         ).trim()
