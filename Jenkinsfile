@@ -7,16 +7,22 @@ node {
         sh "make env"
 
         // Set the build name
-        currentBuild.displayName = sh (
+        def pkgVersion = sh (
             script: "env/bin/python3 setup.py --version",
             returnStdout: true
         ).trim()
+        def pkgFullname = sh (
+            script: "env/bin/python3 setup.py --fullname",
+            returnStdout: true
+        ).trim()
+
+        currentBuild.displayName = pkgVersion
     }
 
     stage('Distribution') {
         // Build the source package
-        sh "make clean-dist dist"
-        archiveArtifacts 'dist/**.tar.gz'
+        sh "make dist"
+        archiveArtifacts "dist/${pkgFullname}.tar.gz"
     }
 
     stage('Testing') {
@@ -29,7 +35,7 @@ node {
 
     stage('Deployment') {
         sh '''
-            sudo pip3 install contrib/*.tar.gz
+            sudo pip3 -H install contrib/${pkgFullname}tar.gz
             sudo systemctl restart collegejump
         '''
     }
