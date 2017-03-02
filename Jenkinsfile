@@ -37,9 +37,9 @@ node {
     }
 
     stage('Deployment') {
-        sh '''
-            sudo -H pip3 install contrib/${pkgFullname}tar.gz
+        sh """
+            sudo -H pip3 install contrib/${pkgFullname}.tar.gz
             sudo -H systemctl restart collegejump
-        '''
+        """
     }
 }
