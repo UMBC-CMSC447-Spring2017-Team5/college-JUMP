@@ -22,7 +22,7 @@ node {
         currentBuild.displayName = pkgVersion
     }
 
-    stage('Distribution') {
+    stage('Packaging') {
         // Build the source package
         sh "make dist"
         archiveArtifacts "dist/${pkgFullname}.tar.gz"
