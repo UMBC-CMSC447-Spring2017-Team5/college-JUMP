@@ -7,7 +7,10 @@ node {
         sh "make env"
 
         // Set the build name
-        currentBuild.displayName = sh "env/bin/python3 setup.py --version"
+        currentBuild.displayName = sh (
+            script: "env/bin/python3 setup.py --version",
+            returnStdout: true
+        ).trim()
     }
 
     stage('Distribution') {
