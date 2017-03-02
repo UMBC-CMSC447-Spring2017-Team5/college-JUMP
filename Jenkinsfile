@@ -26,4 +26,11 @@ node {
             currentBuild.result = 'UNSTABLE'
         }
     }
+
+    stage('Deployment') {
+        sh '''
+            sudo pip3 install contrib/*.tar.gz
+            sudo systemctl restart collegejump
+        '''
+    }
 }
