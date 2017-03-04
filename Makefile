@@ -1,11 +1,11 @@
-.PHONY: run test vrun vhalt install user_run dist clean-dist
+.PHONY: env run test vrun vhalt install user_run dist clean-dist
 
 env: env/setup-stamp
-	python3 -m venv env
-	env/bin/python3 env/bin/pip3 install --editable .
 
 env/setup-stamp: setup.py
 	touch $@
+	python3 -m venv env
+	env/bin/python3 env/bin/pip3 install --editable .
 
 run: env
 	env/bin/python3 -m collegejump
