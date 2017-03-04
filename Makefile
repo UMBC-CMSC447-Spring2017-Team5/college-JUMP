@@ -1,11 +1,4 @@
-.PHONY: env run test vrun vhalt install user_run dist clean-dist
-
-env: env/setup-stamp
-
-env/setup-stamp: setup.py
-	touch $@
-	python3 -m venv env
-	env/bin/python3 env/bin/pip3 install --editable .
+.PHONY: env run test dist dist-clean
 
 run: env
 	env/bin/python3 -m collegejump
@@ -14,24 +7,17 @@ run: env
 test: env
 	env/bin/python3 test.py
 
-# Run the module inside a vagrant instance. (Remember to vhalt afterward.)
-vrun:
-	vagrant up
-	vagrant ssh --command "cd collegejump && make user_run"
+env: env/setup-stamp
+dist: dist/setup-stamp
 
-vhalt:
-	vagrant halt
+env/setup-stamp: setup.py
+	touch $@
+	python3 -m venv env
+	env/bin/python3 env/bin/pip3 install --editable .
 
-install: dist
-	pip3 install --force "dist/$(shell env/bin/python3 setup.py --fullname).tar.gz"
-
-# Install dependencies user-wide and run the module from the current directory.
-user_run:
-	pip3 install --editable .
-	python3 -m collegejump --host 0.0.0.0
-
-dist: env
+dist/setup-stamp: setup.py
+	touch $@
 	env/bin/python3 setup.py sdist
 
-clean-dist:
+dist-clean:
 	@rm -rf dist/
