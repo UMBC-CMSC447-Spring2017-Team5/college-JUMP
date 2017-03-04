@@ -38,7 +38,7 @@ node {
 
     stage('Deployment') {
         sh """
-            sudo -H pip3 install \"dist/${pkgFullname}.tar.gz\"
+            sudo -H pip3 install --upgrade \"dist/${pkgFullname}.tar.gz\"
             sudo -H systemctl restart collegejump
         """
     }
