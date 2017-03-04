@@ -47,17 +47,9 @@ def get_scm_version():
 
     return version
 
-def get_version():
-    """Collect the burned-in version if available, or SCM version otherwise."""
-    try:
-        from collegejump._version import __version__
-        return __version__
-    except ImportError:
-        return get_scm_version()
-
 setuptools.setup(
     name='College JUMP Website',
-    version=get_version(),
+    version=get_scm_version(),
     packages=['collegejump'],
     include_package_data=True,
     zip_safe=False,
