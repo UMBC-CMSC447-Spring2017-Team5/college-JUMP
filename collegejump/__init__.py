@@ -1,9 +1,10 @@
 from flask import Flask
 
+__version__ = None
 try:
     from collegejump._version import __version__
 except ImportError:
-    print("WARN: no version.py; is the package installed??")
+    print("WARN: no _version.py; is the package installed??")
     __version__ = "development"
 
 app = Flask(__name__)
