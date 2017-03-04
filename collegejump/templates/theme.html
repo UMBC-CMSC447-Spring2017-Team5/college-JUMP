@@ -23,6 +23,14 @@
     {% endblock %}
   </head>
   <body>
+  
+  <nav class="navbar navbar-default navbar-static-top">
+  <div class="container">
+  <li><a href="{{ url_for('front_page') }}">Home</a></li>
+  <li><a href="{{ url_for('calendar_page') }}">Calendar</a></li> 
+  </div>
+  </nav>
+  
     {% block content %}
     {% endblock %}
 
