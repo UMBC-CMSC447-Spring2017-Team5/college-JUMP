@@ -1,6 +1,10 @@
 from collegejump import app
 import flask
 
+@app.route('/static/<path:path>')
+def send_static(path):
+    return flask.send_from_directory('static', path)
+
 @app.route('/')
 @app.route('/index.html')
 def front_page():
