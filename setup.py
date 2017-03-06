@@ -30,7 +30,7 @@ def get_scm_version():
                     -g
                     (?P<git>[0-9a-f]+)   # Match the commit ID if present
                     (?P<dirty>\.dirty)?  # Match the "dirty" identifier if present
-                )
+                )?
                 ''',
                 description, re.VERBOSE)
         groups = {group: (value if value else '')
