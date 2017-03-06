@@ -72,10 +72,14 @@
 
         </div>
 
-    <footer>
+    <footer class="footer">
+        <div class="container">
+        <p class="text-muted">
       {% block footer %}
       {{ __version__ }}
       {% endblock %}
+      </p>
+      </div>
     </footer>
   </body>
 </html>
