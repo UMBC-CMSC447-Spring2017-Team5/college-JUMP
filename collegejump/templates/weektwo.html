@@ -1,0 +1,25 @@
+ {% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>College JUMP Assignment 2 </title>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h1>  Hello, world!</h2>
+</h1> This is a demo assignment template </h2>
+
+<form>
+  <div class="form-group">
+    <label for="GradeExplanation">Please respond in 200 words or more to the following prompt:
+    <p> Why do you deserve the grade indicated in Assignment 1?
+    </label>
+    <textarea class="form-control" id="GradeExplanation" rows="3"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+
+
+{% endblock %}

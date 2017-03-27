@@ -1,0 +1,31 @@
+ {% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>College JUMP Assignment 3</title>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h1>  Hello, world!</h2>
+</h1> This is a demo assignment template </h2>
+
+<form>
+
+
+<div class="form-group">
+    <label for="exampleInputFile">Upload your third assignment!</label>
+    <input type="file" class="form-control-file"  aria-describedby="fileHelp">
+    <small id="fileHelp" class="form-text text-muted">
+    Reminder: Jif gifs should be uploaded in .gif format. Give the gift of gif!
+    </small>
+  </div>
+
+
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+
+
+{% endblock %}

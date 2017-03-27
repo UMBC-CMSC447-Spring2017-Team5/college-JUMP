@@ -1,0 +1,35 @@
+ {% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>College JUMP Assignment 1 </title>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h1>  Hello, world!</h2>
+</h1> This is a demo assignment template </h2>
+
+<form>
+ <div class="form-group">
+    <label for="Assignment1">What grade would you like in CMSC 447?</label>
+    <select class="form-control" id="Assignment1">
+      <option>A</option>
+      <option>B</option>
+      <option>C</option>
+      <option>D</option>
+      <option>F</option>
+      <option>Pass</option>
+      <option>Fail</option>
+      <option>I just want my degree!</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+</form>
+
+
+{% endblock %}
+
+  
