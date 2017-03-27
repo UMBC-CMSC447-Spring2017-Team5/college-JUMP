@@ -16,3 +16,9 @@ def calendar_page():
     return flask.render_template('calendar.html',
                                  __version__=app.config["VERSION"],
                                  gcal_link="dummylink")
+
+@app.route('/login.html')
+def login_page():
+    return flask.render_template('login.html',
+                                 __version__=app.config["VERSION"],
+                                 gcal_link="dummylink")

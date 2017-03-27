@@ -1,0 +1,27 @@
+{% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>College JUMP Login demo </title>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<h1>  Hello, world!</h2>
+</h1> This is the College JUMP Login Page </h2>
+
+<form>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+    <small id="emailHelp" class="form-text text-muted">Never share your password with anyone else.</small>
+  </div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+{% endblock %}
