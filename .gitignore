@@ -1,6 +1,9 @@
 # Auto-generated version file
 collegejump/_version.py
 
+# Database files
+*.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
