@@ -55,7 +55,8 @@ setuptools.setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
-        'Flask >= 0.12'
+        'Flask >= 0.12',
+        'Flask-SQLAlchemy >= 2.2'
     ],
     cmdclass={ # Override certain commands
         'sdist': sdist_burn_version
