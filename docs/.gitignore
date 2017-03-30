@@ -1,0 +1,4 @@
+diagrams/*.aux
+diagrams/*.dvi
+diagrams/*.log
+diagrams/*.png
