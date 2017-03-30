@@ -2,8 +2,6 @@
 
 all: diagrams/uml_components.png
 
-diagrams/%.pdf: diagrams/%.tex
+diagrams/%.png: diagrams/%.tex
 	pdflatex --halt-on-error --output-directory diagrams $^
-
-diagrams/%.png: diagrams/%.pdf
-	convert -density 300 $^ -quality 90 $@
+	convert -density 300 $(^:.tex=.pdf) -quality 90 $@

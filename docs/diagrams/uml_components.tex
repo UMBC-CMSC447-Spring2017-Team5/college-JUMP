@@ -4,8 +4,45 @@
 
 \begin{document}
 \begin{tikzpicture}
-    \begin{umlcomponent}{Flask Framework}
+    \begin{umlcomponent}{College JUMP Website}
+        \umlbasiccomponent[x=2,y=0]{Views}
+        \umlprovidedinterface[interface=HTML Server,distance=2.5cm]{Views}
+        \umlport{Views}{east}
+        \umlport{Views}{south}
+
+        \begin{umlcomponent}{Models}
+            \umlbasiccomponent[x=6.5,y=-0.75]{Users}
+            \umlbasiccomponent[x=6.5,y=-2.75]{Announcements}
+            \umlbasiccomponent[x=6.5,y=-4.75]{Documents}
+        \end{umlcomponent}
+        \umlrequiredinterface[interface=DB Connector,distance=3.25cm]{Models}
+        \umlport{Models}{west}
+        \umlport{Models}{east}
+
+        \umlbasiccomponent[x=-1,y=-3.5]{Templates}
+        \umlport{Templates}{east}
+
+        \umlbasiccomponent[x=-1,y=-5.5]{Static}
+        \umlport{Static}{east}
+
+        \umlHVHassemblyconnector[interface=Data Store]{Views-east-port}{Models-west-port}
+        \umlVHassemblyconnector[interface=Jinja2]{Views-south-port}{Templates-east-port}
+        \umlVHassemblyconnector[interface=File Returner]{Views-south-port}{Static-east-port}
     \end{umlcomponent}
+
+    \umlprovidedinterface[interface=Web Interface,distance=8cm]{College JUMP Website}
+
+    \umlport{College JUMP Website}{west}
+    \umlport{College JUMP Website}{east}
+
+    \umldelegateconnector{College JUMP Website-west-port}{Views-west-interface}
+    \umldelegateconnector{College JUMP Website-east-port}{Models-east-interface}
+
+    \umlbasiccomponent[x=14,y=0]{SQLite3 Database}
+    \umlport{SQLite3 Database}{south}
+    \umlHVassemblyconnector[interface=SQLAlchemy]{College JUMP Website-east-port}{SQLite3 Database-south-port}
+
+
 
     \node[align=center,font=\bfseries, yshift=2em] (title) 
         at (current bounding box.north)
