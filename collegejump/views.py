@@ -6,7 +6,7 @@ def send_static(path):
     return flask.send_from_directory('static', path)
 
 @app.route('/')
-@app.route('/index.html')
+#@app.route('/index.html')
 def front_page():
     return flask.render_template('index.html',
                                  __version__=app.config["VERSION"])
