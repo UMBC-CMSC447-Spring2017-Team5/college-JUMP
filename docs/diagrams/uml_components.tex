@@ -26,8 +26,8 @@
         \umlport{Static}{east}
 
         \umlHVHassemblyconnector[interface=Data Store]{Views-east-port}{Models-west-port}
-        \umlVHassemblyconnector[interface=Jinja2]{Views-south-port}{Templates-east-port}
-        \umlVHassemblyconnector[interface=File Returner]{Views-south-port}{Static-east-port}
+        \umlHVassemblyconnector[interface=Jinja2,first arm]{Templates-east-port}{Views-south-port}
+        \umlHVassemblyconnector[interface=File Returner,first arm]{Static-east-port}{Views-south-port}
     \end{umlcomponent}
 
     \umlprovidedinterface[interface=Web Interface,distance=8cm]{College JUMP Website}
