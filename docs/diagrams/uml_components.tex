@@ -22,11 +22,15 @@
         \umlbasiccomponent[x=-1,y=-3.5]{Templates}
         \umlport{Templates}{east}
 
-        \umlbasiccomponent[x=-1,y=-5.5]{Static}
+        \umlbasiccomponent[x=-1,y=-5.5]{Forms}
+        \umlport{Forms}{east}
+
+        \umlbasiccomponent[x=-1,y=-7.5]{Static}
         \umlport{Static}{east}
 
         \umlHVHassemblyconnector[interface=Data Store]{Views-east-port}{Models-west-port}
         \umlHVassemblyconnector[interface=Jinja2,first arm]{Templates-east-port}{Views-south-port}
+        \umlHVassemblyconnector[interface=WTForms,first arm]{Forms-east-port}{Views-south-port}
         \umlHVassemblyconnector[interface=File Returner,first arm]{Static-east-port}{Views-south-port}
     \end{umlcomponent}
 
