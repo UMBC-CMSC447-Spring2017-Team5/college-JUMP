@@ -1,0 +1,68 @@
+\documentclass{standalone}
+
+\usepackage{tikz-uml}
+
+\begin{document}
+\begin{tikzpicture}
+    \begin{umlpackage}{collegejump{.}models}
+        \begin{umlclass}{User}{%
+                + id : Integer \\
+                + name : String \\
+                + email : String \\
+                + \_password : String \\
+                + admin : Boolean \\
+                + mentor\_id : Integer
+            }{%
+                + \_set\_password(plaintext : String) : void \\
+                + check\_password(plaintext : String) : Boolean \\
+                \umlstatic{+ load\_user(email : String)}
+            }
+        \end{umlclass}
+        \umlassoc[mult1=0..1,arg1=mentor, mult2=*,arg2=mentee,
+                  angle1=-60,angle2=-120,loopsize=2cm]{User}{User}
+
+        \begin{umlclass}[x=10,y=0]{Announcement}{%
+                + id : Integer \\
+                + title : String \\
+                + content : String \\
+                + timestamp : DateTime \\
+                + author\_id : Integer
+            }{}
+        \end{umlclass}
+        \umlassoc[geometry=--,arg1=author,mult1=1,mult2=*]{User}{Announcement}
+
+        \begin{umlclass}[x=-2,y=-5.5]{Semester}{%
+                + id : Integer \\
+                + start : DateTime \\
+                + end : DateTime
+            }{}
+        \end{umlclass}
+
+        \begin{umlclass}[x=4,y=-5.5]{Week}{%
+                + semester\_id : Integer \\
+                + week\_number : Integer
+            }{}
+        \end{umlclass}
+        \umlassoc[mult1=1,mult2=1..*]{Semester}{Week}
+
+        \begin{umlclass}[x=0,y=-8.5]{Assignment}{%
+                + id : Integer \\
+                + questions : JSON
+            }{}
+        \end{umlclass}
+        \umlVHassoc[anchor1=-110,mult1=*,mult2=*,pos2=1.9]{Week}{Assignment}
+
+        \begin{umlclass}[x=8,y=-8.5]{Document}{%
+                + id : Integer \\
+                + data : LargeBinary
+            }{}
+        \end{umlclass}
+        \umlVHassoc[anchor1=-70,mult1=*,mult2=*,pos2=1.9]{Week}{Document}
+
+    \end{umlpackage}
+
+    \node[align=center,font=\bfseries, yshift=2em] (title) 
+        at (current bounding box.north)
+        {College JUMP Website Class Diagram};
+\end{tikzpicture}
+\end{document}
