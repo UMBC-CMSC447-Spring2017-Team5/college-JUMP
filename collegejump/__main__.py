@@ -31,8 +31,10 @@ def main(args):
             os.path.join(os.getcwd(), args.db))
     app.config["VERSION"] = __version__
 
+    app.secret_key = os.urandom(24)
+
     # We must import the database utilities once the DATABASE_URI is set.
-    from collegejump import database
+    from collegejump import database, views
 
 
     # Now that common setup is finished, we can decide what to run.

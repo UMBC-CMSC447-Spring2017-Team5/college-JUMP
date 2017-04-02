@@ -29,7 +29,9 @@ setuptools.setup(
         'setuptools',
         'Flask >= 0.12',
         'Flask-SQLAlchemy >= 2.2',
-        'Flask-Bcrypt'
+        'Flask-Bcrypt',
+        'Flask-WTF',
+        'Flask-Login',
     ],
     cmdclass={ # Override certain commands
         'sdist': sdist_burn_version

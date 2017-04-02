@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, request
+from flask_login import LoginManager
 import subprocess, string
 
 import collegejump.scmtools
@@ -18,4 +19,5 @@ app.config['VERSION'] = __version__
 # TODO: extract this from a configuration file
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-from collegejump import views
+app.login_manager = LoginManager()
+app.login_manager.init_app(app)

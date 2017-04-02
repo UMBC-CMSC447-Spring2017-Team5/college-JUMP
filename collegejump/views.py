@@ -1,5 +1,7 @@
-from collegejump import app
 import flask
+import flask_login
+
+from collegejump import app, forms, models
 
 @app.route('/static/<path:path>')
 def send_static(path):
@@ -17,11 +19,30 @@ def calendar_page():
                                  __version__=app.config["VERSION"],
                                  gcal_link="dummylink")
 
-@app.route('/login.html')
+@app.route('/login', methods=['GET', 'POST'])
 def login_page():
-    return flask.render_template('login.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
+    # If the login form is successfully POSTed to us here, try to log the user
+    # in. Otherwise, render the page as normal.
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        print("Attempting to log in {}... ".format(form.email.data), end="")
+        email = form.email.data
+        password = form.password.data
+
+        user = models.User.load_user(email)
+        if user and user.check_password(password):
+            print("success!")
+            # Modify the session so that the user is logged in.
+            flask_login.login_user(user)
+
+            # Redirect using the form utility. Use `?next=` if presented.
+            return form.redirect()
+        else:
+            print("failure.")
+
+
+    return flask.render_template('login.html', form=form,
+                                 __version__=app.config["VERSION"])
 
 @app.route('/week/<int:week_number>')
 def week_page(week_number):
