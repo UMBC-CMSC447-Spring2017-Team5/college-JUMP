@@ -1,22 +1,13 @@
 from flask import Flask
 import subprocess, string
 
-def get_git_revision_hash():
-    try:
-        s = str(subprocess.check_output(["git", "describe", "--always"]).strip())
-        # return format is like b'versionstring'\n
-        # so partition between apostrophe character
-        s = s.partition('\'')[-1].rpartition('\'')[0]
-        return s
-    except:
-        return "Subprocess Exception"
+import collegejump.scmtools
 
-#try:
-#    from collegejump._version import __version__
-#except ImportError:
-#    print("WARN: no _version.py; is the package installed??")
-__version__ = "College JUMP version " + get_git_revision_hash()
-
+try:
+    from collegejump._version import __version__
+except ImportError:
+    print("WARN: no _version.py; is the package installed? using SCM instead")
+    __version__ = collegejump.scmtools.get_scm_version()
 
 app = Flask(__name__)
 

@@ -42,7 +42,7 @@ def main(args):
     if(args.func != None):
         return args.func(args)
 
-    app.logger.info("Starting College JUMP Website version '{}'".format(__version__))
+    print("Starting College JUMP Website version '{}'".format(__version__))
 
     # If the application is prefixed, such as behind a web proxy, then we need
     # middleware to rewrite urls. Otherwise, do no such rewriting.
