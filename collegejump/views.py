@@ -23,7 +23,7 @@ def login_page():
                                  __version__=app.config["VERSION"],
                                  gcal_link="dummylink")
 
-@app.route('/week/<week_number>')
+@app.route('/week/<int:week_number>')
 def week_page(week_number):
     return flask.render_template('week_page.html',
                                  week_number=week_number,
