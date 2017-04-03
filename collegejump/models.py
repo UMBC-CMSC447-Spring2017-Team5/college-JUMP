@@ -84,10 +84,12 @@ class Announcement(db.Model):
 class Semester(db.Model):
     """A semester is a collection of weeks meant to make up the content of the
     website during a whole semester."""
+    NAME_MAX_LENGTH = 16
 
     id    = db.Column(db.Integer, primary_key=True)
     start = db.Column(db.Date())
     end   = db.Column(db.Date())
+    name  = db.Column(db.String(NAME_MAX_LENGTH))
 
 class Week(db.Model):
     # Weeks are identified as (semester, week number) uniquely.
