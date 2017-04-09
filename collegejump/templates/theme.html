@@ -1,6 +1,7 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html>
+
+
   <head>
     {% block head %}
     <meta charset="utf-8"/>
@@ -20,6 +21,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
             crossorigin="anonymous"></script>
+
     {% endblock %}
      </head>
 
@@ -45,22 +47,11 @@
           <ul class="nav navbar-nav">
               <li><a href="{{ url_for('front_page') }}">Home</a></li>
               <li><a href="{{ url_for('calendar_page') }}">Calendar</a></li>
-                             
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-              aria-expanded="false">Assignments<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                {% for n in range(1, 13) %}
-                <li><a href="{{ url_for('week_page', week_number=n) }}">Week {{n}}</a></li>
-                {% endfor %}
-              </ul>
-            </li>
-          </ul>
-          
+              <li><a href="#"><span onclick="openNav()">Assignments</span></a></li>
+           </ul>
 
       
        <form class="nav navbar-nav navbar-right">
-       
        <ul class="nav navbar-nav">
               <li><a href="{{ url_for('announ_page') }}">Edit/Create Announcements</a></li>
               <li><a href="{{ url_for('edit_acct_page') }}">Edit Accounts</a></li>
@@ -77,11 +68,27 @@
      </div><!-- /.container-fluid -->
   </nav>
 
-        <div class="container">
+
+
+
+<!-- SideNav Starts -->
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    {% for n in range(1, 13) %}
+    <a href="{{ url_for('week_page', week_number=n) }}">Week {{n}}</a>
+    {% endfor %}
+</div>
+<!-- SideNav Ends -->
+
+
+<!-- Main Block + Footer Content -->
+<div id="main">
+
+       <div class="container">
         {% block content %}
         {% endblock %}
         </div>
-        
+    
     <footer class="footer">
         <div class="container">
             <p class="text-muted">
@@ -91,5 +98,23 @@
             </p>
         </div>
     </footer>
-    </body>
-</html>
+
+</div>
+<!-- Main Block + Footer Content -->
+
+
+<script>
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+    document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+    document.body.style.backgroundColor = "white";
+}
+</script>
+</body>
+</html> 

@@ -44,6 +44,7 @@ def login_page():
     return flask.render_template('login.html', form=form,
                                  __version__=app.config["VERSION"])
 
+
 @app.route('/account.html')
 def acct_page():
     return flask.render_template('account.html',
