@@ -67,12 +67,10 @@ def edit_acct_page():
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
     if form.validate_on_submit():
-        print("Attempting to create user...", end="")
-        user = User()
-        user.email = form.email.data
-        user.password = form.password.data
+        print("Attempting to create user... ", end="")
+        user = User(form.email.data, form.password.data)
         user.name = form.name.data
-        user.admin= form.admin.data
+        user.admin = form.admin.data
         user.save()
         
         usercheck = models.User.load_user(form.email.data)
