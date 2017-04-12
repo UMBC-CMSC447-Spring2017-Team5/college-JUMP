@@ -18,8 +18,8 @@
                 \umlstatic{+ load\_user(email : String)}
             }
         \end{umlclass}
-        \umlassoc[mult1=0..1,arg1=mentor, mult2=*,arg2=mentee,
-                  angle1=-60,angle2=-120,loopsize=2cm]{User}{User}
+        \umlassoc[mult1=*,arg1=mentor, mult2=*,arg2=mentee,
+                  angle1=-10,angle2=-50,loopsize=3cm]{User}{User}
 
         \begin{umlclass}[x=10,y=0]{Announcement}{%
                 + id : Integer \\
@@ -33,21 +33,25 @@
 
         \begin{umlclass}[x=-2,y=-5.5]{Semester}{%
                 + id : Integer \\
-                + start : Date \\
-                + end : Date \\
-                + name : String
+                + name : String \\
+                + order: Integer
             }{}
         \end{umlclass}
+        \umlassoc[mult1=*,arg1=enrollee, mult2=*,arg2=semester,
+                  anchor1=-140,anchor2=120]{User}{Semester}
 
         \begin{umlclass}[x=4,y=-5.5]{Week}{%
                 + semester\_id : Integer \\
-                + week\_number : Integer
+                + week\_number : Integer \\
+                + intro : String \\
+                + header : String
             }{}
         \end{umlclass}
         \umlassoc[mult1=1,mult2=1..*]{Semester}{Week}
 
         \begin{umlclass}[x=0,y=-8.5]{Assignment}{%
                 + id : Integer \\
+                + name : String \\
                 + questions : JSON
             }{}
         \end{umlclass}
@@ -55,6 +59,7 @@
 
         \begin{umlclass}[x=8,y=-8.5]{Document}{%
                 + id : Integer \\
+                + name : String \\
                 + data : LargeBinary
             }{}
         \end{umlclass}

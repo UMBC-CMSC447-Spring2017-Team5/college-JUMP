@@ -8,6 +8,16 @@ db = app.db
 
 bcrypt = Bcrypt(app)
 
+mentorships = db.Table('mentee_mentors', db.metadata,
+        db.Column('mentee_id', db.Integer, db.ForeignKey('user.id')),
+        db.Column('mentor_id', db.Integer, db.ForeignKey('user.id'))
+        )
+
+enrollment = db.Table('enrollment', db.metadata,
+        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+        db.Column('semester_id', db.Integer, db.ForeignKey('semester.id'))
+        )
+
 week_assignments = db.Table('week_assignments', db.metadata,
         db.Column('semester_id', db.Integer),
         db.Column('week_number', db.Integer),
@@ -25,6 +35,7 @@ week_documents = db.Table('week_documents', db.metadata,
             ['semester_id', 'week_number'],
             ['week.semester_id', 'week.week_number']
         ))
+
 class User(db.Model, UserMixin):
     NAME_MAX_LENGTH = 128
     EMAIL_MAX_LENGTH = 128
@@ -87,14 +98,19 @@ class Semester(db.Model):
     NAME_MAX_LENGTH = 16
 
     id    = db.Column(db.Integer, primary_key=True)
-    start = db.Column(db.Date())
-    end   = db.Column(db.Date())
     name  = db.Column(db.String(NAME_MAX_LENGTH))
+    order = db.Column(db.Integer, unique=True) # for ordering semesters
 
 class Week(db.Model):
+    HEADER_MAX_LENGTH = 64
+    INTRO_MAX_LENGTH  = 1024
+
     # Weeks are identified as (semester, week number) uniquely.
     semester_id = db.Column(db.Integer, db.ForeignKey('semester.id'), primary_key=True)
     week_number = db.Column(db.Integer, primary_key=True)
+
+    header = db.Column(db.String(HEADER_MAX_LENGTH))
+    intro  = db.Column(db.String(INTRO_MAX_LENGTH))
 
     semester = db.relationship('Semester',
             backref=db.backref('weeks', order_by=week_number))
@@ -103,9 +119,15 @@ class Week(db.Model):
     documents   = db.relationship('Document',   secondary=week_documents)
 
 class Assignment(db.Model):
+    NAME_MAX_LENGTH = 64
+
     id        = db.Column(db.Integer, primary_key=True)
+    name      = db.Column(db.String(NAME_MAX_LENGTH))
     questions = db.Column(db.Text) # a JSON blob
 
 class Document(db.Model):
+    NAME_MAX_LENGTH = 64
+
     id   = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(NAME_MAX_LENGTH))
     data = db.Column(db.LargeBinary)
