@@ -94,14 +94,6 @@ def makeadmin(args):
     app.db.session.add(new_admin)
     app.db.session.commit()
 
-    
-def makeuser(args):
-    from collegejump import app
-    from collegejump.models import User
-
-    new_user = User( User.name, User.email, User.password, User.admin)
-    app.db.session.add(new_user)
-    app.db.session.commit()
 # If running this as a script, execute the main function. This is just a
 # good-practice Python idiom.
 if __name__ == '__main__':

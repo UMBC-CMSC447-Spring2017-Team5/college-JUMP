@@ -71,17 +71,9 @@ def edit_acct_page():
         user = User(form.email.data, form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data
-        user.save()
         
-        usercheck = models.User.load_user(form.email.data)
-        
-        if usercheck:
-            print("success!")
-
-            # Redirect using the form utility. Use `?next=` if presented.
-            return form.redirect()
-        else:
-            print("failure.")
+        app.db.session.add(user)
+        app.db.session.commit()
 
 
     return flask.render_template('edit_accounts.html', form=form,
