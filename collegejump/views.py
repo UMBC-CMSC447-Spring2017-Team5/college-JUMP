@@ -1,7 +1,8 @@
+import datetime
 import flask
 import flask_login
 from collegejump.models import User
-from collegejump import app, forms, models
+from collegejump import app, forms, models, database
 
 @app.route('/static/<path:path>')
 def send_static(path):
@@ -79,6 +80,13 @@ def edit_acct_page():
     return flask.render_template('edit_accounts.html', form=form,
                                  __version__=app.config["VERSION"])
 
+@app.route('/database/export')
+def database_export_endpoint():
+    filename = datetime.datetime.now().strftime("collegejump-export-%Y%m%d.zip")
+    return flask.send_file(database.export_db(app.db),
+            attachment_filename=filename,
+            as_attachment=True,
+            mimetype='application/zip')
 
 @app.route('/week/<int:week_number>')
 def week_page(week_number):
