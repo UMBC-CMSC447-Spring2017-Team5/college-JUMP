@@ -33,6 +33,25 @@ Once prepared, execute this to install requirements,
 env/bin/pip install --force .
 ```
 
+
+@app.route('/account.html')
+def acct_page():
+    return flask.render_template('account.html',
+                                 __version__=app.config["VERSION"],
+                                 gcal_link="dummylink")
+    
+@app.route('/announcements.html')
+def announ_page():
+    return flask.render_template('announcements.html',
+                                 __version__=app.config["VERSION"],
+                                 gcal_link="dummylink")
+    
+@app.route('/edit_accounts.html')
+def edit_acct_page():
+    return flask.render_template('edit_accounts.html',
+                                 __version__=app.config["VERSION"],
+                                 gcal_link="dummylink")
+
 ### Flask Itself
 
 The website is organized underneath the `app` directory into fairly distinct
@@ -47,13 +66,3 @@ directory is organized as follows:
 
 Extra scripts and service files may be stored in the `contrib/` folder. For
 example, the Systemd service is installed there.
-
----
-
-### Vagrant
-
-The website may be developed completely within a virtual environment known as
-Vagrant. This allows us to build and run the website on a standard virtual
-interface. To do so, download and install
-[Vagrant](https://www.vagrantup.com/downloads.html)
-for your operating system.
