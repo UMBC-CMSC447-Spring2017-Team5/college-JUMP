@@ -1,6 +1,6 @@
 import flask
 import flask_login
-
+from collegejump.models import User
 from collegejump import app, forms, models
 
 @app.route('/static/<path:path>')
@@ -56,12 +56,39 @@ def announ_page():
     return flask.render_template('announcements.html',
                                  __version__=app.config["VERSION"],
                                  gcal_link="dummylink")
-
-@app.route('/edit_accounts.html')
+    
+    
+    
+    
+    
+@app.route('/edit_accounts', methods=['GET', 'POST'])
 def edit_acct_page():
-    return flask.render_template('edit_accounts.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
+    # If the Create Acct form is successfully POSTed to us here, try to log the user
+    # in. Otherwise, render the page as normal.
+    form = forms.UserInfoForm()
+    if form.validate_on_submit():
+        print("Attempting to create user...", end="")
+        user = User()
+        user.email = form.email.data
+        user.password = form.password.data
+        user.name = form.name.data
+        user.admin= form.admin.data
+        user.save()
+        
+        usercheck = models.User.load_user(form.email.data)
+        
+        if usercheck:
+            print("success!")
+
+            # Redirect using the form utility. Use `?next=` if presented.
+            return form.redirect()
+        else:
+            print("failure.")
+
+
+    return flask.render_template('edit_accounts.html', form=form,
+                                 __version__=app.config["VERSION"])
+
 
 @app.route('/week/<int:week_number>')
 def week_page(week_number):
