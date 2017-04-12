@@ -33,25 +33,6 @@ Once prepared, execute this to install requirements,
 env/bin/pip install --force .
 ```
 
-
-@app.route('/account.html')
-def acct_page():
-    return flask.render_template('account.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
-    
-@app.route('/announcements.html')
-def announ_page():
-    return flask.render_template('announcements.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
-    
-@app.route('/edit_accounts.html')
-def edit_acct_page():
-    return flask.render_template('edit_accounts.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
-
 ### Flask Itself
 
 The website is organized underneath the `app` directory into fairly distinct
