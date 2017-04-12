@@ -51,7 +51,7 @@
            </ul>
 
       
-       <form class="nav navbar-nav navbar-right">
+       <form class="nav navbar-nav navbar-right" onclick="closeNav()">
        <ul class="nav navbar-nav">
               <li><a href="{{ url_for('announ_page') }}">Edit/Create Announcements</a></li>
               <li><a href="{{ url_for('edit_acct_page') }}">Edit Accounts</a></li>
@@ -82,14 +82,14 @@
 
 
 <!-- Main Block + Footer Content -->
-<div id="main" >
-
-       <div class="container">
+<div id="main"onclick="closeNav()" >
+</div>
+       <div class="container" onclick="closeNav()">
         {% block content %}
         {% endblock %}
         </div>
     
-    <footer class="footer" >
+    <footer class="footer"  onclick="closeNav()">
         <div class="container">
             <p class="text-muted">
                 {% block footer %}
@@ -99,7 +99,7 @@
         </div>
     </footer>
 
-</div>
+
 <!-- Main Block + Footer Content -->
 
 
