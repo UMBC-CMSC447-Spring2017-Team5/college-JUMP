@@ -19,6 +19,9 @@ def export_db(db):
     aa ZIP file (in memory, in a BytesIO buffer) suitable for later re-import,
     or archiving.
     """
+
+    print("Exporting database")
+
     # Create an in-memory bytes buffer for storing the file.
     archive_buf = io.BytesIO()
 
@@ -40,3 +43,26 @@ def export_db(db):
     # Return to the start of the bytes IO reader.
     archive_buf.seek(0)
     return archive_buf
+
+def import_db(db, archive_path_or_buf):
+    """Import the tables from the zip archive, as prepared by `export_db()`,
+    while REPLACING EXISTING TABLES.
+    """
+
+    print("Importing database")
+
+    # Open the zip archive.
+    with zipfile.ZipFile(archive_path_or_buf, 'r') as archive:
+        # For each table in the database, check if there is a CSV file
+        # associated.
+        for t in db.metadata.sorted_tables:
+            table_name = "{}.csv".format(t.name)
+            try:
+                table_buf = archive.read(table_name)
+            except:
+                # If the table CSV doesn't exist, skip it.
+                print("Table '{}' missing in archive, skipping import".format(t))
+                continue
+
+            table_reader = csv.reader(table_buf)
+            raise NotImplementedError
