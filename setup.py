@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-import setuptools, setuptools.command.sdist
+import setuptools, setuptools.command.sdist, setuptools.command.test
 import sys
 
 # Load scmtools from inside the package, so that the code to get the version is
@@ -19,12 +19,31 @@ class sdist_burn_version(setuptools.command.sdist.sdist):
 
         os.remove('collegejump/_version.py')
 
+# PyTest runner borrowed from
+# https://docs.pytest.org/en/latest/goodpractices.html#manual-integration
+class PyTest(setuptools.command.test.test):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to pytest")]
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.pytest_args = 'test --junit-xml=coverage.xml'
+
+    def run_tests(self):
+        import shlex
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(shlex.split(self.pytest_args))
+        sys.exit(errno)
+
 setuptools.setup(
     name='College JUMP Website',
     version=scmtools.get_scm_version(),
     packages=['collegejump'],
     include_package_data=True,
     zip_safe=False,
+    tests_require=[
+        'pytest',
+    ],
     install_requires=[
         'setuptools',
         'Flask >= 0.12',
@@ -34,6 +53,7 @@ setuptools.setup(
         'Flask-Login',
     ],
     cmdclass={ # Override certain commands
-        'sdist': sdist_burn_version
+        'sdist': sdist_burn_version,
+        'test': PyTest,
     },
 )

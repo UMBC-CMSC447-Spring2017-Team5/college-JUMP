@@ -34,6 +34,7 @@ node {
         } catch (Exception e) {
             currentBuild.result = 'UNSTABLE'
         }
+        step([$class: 'JUnitResultArchiver', testResults: 'coverage.xml'])
     }
 
     stage('Deployment') {

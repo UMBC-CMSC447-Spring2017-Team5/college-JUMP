@@ -5,7 +5,7 @@ run: env
 
 # Test things
 test: env
-	env/bin/python3 test.py
+	env/bin/python3 setup.py test
 
 env: env/setup-stamp
 
