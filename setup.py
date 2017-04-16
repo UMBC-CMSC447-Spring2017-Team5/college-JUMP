@@ -26,12 +26,12 @@ class PyTest(setuptools.command.test.test):
 
     def initialize_options(self):
         super().initialize_options()
-        self.pytest_args = 'test --junit-xml=coverage.xml'
+        self.pytest_args = 'collegejump --pylint --pylint-rcfile=pylintrc --junit-xml=coverage.xml'
 
     def run_tests(self):
         import shlex
         #import here, cause outside the eggs aren't loaded
-        import pytest
+        import pytest, pylint, pylint_flask
         errno = pytest.main(shlex.split(self.pytest_args))
         sys.exit(errno)
 
@@ -43,6 +43,8 @@ setuptools.setup(
     zip_safe=False,
     tests_require=[
         'pytest',
+        'pytest-pylint',
+        'pylint-flask',
     ],
     install_requires=[
         'setuptools',
