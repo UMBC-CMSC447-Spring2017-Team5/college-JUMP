@@ -9,13 +9,9 @@ import sys
 import werkzeug
 from werkzeug.wsgi import DispatcherMiddleware
 
-# NOTE: Import order of modules within the main() function is very important.
-# Each one makes assumptions about the state of the `app` global variable. The
-# reasons are noted at each import.
-
 def main(args):
     # We cannot import app outside of this function, to avoid circular imports.
-    from collegejump import app, __version__
+    from collegejump import app, init_app, __version__
 
     if(args.version):
         print(__version__)
@@ -33,11 +29,6 @@ def main(args):
 
     app.secret_key = os.urandom(24)
 
-    # We must import the database utilities once the DATABASE_URI is set.
-    from collegejump import database, views
-
-    print("Starting College JUMP Website version '{}'".format(__version__))
-
     # If the application is prefixed, such as behind a web proxy, then we need
     # middleware to rewrite urls. Otherwise, do no such rewriting.
     if args.prefix:
@@ -48,7 +39,14 @@ def main(args):
     else:
         app.config["APPLICATION_ROOT"] = '/'
 
-    app.run(host=args.host, port=args.port, debug=args.debug)
+    # We initailize the applications once configuration options are set.
+    init_app()
+
+    # Gain app context for all other operations.
+    with app.app_context():
+        print("Starting College JUMP Website version '{}'".format(__version__))
+        app.db.create_all()
+        app.run(host=args.host, port=args.port, debug=args.debug)
 
 # Decode command line arguments using argparse
 def parse(argv):

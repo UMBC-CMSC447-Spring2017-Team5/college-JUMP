@@ -1,20 +1,11 @@
-from flask_sqlalchemy import SQLAlchemy
 import csv
 import io
 import zipfile
 
 from collegejump import app
 
-# SQLAlchemy database connection is exposed via this element.
-app.db = SQLAlchemy(app)
-
-# Load the model definitions
-from collegejump import models
-
 # Create any absent tables.
-app.db.create_all()
-
-def export_db(db):
+def export_db():
     """Export all of the tables in the database as separate CSV files stored in
     aa ZIP file (in memory, in a BytesIO buffer) suitable for later re-import,
     or archiving.
@@ -25,13 +16,13 @@ def export_db(db):
     # Create the in-memory zip file inside the buffer
     with zipfile.ZipFile(archive_buf, 'w') as archive:
         # For each table in the database, create a CSV file for it.
-        for t in db.metadata.sorted_tables:
-            table_name = "{}.csv".format(t.name)
+        for table in app.db.metadata.sorted_tables:
+            table_name = "{}.csv".format(table.name)
             table_buf = io.StringIO()
             table_writer = csv.writer(table_buf)
 
             # Get all records from the database and marshal them into CSV.
-            records = db.session.query(t).all()
+            records = app.db.session.query(table).all()
             table_writer.writerows(records)
 
             # Write the CSV file into the ZIP file.

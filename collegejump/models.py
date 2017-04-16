@@ -1,54 +1,50 @@
-from flask_bcrypt import Bcrypt
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from collegejump import app
 
-db = app.db
-
-bcrypt = Bcrypt(app)
-
-mentorships = db.Table('mentee_mentors', db.metadata,
-        db.Column('mentee_id', db.Integer, db.ForeignKey('user.id')),
-        db.Column('mentor_id', db.Integer, db.ForeignKey('user.id'))
+mentorships = app.db.Table('mentee_mentors', app.db.metadata,
+        app.db.Column('mentee_id', app.db.Integer, app.db.ForeignKey('user.id')),
+        app.db.Column('mentor_id', app.db.Integer, app.db.ForeignKey('user.id'))
         )
 
-enrollment = db.Table('enrollment', db.metadata,
-        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-        db.Column('semester_id', db.Integer, db.ForeignKey('semester.id'))
+enrollment = app.db.Table('enrollment', app.db.metadata,
+        app.db.Column('user_id', app.db.Integer, app.db.ForeignKey('user.id')),
+        app.db.Column('semester_id', app.db.Integer, app.db.ForeignKey('semester.id'))
         )
 
-week_assignments = db.Table('week_assignments', db.metadata,
-        db.Column('semester_id', db.Integer),
-        db.Column('week_number', db.Integer),
-        db.Column('assignment_id', db.Integer, db.ForeignKey('assignment.id')),
-        db.ForeignKeyConstraint(
+week_assignments = app.db.Table('week_assignments', app.db.metadata,
+        app.db.Column('semester_id', app.db.Integer),
+        app.db.Column('week_number', app.db.Integer),
+        app.db.Column('assignment_id', app.db.Integer, app.db.ForeignKey('assignment.id')),
+        app.db.ForeignKeyConstraint(
             ['semester_id', 'week_number'],
             ['week.semester_id', 'week.week_number']
         ))
 
-week_documents = db.Table('week_documents', db.metadata,
-        db.Column('semester_id', db.Integer),
-        db.Column('week_number', db.Integer),
-        db.Column('document_id', db.Integer, db.ForeignKey('document.id')),
-        db.ForeignKeyConstraint(
+week_documents = app.db.Table('week_documents', app.db.metadata,
+        app.db.Column('semester_id', app.db.Integer),
+        app.db.Column('week_number', app.db.Integer),
+        app.db.Column('document_id', app.db.Integer, app.db.ForeignKey('document.id')),
+        app.db.ForeignKeyConstraint(
             ['semester_id', 'week_number'],
             ['week.semester_id', 'week.week_number']
         ))
 
-class User(db.Model, UserMixin):
+class User(app.db.Model, UserMixin):
     NAME_MAX_LENGTH = 128
     EMAIL_MAX_LENGTH = 128
 
-    id        = db.Column(db.Integer, primary_key=True)
-    name      = db.Column(db.String(NAME_MAX_LENGTH))
-    email     = db.Column(db.String(EMAIL_MAX_LENGTH), unique=True)
-    _password = db.Column(db.String(128)) # Bcrypt string, not plaintext
+    id        = app.db.Column(app.db.Integer, primary_key=True)
 
-    admin     = db.Column(db.Boolean)
+    name      = app.db.Column(app.db.String(NAME_MAX_LENGTH))
+    email     = app.db.Column(app.db.String(EMAIL_MAX_LENGTH), unique=True)
+    _password = app.db.Column(app.db.String(128)) # Bcrypt string, not plaintext
 
-    mentor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    mentees   = db.relationship('User', backref=db.backref('mentor', remote_side=[id]))
+    admin     = app.db.Column(app.db.Boolean)
+
+    mentor_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'), nullable=True)
+    mentees   = app.db.relationship('User', backref=app.db.backref('mentor', remote_side=[id]))
 
     def __init__(self, email, plaintext):
         self.email = email
@@ -80,54 +76,54 @@ class User(db.Model, UserMixin):
     def load_user(user_email):
         return User.query.filter_by(email=user_email).first()
 
-class Announcement(db.Model):
+class Announcement(app.db.Model):
     TITLE_MAX_LENGTH = 128
     CONTENT_MAX_LENGTH = 1000
 
-    id        = db.Column(db.Integer, primary_key=True)
-    title     = db.Column(db.String(TITLE_MAX_LENGTH))
-    content   = db.Column(db.String(CONTENT_MAX_LENGTH))
-    timestamp = db.Column(db.DateTime())
+    id        = app.db.Column(app.db.Integer, primary_key=True)
+    title     = app.db.Column(app.db.String(TITLE_MAX_LENGTH))
+    content   = app.db.Column(app.db.String(CONTENT_MAX_LENGTH))
+    timestamp = app.db.Column(app.db.DateTime())
 
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    author    = db.relationship('User')
+    author_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'))
+    author    = app.db.relationship('User')
 
-class Semester(db.Model):
+class Semester(app.db.Model):
     """A semester is a collection of weeks meant to make up the content of the
     website during a whole semester."""
     NAME_MAX_LENGTH = 16
 
-    id    = db.Column(db.Integer, primary_key=True)
-    name  = db.Column(db.String(NAME_MAX_LENGTH))
-    order = db.Column(db.Integer, unique=True) # for ordering semesters
+    id    = app.db.Column(app.db.Integer, primary_key=True)
+    name  = app.db.Column(app.db.String(NAME_MAX_LENGTH))
+    order = app.db.Column(app.db.Integer, unique=True) # for ordering semesters
 
-class Week(db.Model):
+class Week(app.db.Model):
     HEADER_MAX_LENGTH = 64
     INTRO_MAX_LENGTH  = 1024
 
     # Weeks are identified as (semester, week number) uniquely.
-    semester_id = db.Column(db.Integer, db.ForeignKey('semester.id'), primary_key=True)
-    week_number = db.Column(db.Integer, primary_key=True)
+    semester_id = app.db.Column(app.db.Integer, app.db.ForeignKey('semester.id'), primary_key=True)
+    week_number = app.db.Column(app.db.Integer, primary_key=True)
 
-    header = db.Column(db.String(HEADER_MAX_LENGTH))
-    intro  = db.Column(db.String(INTRO_MAX_LENGTH))
+    header = app.db.Column(app.db.String(HEADER_MAX_LENGTH))
+    intro  = app.db.Column(app.db.String(INTRO_MAX_LENGTH))
 
-    semester = db.relationship('Semester',
-            backref=db.backref('weeks', order_by=week_number))
+    semester = app.db.relationship('Semester',
+            backref=app.db.backref('weeks', order_by=week_number))
 
-    assignments = db.relationship('Assignment', secondary=week_assignments)
-    documents   = db.relationship('Document',   secondary=week_documents)
+    assignments = app.db.relationship('Assignment', secondary=week_assignments)
+    documents   = app.db.relationship('Document',   secondary=week_documents)
 
-class Assignment(db.Model):
+class Assignment(app.db.Model):
     NAME_MAX_LENGTH = 64
 
-    id        = db.Column(db.Integer, primary_key=True)
-    name      = db.Column(db.String(NAME_MAX_LENGTH))
-    questions = db.Column(db.Text) # a JSON blob
+    id        = app.db.Column(app.db.Integer, primary_key=True)
+    name      = app.db.Column(app.db.String(NAME_MAX_LENGTH))
+    questions = app.db.Column(app.db.Text) # a JSON blob
 
-class Document(db.Model):
+class Document(app.db.Model):
     NAME_MAX_LENGTH = 64
 
-    id   = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(NAME_MAX_LENGTH))
-    data = db.Column(db.LargeBinary)
+    id   = app.db.Column(app.db.Integer, primary_key=True)
+    name = app.db.Column(app.db.String(NAME_MAX_LENGTH))
+    data = app.db.Column(app.db.LargeBinary)
