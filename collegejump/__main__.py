@@ -36,14 +36,6 @@ def main(args):
     # We must import the database utilities once the DATABASE_URI is set.
     from collegejump import database, views
 
-
-    # Now that common setup is finished, we can decide what to run.
-
-    # Execute a subcommand, if one is specified. If we run a subcommand, we
-    # shouldn't continue standard execution.
-    if(args.func != None):
-        return args.func(args)
-
     print("Starting College JUMP Website version '{}'".format(__version__))
 
     # If the application is prefixed, such as behind a web proxy, then we need
@@ -67,32 +59,8 @@ def parse(argv):
     parser.add_argument('--db', default='local.db')
     parser.add_argument('--debug', action='store_true', default=True)
     parser.add_argument('--version', action='store_true')
-    parser.set_defaults(func=None) # for when no subcommand is specified
-
-    # Subparsers are used for implementing subcommands.
-    subparsers =  parser.add_subparsers()
-
-    # createdb is a one-shot subcommand which creates the database
-    subcommand_makeadmin = subparsers.add_parser('makeadmin',
-            help="make a new admin account")
-    subcommand_makeadmin.add_argument('email')
-    subcommand_makeadmin.add_argument('password', nargs='?')
-    subcommand_makeadmin.set_defaults(func=makeadmin)
 
     return parser.parse_args(argv)
-
-def makeadmin(args):
-    from collegejump import app
-    from collegejump.models import User
-
-    if args.password:
-        password = args.password
-    else:
-        password = getpass.getpass()
-
-    new_admin = User(args.email, password)
-    app.db.session.add(new_admin)
-    app.db.session.commit()
 
 # If running this as a script, execute the main function. This is just a
 # good-practice Python idiom.
