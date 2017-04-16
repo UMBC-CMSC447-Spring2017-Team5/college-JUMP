@@ -15,7 +15,7 @@ Make is not necessary to run the website, but it is a handy tool that lets us
 keep our development processes standardized. The information below is rolled
 into the repository `Makefile`.
 
-### Virtual Environment
+### Virtual Environments
 
 Python3 ships with a virtual environment module, which can be used to install
 Python libraries and utilities inside a directory, to be kept isolated from the
@@ -32,6 +32,25 @@ Once prepared, execute this to install requirements,
 ```
 env/bin/pip install --force .
 ```
+
+### Testing
+
+Testing has its own set of dependencies, which are also automatically installed,
+but which require the Python3 development headers to be installed. On Debian or
+one of its derivatives, issue this command.
+```
+apt install python3-dev
+```
+
+In order to perform the automated testing, which includes both unit tests and
+code linting, either run `make test` or invoke the setup script directly:
+```
+env/bin/python3 setup.py test
+```
+
+Tests themselves are managed with `pytest`, and located in the module
+`collegejump.test`.
+
 
 ### Flask Itself
 
