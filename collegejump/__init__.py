@@ -1,14 +1,17 @@
+import subprocess
+import string
+
 from flask import Flask, request
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-import subprocess, string
 
 # Flask convention is to use `app`
-app = Flask(__name__)
+app = Flask(__name__)  # pylint: disable=invalid-name
 app.bcrypt = Bcrypt()
 app.db = SQLAlchemy()
 app.login_manager = LoginManager()
+
 
 def init_app():
     app.bcrypt.init_app(app)

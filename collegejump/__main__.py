@@ -9,11 +9,12 @@ import sys
 import werkzeug
 from werkzeug.wsgi import DispatcherMiddleware
 
+
 def main(args):
     # We cannot import app outside of this function, to avoid circular imports.
     from collegejump import app, init_app, __version__
 
-    if(args.version):
+    if args.version:
         print(__version__)
         return 0
 
@@ -24,7 +25,7 @@ def main(args):
     app.logger.setLevel(level)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(
-            os.path.join(os.getcwd(), args.db))
+        os.path.join(os.getcwd(), args.db))
     app.config["VERSION"] = __version__
 
     app.secret_key = os.urandom(24)
@@ -34,8 +35,8 @@ def main(args):
     if args.prefix:
         app.config["APPLICATION_ROOT"] = args.prefix
         app.wsgi_app = werkzeug.wsgi.DispatcherMiddleware(
-                werkzeug.utils.redirect(app.config["APPLICATION_ROOT"], 301),
-                {app.config["APPLICATION_ROOT"]: app.wsgi_app})
+            werkzeug.utils.redirect(app.config["APPLICATION_ROOT"], 301),
+            {app.config["APPLICATION_ROOT"]: app.wsgi_app})
     else:
         app.config["APPLICATION_ROOT"] = '/'
 
@@ -49,6 +50,8 @@ def main(args):
         app.run(host=args.host, port=args.port, debug=args.debug)
 
 # Decode command line arguments using argparse
+
+
 def parse(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', default='127.0.0.1')
