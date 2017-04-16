@@ -2,16 +2,16 @@ from flask_wtf import FlaskForm
 from wtforms import fields, validators
 import flask
 
-from collegejump import models
+from collegejump import models # pylint: disable=cyclic-import
 
 
 class RedirectForm(FlaskForm):
-    next = fields.HiddenField()
+    returnto = fields.HiddenField() #
 
-    def redirect(self, endpoint='front_page', **values):
-        next = self.next.data or flask.url_for(endpoint)
-        # if is_safe_url(self.next.data):
-        return flask.redirect(next)
+    def redirect(self, endpoint='front_page'):
+        returnto = self.returnto.data or flask.url_for(endpoint)
+        # if is_safe_url(self.returnto.data):
+        return flask.redirect(returnto)
 
 
 class LoginForm(RedirectForm):

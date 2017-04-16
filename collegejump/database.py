@@ -2,7 +2,7 @@ import csv
 import io
 import zipfile
 
-from collegejump import app
+from collegejump import app # pylint: disable=cyclic-import
 
 # Create any absent tables.
 

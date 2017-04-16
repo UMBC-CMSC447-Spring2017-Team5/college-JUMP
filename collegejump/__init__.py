@@ -28,10 +28,9 @@ except ImportError:
 # Make the version easily accessible
 app.config['VERSION'] = __version__
 
-# Set the database path and other SQLAlchemy options.
-# TODO: extract this from a configuration file
+# Set SQLAlchemy options that'll never change
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # We import the views here so that the application still mostly works even if
 # the main() function isn't ever run.
-import collegejump.views
+import collegejump.views # pylint: disable=cyclic-import,wrong-import-position

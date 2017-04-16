@@ -8,7 +8,7 @@ def get_scm_version():
         description = subprocess.check_output(
             ['git', 'describe', '--always', '--dirty=.dirty']) \
             .decode('UTF-8').strip()
-        version_data = re.match('''
+        version_data = re.match(r'''
                 (?P<release>[0-9]+(\.[0-9]+)*) # Match the release version
                 (
                     -(?P<dev>[0-9]+) # Match a since-last-tag number if present
@@ -29,7 +29,7 @@ def get_scm_version():
             groups['dirty'] if groups['git'] else '',
             **version_data.groupdict())
 
-    except Exception as e:
+    except subprocess.CalledProcessError as e:
         print("Could not get version: {}", repr(e))
         version = 'UNAVAILABLE'
 

@@ -1,14 +1,11 @@
 #!env/bin/python3
 
 import argparse
-import getpass
 import logging
 import os
 import sys
 
 import werkzeug
-from werkzeug.wsgi import DispatcherMiddleware
-
 
 def main(args):
     # We cannot import app outside of this function, to avoid circular imports.

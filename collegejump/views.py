@@ -1,9 +1,8 @@
 import datetime
 import flask
 import flask_login
-from collegejump.models import User
-from collegejump import app, forms, models, database
-
+from collegejump import app # pylint: disable=cyclic-import
+from collegejump import forms, models, database
 
 @app.route('/static/<path:path>')
 def send_static(path):
@@ -40,7 +39,7 @@ def login_page():
             # Modify the session so that the user is logged in.
             flask_login.login_user(user)
 
-            # Redirect using the form utility. Use `?next=` if presented.
+            # Redirect using the form utility. Use `?returnto=` if presented.
             return form.redirect()
         else:
             print("failure.")
@@ -70,7 +69,7 @@ def edit_acct_page():
     form = forms.UserInfoForm()
     if form.validate_on_submit():
         print("Attempting to create user... ", end="")
-        user = User(form.email.data, form.password.data)
+        user = models.User(form.email.data, form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data
 

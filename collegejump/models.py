@@ -1,21 +1,20 @@
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from collegejump import app
+from collegejump import app # pylint: disable=cyclic-import
 
+# pylint: disable=invalid-name
 mentorships = app.db.Table('mentee_mentors', app.db.metadata,
                            app.db.Column('mentee_id', app.db.Integer,
                                          app.db.ForeignKey('user.id')),
                            app.db.Column('mentor_id', app.db.Integer,
-                                         app.db.ForeignKey('user.id'))
-                           )
+                                         app.db.ForeignKey('user.id')))
 
 enrollment = app.db.Table('enrollment', app.db.metadata,
                           app.db.Column('user_id', app.db.Integer,
                                         app.db.ForeignKey('user.id')),
                           app.db.Column('semester_id', app.db.Integer,
-                                        app.db.ForeignKey('semester.id'))
-                          )
+                                        app.db.ForeignKey('semester.id')))
 
 week_assignments = app.db.Table('week_assignments', app.db.metadata,
                                 app.db.Column('semester_id', app.db.Integer),
@@ -24,8 +23,7 @@ week_assignments = app.db.Table('week_assignments', app.db.metadata,
                                               app.db.ForeignKey('assignment.id')),
                                 app.db.ForeignKeyConstraint(
                                     ['semester_id', 'week_number'],
-                                    ['week.semester_id', 'week.week_number']
-                                ))
+                                    ['week.semester_id', 'week.week_number']))
 
 week_documents = app.db.Table('week_documents', app.db.metadata,
                               app.db.Column('semester_id', app.db.Integer),
@@ -34,8 +32,7 @@ week_documents = app.db.Table('week_documents', app.db.metadata,
                                             app.db.ForeignKey('document.id')),
                               app.db.ForeignKeyConstraint(
                                   ['semester_id', 'week_number'],
-                                  ['week.semester_id', 'week.week_number']
-                              ))
+                                  ['week.semester_id', 'week.week_number']))
 
 
 class User(app.db.Model, UserMixin):
@@ -67,19 +64,19 @@ class User(app.db.Model, UserMixin):
     # element, but is modified and accessed using these functions
     # automatically. This is the getter.
     @hybrid_property
-    def password(self):
+    def password(self): # pylint: disable=method-hidden
         return self._password
 
     # This is the setter for the password property, which is used automatically
     # when accessing the property like a regular variable.
     @password.setter
     def _set_password(self, plaintext):
-        self._password = bcrypt.generate_password_hash(plaintext)
+        self._password = app.bcrypt.generate_password_hash(plaintext)
 
     def check_password(self, plaintext):
         """Check whether an entered plaintext password matches the stored hashed
         copy. Returns True or False."""
-        return bcrypt.check_password_hash(self.password, plaintext)
+        return app.bcrypt.check_password_hash(self.password, plaintext)
 
     @staticmethod
     @app.login_manager.user_loader
@@ -127,7 +124,7 @@ class Week(app.db.Model):
                                    backref=app.db.backref('weeks', order_by=week_number))
 
     assignments = app.db.relationship('Assignment', secondary=week_assignments)
-    documents = app.db.relationship('Document',   secondary=week_documents)
+    documents = app.db.relationship('Document', secondary=week_documents)
 
 
 class Assignment(app.db.Model):

@@ -107,6 +107,8 @@ disable=print-statement,
         deprecated-str-translate-call,
         missing-docstring,
         too-few-public-methods,
+        too-many-function-args,
+        cyclic-import, # Flask requires import structure detected as circular
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -286,7 +288,7 @@ function-name-hint=(([a-z][a-z0-9_]{2,30})|(_[a-z0-9_]*))$
 function-rgx=(([a-z][a-z0-9_]{2,30})|(_[a-z0-9_]*))$
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,id,ex,Run,_
+good-names=i,j,k,e,id,ex,Run,_
 
 # Include a hint for the correct naming format with invalid-name
 include-naming-hint=no
