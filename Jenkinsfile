@@ -32,7 +32,7 @@ node {
             sh "make dist"
         } catch (Exception e) {
             currentbuild.result = 'FAILURE'
-            setBuildStatus("Packaging failing", 'failure')
+            setBuildStatus("Packaging failing", currentbuild.result)
         }
         archiveArtifacts "dist/${pkgFullname}.tar.gz"
     }
@@ -41,10 +41,10 @@ node {
         try {
             sh "make test"
             currentBuild.result = 'SUCCESS'
-            setBuildStatus("Tests passing", 'success');
+            setBuildStatus("Tests passing", currentbuild.result);
         } catch (Exception e) {
             currentBuild.result = 'UNSTABLE'
-            setBuildStatus("Tests failing", 'error')
+            setBuildStatus("Tests failing", currentbuild.result)
         }
         junit 'coverage.xml'
     }
