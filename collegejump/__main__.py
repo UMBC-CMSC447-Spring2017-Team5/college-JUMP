@@ -42,7 +42,7 @@ def main(args):
 
     # Gain app context for all other operations.
     with app.app_context():
-        app.logger.info("Starting College JUMP Website version '{}'".format(__version__))
+        app.logger.info("Starting College JUMP Website version '%s'", __version__)
         app.run(host=args.host, port=args.port, debug=args.debug)
 
 # Decode command line arguments using argparse

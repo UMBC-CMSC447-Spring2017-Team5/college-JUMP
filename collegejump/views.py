@@ -30,7 +30,6 @@ def login_page():
     # in. Otherwise, render the page as normal.
     form = forms.LoginForm()
     if form.validate_on_submit():
-        app.logger.info("Attempting to log in {}... ".format(form.email.data), end="")
         email = form.email.data
         password = form.password.data
 
@@ -40,25 +39,21 @@ def login_page():
                 # Modify the session so that the user is logged in.
                 success = login_user(user)
                 if success:
-                    app.logger.info("success.")
+                    app.logger.info("Successful login by %r", user)
                     return form.redirect()
                 else:
                     # If the login failed, here, it's not because of the
                     # password. Maybe the user is inactive?
-                    app.logger.info("login failed unexpectedly")
-
-                    # Fall through to the failure handler.
+                    app.logger.info("Unexpected login failure by %r", user)
+            else:
+                app.logger.info("Wrong password for %r", user)
 
         except MultipleResultsFound:
             # This is actually really bad, and means the database is very broken.
             raise
 
-        except NoResultFound as e:
-            print("no users with email '{}' found: {}".format(email, e))
-            # Fall through to the failure handler.
-
-        # If we reach here, the login has failed.
-        app.logger.info("failure.")
+        except NoResultFound:
+            app.logger.info("Attempt to login with unknown email %r", email)
 
     return flask.render_template('login.html', form=form,
                                  __version__=app.config["VERSION"])
