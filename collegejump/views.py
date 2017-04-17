@@ -67,6 +67,7 @@ def logout_page():
     return flask.redirect(flask.url_for('front_page'))
 
 @app.route('/account.html')
+@login_required
 def acct_page():
     return flask.render_template('account.html',
                                  __version__=app.config["VERSION"],
@@ -74,6 +75,7 @@ def acct_page():
 
 
 @app.route('/announcements.html')
+#@login_required
 def announ_page():
     return flask.render_template('announcements.html',
                                  __version__=app.config["VERSION"],
@@ -81,6 +83,7 @@ def announ_page():
 
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
+#@login_required
 def edit_acct_page():
     # If the Create Acct form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
