@@ -24,7 +24,12 @@ node {
 
     stage('Packaging') {
         // Build the source package
-        sh "make dist"
+        try {
+            sh "make dist"
+        } catch (Exception e) {
+            currentbuild.result = 'FAILURE'
+            setBuildStatus("Packaging failing", currentBuild.result)
+        }
         archiveArtifacts "dist/${pkgFullname}.tar.gz"
     }
 
