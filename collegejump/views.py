@@ -1,7 +1,7 @@
 import datetime
 import flask
 import flask_login
-from collegejump import app # pylint: disable=cyclic-import
+from collegejump import app
 from collegejump import forms, models, database
 
 @app.route('/static/<path:path>')

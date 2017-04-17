@@ -2,11 +2,11 @@ from flask_wtf import FlaskForm
 from wtforms import fields, validators
 import flask
 
-from collegejump import models # pylint: disable=cyclic-import
+from collegejump import models
 
 
 class RedirectForm(FlaskForm):
-    returnto = fields.HiddenField() #
+    returnto = fields.HiddenField()
 
     def redirect(self, endpoint='front_page'):
         returnto = self.returnto.data or flask.url_for(endpoint)

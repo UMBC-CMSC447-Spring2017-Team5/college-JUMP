@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from collegejump import app # pylint: disable=cyclic-import
+from collegejump import app
 
 # pylint: disable=invalid-name
 mentorships = app.db.Table('mentee_mentors', app.db.metadata,

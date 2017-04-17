@@ -7,7 +7,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 # Flask convention is to use `app`
-app = Flask(__name__)  # pylint: disable=invalid-name
+app = Flask(__name__) # pylint: disable=invalid-name
 app.bcrypt = Bcrypt()
 app.db = SQLAlchemy()
 app.login_manager = LoginManager()
@@ -33,4 +33,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # We import the views here so that the application still mostly works even if
 # the main() function isn't ever run.
-import collegejump.views # pylint: disable=cyclic-import,wrong-import-position
+import collegejump.views # pylint: disable=wrong-import-position
