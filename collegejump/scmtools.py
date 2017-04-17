@@ -1,7 +1,5 @@
 import re
 import subprocess
-import app
-
 
 def get_scm_version():
     """Collect the SCM version in setuptools-safe format."""
@@ -19,8 +17,7 @@ def get_scm_version():
                     (?P<git>[0-9a-f]+)   # Match the commit ID if present
                     (?P<dirty>\.dirty)?  # Match the "dirty" identifier if present
                 )?
-                ''',
-                                description, re.VERBOSE)
+                ''', description, re.VERBOSE)
         groups = {group: (value if value else '')
                   for group, value
                   in version_data.groupdict().items()}
@@ -31,7 +28,7 @@ def get_scm_version():
             **version_data.groupdict())
 
     except subprocess.CalledProcessError as e:
-        app.logger.error("Could not get version: {}", repr(e))
+        print("Could not get version: {}", repr(e))
         version = 'UNAVAILABLE'
 
     return version
