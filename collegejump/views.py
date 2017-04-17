@@ -29,21 +29,20 @@ def login_page():
     # in. Otherwise, render the page as normal.
     form = forms.LoginForm()
     if form.validate_on_submit():
-        print("Attempting to log in {}... ".format(form.email.data), end="")
+        app.logger.info("Attempting to log in {}... ".format(form.email.data), end="")
         email = form.email.data
         password = form.password.data
 
         user = models.User.load_user(email)
         if user and user.check_password(password):
-            print("success!")
+            app.logger.info("success!")
             # Modify the session so that the user is logged in.
             flask_login.login_user(user)
 
             # Redirect using the form utility. Use `?returnto=` if presented.
             return form.redirect()
         else:
-            print("failure.")
-
+            app.logger.info("failure.")
     return flask.render_template('login.html', form=form,
                                  __version__=app.config["VERSION"])
 
@@ -68,7 +67,7 @@ def edit_acct_page():
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
     if form.validate_on_submit():
-        print("Attempting to create user... ", end="")
+        app.logger.info("Attempting to create user... ", end="")
         user = models.User(form.email.data, form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data

@@ -21,7 +21,7 @@ def init_app():
 try:
     from collegejump._version import __version__
 except ImportError:
-    print("WARN: no _version.py; is the package installed? using SCM instead")
+    app.logger.warning("WARN: no _version.py; is the package installed? using SCM instead")
     import collegejump.scmtools
     __version__ = collegejump.scmtools.get_scm_version()
 

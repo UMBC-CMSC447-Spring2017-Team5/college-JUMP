@@ -1,5 +1,6 @@
 import re
 import subprocess
+import app
 
 
 def get_scm_version():
@@ -30,7 +31,7 @@ def get_scm_version():
             **version_data.groupdict())
 
     except subprocess.CalledProcessError as e:
-        print("Could not get version: {}", repr(e))
+        app.logger.error("Could not get version: {}", repr(e))
         version = 'UNAVAILABLE'
 
     return version

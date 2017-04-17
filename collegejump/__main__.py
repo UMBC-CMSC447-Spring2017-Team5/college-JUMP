@@ -12,7 +12,7 @@ def main(args):
     from collegejump import app, init_app, __version__
 
     if args.version:
-        print(__version__)
+        app.logger.info(__version__)
         return 0
 
     # Prepare logging.
@@ -42,7 +42,7 @@ def main(args):
 
     # Gain app context for all other operations.
     with app.app_context():
-        print("Starting College JUMP Website version '{}'".format(__version__))
+        app.logger.info("Starting College JUMP Website version '{}'".format(__version__))
         app.db.create_all()
         app.run(host=args.host, port=args.port, debug=args.debug)
 
