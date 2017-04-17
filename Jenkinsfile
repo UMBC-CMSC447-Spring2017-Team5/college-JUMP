@@ -35,6 +35,8 @@ node {
             currentBuild.result = 'UNSTABLE'
         }
         junit 'coverage.xml'
+
+        setBuildStatus("Tested by Jenkins", currentBuild.result)
     }
 
     stage('Deployment') {
@@ -43,4 +45,23 @@ node {
             sudo -H systemctl restart collegejump
         """
     }
+}
+
+void setBuildStatus(String message, String state) {
+  step([
+      $class: "GitHubCommitStatusSetter",
+      reposSource: [
+        $class: "ManuallyEnteredRepositorySource",
+        url: "https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP"
+      ],
+      contextSource: [
+        $class: "ManuallyEnteredCommitContextSource",
+        context: "ci/jenkins/build-status"
+      ],
+      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+      statusResultSource: [
+        $class: "ConditionalStatusResultSource",
+        results: [[$class: "AnyBuildResult", message: message, state: state]]
+      ]
+  ]);
 }
