@@ -6,6 +6,10 @@ node {
     stage('Preparation') {
         // Get some code from the GitHub repository
         git 'https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP.git'
+        // Set the build status to pending, so anyone who's watching can tell
+        // we're working on it.
+        setBuildStatus("Jenkins working", 'PENDING')
+
         // Prepare the virtual environment
         sh "make env"
 
@@ -28,24 +32,21 @@ node {
             sh "make dist"
         } catch (Exception e) {
             currentbuild.result = 'FAILURE'
-            setBuildStatus("Packaging failing", currentBuild.result)
+            setBuildStatus("Packaging failing", 'failure')
         }
         archiveArtifacts "dist/${pkgFullname}.tar.gz"
     }
 
     stage('Testing') {
-        buildstatus_message = ""
         try {
             sh "make test"
             currentBuild.result = 'SUCCESS'
-            buildstatus_message = "Tests passing"
+            setBuildStatus("Tests passing", 'success');
         } catch (Exception e) {
             currentBuild.result = 'UNSTABLE'
-            buildstatus_message = "Tests failing"
+            setBuildStatus("Tests failing", 'error')
         }
         junit 'coverage.xml'
-
-        setBuildStatus(buildstatus_message, currentBuild.result)
     }
 
     stage('Deployment') {
