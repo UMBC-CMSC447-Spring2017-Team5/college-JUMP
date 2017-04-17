@@ -6,14 +6,12 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
 from collegejump import forms, models, database
 
-
 @app.route('/static/<path:path>')
 def send_static(path):
     return flask.send_from_directory('static', path)
 
 
 @app.route('/')
-#@app.route('/index.html')
 def front_page():
     return flask.render_template('index.html',
                                  __version__=app.config["VERSION"])
@@ -75,7 +73,7 @@ def acct_page():
 
 
 @app.route('/announcements.html')
-#@login_required
+@login_required
 def announ_page():
     return flask.render_template('announcements.html',
                                  __version__=app.config["VERSION"],
@@ -83,7 +81,7 @@ def announ_page():
 
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_acct_page():
     # If the Create Acct form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
@@ -108,6 +106,7 @@ def edit_acct_page():
 
 
 @app.route('/database/export')
+@login_required
 def database_export_endpoint():
     filename = datetime.datetime.now().strftime("collegejump-export-%Y%m%d.zip")
     return flask.send_file(database.export_db(),
