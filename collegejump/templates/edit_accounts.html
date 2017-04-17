@@ -8,21 +8,11 @@
 {% block content %}
 {{ super() }}
 <h1>  Hello, world!</h2>
- This is the College JUMP Admin Account Editing Page.
+This is the College JUMP Admin Account Editing Page.
 Here you can view and edit your users' account details!
 
 <h2> Add New Account </h2>
 <br>
-
-<!-- 
- <div class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Name">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Password">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Mentor ">
-    <button type="submit" class="btn btn-primary">Submit</button>
-</div>
--->
 
 <form method="POST" action="{{ url_for('edit_acct_page') }}">
   {{ form.csrf_token }}
@@ -35,88 +25,36 @@ Here you can view and edit your users' account details!
   <div>
     {{ form.password.label }} {{ form.password(class_="form-control", placeholder="Password") }}
   </div>
-   <div>
+  <div>
     {{ form.admin.label }} {{ form.admin(class_="form-control", placeholder="Admin") }}
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
   <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
 </form>
-
-
-
-
-
-
 <br>
 
 <h2> Edit Accounts </h2>
 <br>
 
 
- <div class="form-group">
-    Rick Sanchez
-    <button type="submit" class="btn btn-primary">Edit User Account</button>
-    <button type="submit" class="btn btn-primary">Delete User Account</button>
-    <br>
-<small id="None" class="form-text text-muted">
-    Rick Sanchez
-</small>
- <div class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Chaneg Name">
+<div class="form-group">
+  {% for user in users %}
+  {{ user.name }}
+  <button type="submit" class="btn btn-primary">Edit User Account</button>
+  <button type="submit" class="btn btn-primary">Delete User Account</button>
+  <br>
+
+  <small id="None" class="form-text text-muted">
+    {{ user.name }}
+  </small>
+  <div class="form-group">
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Change Name">
   </div>
 
-<small id="None" class="form-text text-muted">
-    RickSanchez1@gmail.com
-</small>
-
- <div class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Change Email">
-  </div>
-
-<small id="None" class="form-text text-muted">
-    SzechuanSauce3
-</small>
- <div class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Change Password">
-  </div>
-
-<small id="None" class="form-text text-muted">
-     Morty Sanchez
-</small>
- <div class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Change Mentee">
-  </div>
-<button type="submit" class="btn btn-primary">Submit Changes</button>
+  <small id="None" class="form-text text-muted">
+    {{ user.email }}
+  </small>
+  {% endfor %}
 </div>
-<br>
-<br>
-
-    Morty Sanchez
-    <button type="submit" class="btn btn-primary">Edit User Account</button>
-    <button type="submit" class="btn btn-primary">Delete User Account</button>
-    <br>
-    <br>
-
-    Beth Sanchez
-    <button type="submit" class="btn btn-primary">Edit User Account</button>
-    <button type="submit" class="btn btn-primary">Delete User Account</button>
-    <br>
-    <br>
-
-    Summer Sanchez
-    <button type="submit" class="btn btn-primary">Edit User Account</button>
-    <button type="submit" class="btn btn-primary">Delete User Account</button>
-    <br>
-    <br>
-
-     Jerry Sanchez
-    <button type="submit" class="btn btn-primary">Edit User Account</button>
-    <button type="submit" class="btn btn-primary">Delete User Account</button>
-
-<br>
-<br>
-<br>
-
-
 
 {% endblock %}
