@@ -1,6 +1,6 @@
 import datetime
 import flask
-import flask_login
+from flask_login import login_user, logout_user, login_required
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
 from collegejump import forms, models, database
@@ -35,10 +35,10 @@ def login_page():
         password = form.password.data
 
         try:
-            user = models.User.query.filter(email=email).one()
+            user = models.User.query.filter_by(email=email).one()
             if user.check_password(password):
                 # Modify the session so that the user is logged in.
-                success = flask_login.login_user(user)
+                success = login_user(user)
                 if success:
                     app.logger.info("success.")
                     return form.redirect()
@@ -63,6 +63,11 @@ def login_page():
     return flask.render_template('login.html', form=form,
                                  __version__=app.config["VERSION"])
 
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout_page():
+    logout_user()
+    return flask.redirect(flask.url_for('front_page'))
 
 @app.route('/account.html')
 def acct_page():
