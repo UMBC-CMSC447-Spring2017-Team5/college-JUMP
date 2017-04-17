@@ -31,12 +31,15 @@ node {
     stage('Testing') {
         try {
             sh "make test"
+            currentBuild.result = 'SUCCESS'
+            currentBuild.buildstatus_message = "Tests passing"
         } catch (Exception e) {
             currentBuild.result = 'UNSTABLE'
+            currentBuild.buildstatus_message = "Tests failing"
         }
         junit 'coverage.xml'
 
-        setBuildStatus("Tested by Jenkins", currentBuild.result)
+        setBuildStatus(currentBuild.buildstatus_message, currentBuild.result)
     }
 
     stage('Deployment') {
