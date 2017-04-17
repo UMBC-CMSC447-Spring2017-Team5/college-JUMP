@@ -31,6 +31,11 @@ app.config['VERSION'] = __version__
 # Set SQLAlchemy options that'll never change
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Register a function to run before other requests.
+@app.before_first_request
+def prepare_after_init():
+    app.db.create_all()
+
 # We import the views here so that the application still mostly works even if
 # the main() function isn't ever run.
 import collegejump.views # pylint: disable=wrong-import-position

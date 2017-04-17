@@ -12,7 +12,9 @@ def collegejump():
 @pytest.fixture
 def app():
     import collegejump
-    return collegejump.app.test_client()
+    test_app = collegejump.app.test_client()
+    collegejump.init_app()
+    return test_app
 
 
 class TestCollegeJUMP():
