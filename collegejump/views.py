@@ -1,33 +1,12 @@
 import datetime
 import flask
-from urllib.parse import  urlparse, urljoin
-from flask import request, url_for, redirect
+from flask import url_for
 from flask_login import login_user, logout_user, login_required
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
 from collegejump import forms, models, database
 
 
-def is_safe_url(target):
-    ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
-    return test_url.scheme in ('http', 'https') and \
-           ref_url.netloc == test_url.netloc
-
-def get_redirect_target():
-    for target in request.values.get('next'), request.referrer:
-        if not target:
-            continue
-        if is_safe_url(target):
-            return target
-            
-def redirect_back(endpoint, **values):
-    target = request.form['next']
-    if not target or not is_safe_url(target):
-        target = url_for(endpoint, **values)
-    return redirect(target)
-            
-            
 @app.route('/static/<path:path>')
 def send_static(path):
     return flask.send_from_directory('static', path)
@@ -51,7 +30,6 @@ def calendar_page():
 def login_page():
     # If the login form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
-    next = get_redirect_target()
     form = forms.LoginForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -64,11 +42,11 @@ def login_page():
                 success = login_user(user)
                 if success:
                     app.logger.info("Successful login by %r", user)
-                    return redirect_back(url_for('front_page'))
+                    return form.redirect()
                 else:
                     # If the login failed, here, it's not because of the
                     # password. Maybe the user is inactive?
-                    app.logger.warn("Unexpected login failure by %r", user)
+                    app.logger.warning("Unexpected login failure by %r", user)
             else:
                 app.logger.info("Wrong password for %r", user)
 
@@ -79,7 +57,7 @@ def login_page():
         except NoResultFound:
             app.logger.info("Attempt to login with unknown email %r", email)
 
-    return flask.render_template('login.html', form=form,next=next,
+    return flask.render_template('login.html', form=form,
                                  __version__=app.config["VERSION"])
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -104,7 +82,6 @@ def announ_page():
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
 def edit_acct_page():
-    next = get_redirect_target()
     # If the Create Acct form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
@@ -116,13 +93,13 @@ def edit_acct_page():
         app.db.session.add(user)
         app.db.session.commit()
 
-        app.logger.info("Created user %r in the database", user);
+        app.logger.info("Created user %r in the database", user)
 
-        return redirect_back('edit_accounts')
+        return form.redirect()
 
     return flask.render_template('edit_accounts.html',
                                  form=form,
-                                 next=next,
+                                 redirectto=url_for('edit_acct_page'),
                                  __version__=app.config["VERSION"])
 
 

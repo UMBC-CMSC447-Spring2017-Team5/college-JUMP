@@ -1,8 +1,15 @@
+from urllib.parse import  urlparse, urljoin
 from flask_wtf import FlaskForm
 from wtforms import fields, validators
 import flask
 
 from collegejump import models
+
+def is_safe_url(target):
+    ref_url = urlparse(flask.request.host_url)
+    test_url = urlparse(urljoin(flask.request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
 
 
 class RedirectForm(FlaskForm):
@@ -10,8 +17,9 @@ class RedirectForm(FlaskForm):
 
     def redirect(self, endpoint='front_page'):
         returnto = self.returnto.data or flask.url_for(endpoint)
-        # if is_safe_url(self.returnto.data):
-        return flask.redirect(returnto)
+        if is_safe_url(returnto):
+            return flask.redirect(returnto)
+        return flask.redirect(flask.url_for('front_page'))
 
 
 class LoginForm(RedirectForm):
