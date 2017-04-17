@@ -33,3 +33,30 @@ def export_db():
     # Return to the start of the bytes IO reader.
     archive_buf.seek(0)
     return archive_buf
+
+def import_db(archive_path_or_buf):
+    """Import all of the tables in an archive as prepared by `export_db()`."""
+
+    app.db.create_all()
+
+    connection = app.db.engine.connect()
+    transaction = connection.begin()
+
+    # Open the in-memory zip file.
+    with zipfile.ZipFile(archive_path_or_buf, 'r') as archive:
+        # For each table in the database, check if there is a CSV file
+        # associated.
+        for table in app.db.metadata.sorted_tables:
+            table_name = "{}.csv".format(table.name)
+            try:
+                with archive.open(table_name, 'r') as table_buf:
+                    table_buf_str = io.TextIOWrapper(table_buf, encoding='utf-8')
+                    table_reader = csv.DictReader(table_buf_str, fieldnames=table.columns)
+                    for row in table_reader:
+                        connection.execute(table.insert(values=row))
+            except:
+                transaction.rollback()
+                raise
+
+    transaction.commit()
+    return

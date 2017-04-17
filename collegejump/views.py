@@ -110,7 +110,7 @@ def edit_acct_page():
 @app.route('/database/export')
 def database_export_endpoint():
     filename = datetime.datetime.now().strftime("collegejump-export-%Y%m%d.zip")
-    return flask.send_file(database.export_db(app.db),
+    return flask.send_file(database.export_db(),
                            attachment_filename=filename,
                            as_attachment=True,
                            mimetype='application/zip')
