@@ -114,16 +114,20 @@ def edit_acct_page():
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
     if form.validate_on_submit():
-        app.logger.info("Attempting to create user... ")
         user = models.User(form.email.data, form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data
 
         app.db.session.add(user)
         app.db.session.commit()
+
+        app.logger.info("Created user %r in the database", user);
+
         return redirect_back('edit_accounts')
 
-    return flask.render_template('edit_accounts.html', form=form,next=next, 
+    return flask.render_template('edit_accounts.html',
+                                 form=form,
+                                 next=next,
                                  __version__=app.config["VERSION"])
 
 
