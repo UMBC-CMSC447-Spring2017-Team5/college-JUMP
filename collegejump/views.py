@@ -54,7 +54,7 @@ def login_page():
     next = get_redirect_target()
     form = forms.LoginForm()
     if form.validate_on_submit():
-        app.logger.info("Attempting to log in {}... ".format(form.email.data), end="")
+        app.logger.info("Attempting to log in {}... ".format(form.email.data))
         email = form.email.data
         password = form.password.data
 
@@ -114,7 +114,7 @@ def edit_acct_page():
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
     if form.validate_on_submit():
-        app.logger.info("Attempting to create user... ", end="")
+        app.logger.info("Attempting to create user... ")
         user = models.User(form.email.data, form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data
