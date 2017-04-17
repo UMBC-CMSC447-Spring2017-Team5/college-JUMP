@@ -58,7 +58,7 @@ class User(app.db.Model, UserMixin):
         self.password = plaintext  # applies hash automatically
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User {}>'.format(self.email)
 
     # Using @hybrid_property, the `password` element acts just like a "real"
     # element, but is modified and accessed using these functions
@@ -80,8 +80,8 @@ class User(app.db.Model, UserMixin):
 
     @staticmethod
     @app.login_manager.user_loader
-    def load_user(user_email):
-        return User.query.filter_by(email=user_email).first()
+    def load_user(user_id):
+        return User.query.filter_by(id=user_id).first()
 
 
 class Announcement(app.db.Model):

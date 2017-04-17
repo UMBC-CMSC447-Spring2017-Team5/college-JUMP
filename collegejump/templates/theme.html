@@ -56,7 +56,13 @@
               <li><a href="{{ url_for('announ_page') }}">Edit/Create Announcements</a></li>
               <li><a href="{{ url_for('edit_acct_page') }}">Edit Accounts</a></li>
               <li><a href="{{ url_for('acct_page') }}">Account Settings</a></li>
-              <li><a href="{{ url_for('login_page') }}">Log In</a></li>
+              <li>
+                {% if not current_user.is_authenticated %}
+                  <a href="{{ url_for('login_page') }}">Log In</a>
+                {% else %}
+                  <a href="{{ url_for('logout_page') }}">Log Out</a>
+                {% endif %}
+              </li>
 
 
        <a class="navbar-brand" href="{{ url_for('front_page') }}"> <img src="{{ url_for('send_static',path='cj.jpg') }}" 

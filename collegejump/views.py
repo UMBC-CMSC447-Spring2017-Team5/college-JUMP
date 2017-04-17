@@ -1,6 +1,7 @@
 import datetime
 import flask
 import flask_login
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
 from collegejump import forms, models, database
 
@@ -33,16 +34,32 @@ def login_page():
         email = form.email.data
         password = form.password.data
 
-        user = models.User.load_user(email)
-        if user and user.check_password(password):
-            app.logger.info("success!")
-            # Modify the session so that the user is logged in.
-            flask_login.login_user(user)
+        try:
+            user = models.User.query.filter(email=email).one()
+            if user.check_password(password):
+                # Modify the session so that the user is logged in.
+                success = flask_login.login_user(user)
+                if success:
+                    app.logger.info("success.")
+                    return form.redirect()
+                else:
+                    # If the login failed, here, it's not because of the
+                    # password. Maybe the user is inactive?
+                    app.logger.info("login failed unexpectedly")
 
-            # Redirect using the form utility. Use `?returnto=` if presented.
-            return form.redirect()
-        else:
-            app.logger.info("failure.")
+                    # Fall through to the failure handler.
+
+        except MultipleResultsFound:
+            # This is actually really bad, and means the database is very broken.
+            raise
+
+        except NoResultFound as e:
+            print("no users with email '{}' found: {}".format(email, e))
+            # Fall through to the failure handler.
+
+        # If we reach here, the login has failed.
+        app.logger.info("failure.")
+
     return flask.render_template('login.html', form=form,
                                  __version__=app.config["VERSION"])
 
