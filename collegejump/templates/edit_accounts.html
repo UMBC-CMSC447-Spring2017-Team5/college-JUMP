@@ -14,7 +14,7 @@ Here you can view and edit your users' account details!
 <h2> Add New Account </h2>
 <br>
 
-<form method="POST" action="{{ url_for('edit_acct_page') }}">
+<form method="POST" action="{{ url_for('edit_accounts_page') }}">
   {{ form.csrf_token }}
   <div>
     {{ form.name.label }} {{ form.name(class_="form-control", placeholder="Name") }}

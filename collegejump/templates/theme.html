@@ -55,14 +55,14 @@
          <ul class="nav navbar-nav">
            <!-- Links for the admin only -->
            {% if current_user.is_authenticated and current_user.admin %}
-           <li><a href="{{ url_for('announ_page') }}">Edit/Create Announcements</a></li>
-           <li><a href="{{ url_for('edit_acct_page') }}">Edit Accounts</a></li>
+           <li><a href="{{ url_for('announcements_page') }}">Edit/Create Announcements</a></li>
+           <li><a href="{{ url_for('edit_accounts_page') }}">Edit Accounts</a></li>
            {% endif %}
            <!-- -->
 
            <!-- Links for any authenticated user -->
            {% if current_user.is_authenticated %}
-           <li><a href="{{ url_for('acct_page') }}">Account Settings</a></li>
+           <li><a href="{{ url_for('account_settings_page') }}">Account Settings</a></li>
            {% endif %}
            <!-- -->
 

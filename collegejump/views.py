@@ -17,7 +17,7 @@ def front_page():
                                  __version__=app.config["VERSION"])
 
 
-@app.route('/calendar.html')
+@app.route('/calendar')
 def calendar_page():
     return flask.render_template('calendar.html',
                                  __version__=app.config["VERSION"],
@@ -64,17 +64,17 @@ def logout_page():
     logout_user()
     return flask.redirect(flask.url_for('front_page'))
 
-@app.route('/account.html')
+@app.route('/account_settings')
 @login_required
-def acct_page():
-    return flask.render_template('account.html',
+def account_settings_page():
+    return flask.render_template('account_settings.html',
                                  __version__=app.config["VERSION"],
                                  gcal_link="dummylink")
 
 
-@app.route('/announcements.html')
+@app.route('/announcements')
 @login_required
-def announ_page():
+def announcements_page():
     return flask.render_template('announcements.html',
                                  __version__=app.config["VERSION"],
                                  gcal_link="dummylink")
@@ -82,7 +82,7 @@ def announ_page():
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
 @login_required
-def edit_acct_page():
+def edit_accounts_page():
     # If the Create Acct form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
