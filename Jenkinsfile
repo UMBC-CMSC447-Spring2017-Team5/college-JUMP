@@ -29,17 +29,18 @@ node {
     }
 
     stage('Testing') {
+        buildstatus_message = ""
         try {
             sh "make test"
             currentBuild.result = 'SUCCESS'
-            currentBuild.buildstatus_message = "Tests passing"
+            buildstatus_message = "Tests passing"
         } catch (Exception e) {
             currentBuild.result = 'UNSTABLE'
-            currentBuild.buildstatus_message = "Tests failing"
+            buildstatus_message = "Tests failing"
         }
         junit 'coverage.xml'
 
-        setBuildStatus(currentBuild.buildstatus_message, currentBuild.result)
+        setBuildStatus(buildstatus_message, currentBuild.result)
     }
 
     stage('Deployment') {
