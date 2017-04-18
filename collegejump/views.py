@@ -81,7 +81,7 @@ def announcements_page():
 
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def edit_accounts_page():
     # If the Create Acct form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
@@ -96,7 +96,7 @@ def edit_accounts_page():
 
         app.logger.info("Created user %r in the database", user)
 
-        return form.redirect()
+        return form.redirect(url_for('edit_acct_page'))
 
     return flask.render_template('edit_accounts.html',
                                  form=form,
