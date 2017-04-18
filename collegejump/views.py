@@ -30,7 +30,7 @@ def login_page():
     # in. Otherwise, render the page as normal.
     form = forms.LoginForm()
     if form.validate_on_submit():
-        email = form.email.data
+        email = form.email.data.lower()
         password = form.password.data
 
         try:
@@ -87,7 +87,7 @@ def edit_accounts_page():
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
     if form.validate_on_submit():
-        user = models.User(form.email.data, form.password.data)
+        user = models.User(form.email.data.lower(), form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data
 
