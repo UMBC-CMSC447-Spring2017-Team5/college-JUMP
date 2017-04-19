@@ -1,3 +1,4 @@
+import datetime
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -58,7 +59,7 @@ class User(app.db.Model, UserMixin):
         self.password = plaintext  # applies hash automatically
 
     def __repr__(self):
-        return '<User {}>'.format(self.email)
+        return '<User {!r}>'.format(self.email)
 
     # Using @hybrid_property, the `password` element acts just like a "real"
     # element, but is modified and accessed using these functions
@@ -96,6 +97,17 @@ class Announcement(app.db.Model):
     author_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'))
     author = app.db.relationship('User')
 
+    def __init__(self, author_email, title, content, timestamp=None):
+        self.author = User.query.filter_by(email=author_email).one()
+        self.title = title
+        self.content = content
+
+        if timestamp is None:
+            timestamp = datetime.datetime.now()
+        self.timestamp = timestamp
+
+    def __repr__(self):
+        return '<Announcement {!r}>'.format(self.title)
 
 class Semester(app.db.Model):
     """A semester is a collection of weeks meant to make up the content of the
