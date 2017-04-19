@@ -78,6 +78,12 @@ directory is organized as follows:
 - `views` is responsible for website display **logic** (not HTML/CSS/JS)
 - `templates` holds the HTML/CSS templates to be served
 
+### Creating Users
+
+For bootstrapping, testing, and creating users from scratch in a new or existing
+database, use the `contrib/make_user.py` script. For arguments on that script,
+supply `--help` as an argument.
+
 ## Contrib and Extra Scripts
 
 Extra scripts and service files may be stored in the `contrib/` folder. For
