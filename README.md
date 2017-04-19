@@ -13,7 +13,8 @@ levels of user access, the already stated file uploading and downloading, accoun
 modification, page navigation, and viewing of an integrated Google calendar. The 
 following sections discuss the tools used to develop these functionalities and 
 provide the basic setup steps to creating a functioning development environment.
-To access the website, use the link `https://lassa.xen.prgmr.com/collegejump/`.
+
+The website is available at a [demo location][].
 
 ## Developer's Guide
 
@@ -91,3 +92,5 @@ browser of your choice to view the build.
 
 While the build is active, you can modify the code and any changes will be 
 reflected on the local build in real-time.
+
+[demo location]: https://lassa.xen.prgmr.com/collegejump/
