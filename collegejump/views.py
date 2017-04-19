@@ -96,12 +96,12 @@ def edit_accounts_page():
 
         app.logger.info("Created user %r in the database", user)
 
-        return form.redirect(url_for('edit_acct_page'))
+        return form.redirect()
 
     return flask.render_template('edit_accounts.html',
                                  form=form,
                                  users=models.User.query.all(),
-                                 redirectto=url_for('edit_acct_page'),
+                                 redirectto=url_for('edit_accounts_page'),
                                  __version__=app.config["VERSION"])
 
 
