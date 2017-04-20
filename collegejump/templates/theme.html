@@ -70,7 +70,7 @@
            <!-- Log in/out -->
            <li>
              {% if not current_user.is_authenticated %}
-             <a href="{{ url_for('login_page') }}">Log In</a>
+             <a href="{{ url_for('login_page', returnto=request.base_url) }}">Log In</a>
              {% else %}
              <a href="{{ url_for('logout_page') }}">Log Out</a>
              {% endif %}

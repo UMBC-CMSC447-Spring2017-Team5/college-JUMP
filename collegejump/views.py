@@ -26,6 +26,9 @@ def calendar_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
+    # Get the returnto query string, if any.
+    returnto = flask.request.args.get('returnto')
+
     # If the login form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
     form = forms.LoginForm()
@@ -55,7 +58,7 @@ def login_page():
         except NoResultFound:
             app.logger.info("Attempt to login with unknown email %r", email)
 
-    return flask.render_template('login.html', form=form)
+    return flask.render_template('login.html', form=form, returnto=returnto)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
