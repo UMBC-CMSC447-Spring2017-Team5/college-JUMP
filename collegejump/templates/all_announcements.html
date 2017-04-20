@@ -1,0 +1,20 @@
+{% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>Announcements</title>
+{% endblock %}
+
+{% block content %}
+
+<ul>
+  {% for announcement in announcements %}
+  <li>
+    <a href="{{ url_for("announcement_page", announcement_id=announcement.id) }}">
+      {{ announcement.title }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

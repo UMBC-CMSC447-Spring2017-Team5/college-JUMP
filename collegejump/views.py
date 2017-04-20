@@ -1,7 +1,7 @@
 import datetime
 import flask
 from flask import url_for
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
 from collegejump import forms, models, database
@@ -69,11 +69,32 @@ def account_settings_page():
     return flask.render_template('account_settings.html')
 
 
-@app.route('/announcements')
+@app.route('/announcement/new')
+@app.route('/announcement/<int:announcement_id>/edit')
 @login_required
-def announcements_page():
-    return flask.render_template('announcements.html')
+def edit_announcement_page(announcement_id=None):
+    if announcement_id is not None:
+        announcement = models.Announcement.query\
+                .filter(models.Announcement.id == announcement_id)\
+                .one()
+    else:
+        announcement = models.Announcement(current_user.email, '', '')
 
+    return flask.render_template('edit_announcement.html', announcement=announcement)
+
+@app.route('/announcement/')
+@app.route('/announcement/<int:announcement_id>')
+def announcement_page(announcement_id=None):
+    if announcement_id is not None:
+        announcement = models.Announcement.query\
+                .filter(models.Announcement.id == announcement_id)\
+                .one()
+        return flask.render_template('announcement.html', announcement=announcement)
+
+    # Otherwise
+    announcements = models.Announcement.query\
+            .order_by(models.Announcement.timestamp.desc())
+    return flask.render_template('all_announcements.html', announcements=announcements)
 
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
