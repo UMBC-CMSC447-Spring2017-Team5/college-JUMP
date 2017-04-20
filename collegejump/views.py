@@ -83,13 +83,26 @@ def announcements_page():
                                  gcal_link="dummylink")
 
 
+
 @app.route('/edit_accounts', methods=['GET', 'POST'])
 #@login_required
 def edit_accounts_page():
     # If the Create Acct form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
     form = forms.UserInfoForm()
-    if form.validate_on_submit():
+    query = models.User.query.filter_by(email=form.email.data).first()
+
+    if query is not None:
+        if form.validate_on_submit():
+            query.name = form.name.data
+            query.email = form.email.data.lower()
+            query.password = form.password.data
+            query.admin = form.admin.data
+            app.db.session.commit()
+            app.logger.info("Updated  user %r in the database", query)
+            return flask.redirect(flask.url_for('edit_accounts_page'))
+
+    elif form.validate_on_submit():
         user = models.User(form.email.data.lower(), form.password.data)
         user.name = form.name.data
         user.admin = form.admin.data
@@ -101,11 +114,14 @@ def edit_accounts_page():
 
         return flask.redirect(flask.url_for('edit_accounts_page'))
 
+
+
     return flask.render_template('edit_accounts.html',
                                  form=form,
                                  users=models.User.query.all(),
                                  redirectto=url_for('edit_accounts_page'),
                                  __version__=app.config["VERSION"])
+
 
 
 @app.route('/database/export')

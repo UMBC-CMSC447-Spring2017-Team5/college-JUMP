@@ -40,20 +40,30 @@ Here you can view and edit your users' account details!
 <div class="form-group">
   {% for user in users %}
   {{ user.name }}
-  <button type="submit" class="btn btn-primary">Edit User Account</button>
-  <button type="submit" class="btn btn-primary">Delete User Account</button>
+  {{ user.password }}
   <br>
-
-  <small id="None" class="form-text text-muted">
-    {{ user.name }}
-  </small>
-  <div class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Change Name">
+  <br>
+  <form method="POST" action="{{ url_for('edit_accounts_page') }}">
+  {{ form.csrf_token }}
+  <div>
+    {{ form.name.label }} {{ form.name(class_="form-control",  value= user.name) }}
   </div>
-
-  <small id="None" class="form-text text-muted">
-    {{ user.email }}
-  </small>
+  <div>
+    {{ form.email.label }} {{ form.email(class_="form-control", value=user.email) }}
+  </div>
+  <div>
+    {{ form.password.label }} {{ form.password(class_="form-control", value=user.password) }}
+  </div>
+  <div>
+   {{ form.admin.label }} {{ form.admin(class_="form-control", value=user.admin) }}
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
+</form>
+  <br>
+  <br>
+  
+  
   {% endfor %}
 </div>
 
