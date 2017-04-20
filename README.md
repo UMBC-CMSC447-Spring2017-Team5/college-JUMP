@@ -78,17 +78,23 @@ directory is organized as follows:
 - `views` is responsible for website display **logic** (not HTML/CSS/JS)
 - `templates` holds the HTML/CSS templates to be served
 
+
+## Contrib and Extra Scripts
+
+Extra scripts and service files may be stored in the `contrib/` folder. For
+example, the Systemd service is installed there.
+
+### Creating Testing Objects
+
+Many kinds of objects can be created in the database using scripts in the
+`contrib/` folder, such as `make_user.py` and `announce.py`.
+
 ### Creating Users
 
 For bootstrapping, testing, and creating users from scratch in a new or existing
 database, use the `contrib/make_user.py` script. For arguments on that script,
 supply `--help` as an argument. If you are using a virtual environment, be sure
 to prefix the command with `env/bin/python3`.
-
-## Contrib and Extra Scripts
-
-Extra scripts and service files may be stored in the `contrib/` folder. For
-example, the Systemd service is installed there.
 
 ## Instantiating Local Builds
 
