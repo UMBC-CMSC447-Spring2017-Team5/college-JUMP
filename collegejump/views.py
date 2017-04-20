@@ -13,7 +13,10 @@ def send_static(path):
 
 @app.route('/')
 def front_page():
+    announcements = models.Announcement.query\
+            .order_by(models.Announcement.timestamp.desc()).limit(10)
     return flask.render_template('index.html',
+                                 announcements=announcements,
                                  __version__=app.config["VERSION"])
 
 

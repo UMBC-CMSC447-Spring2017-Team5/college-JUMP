@@ -8,33 +8,23 @@
 {% block content %}
 {{ super() }}
 
-<h2>Hello, world! This is the College JUMP website skeleton front page.</h2>
+<div>
+  <h2>CollegeJUMP</h2>
+</div>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean accumsan lobortis odio, vel pretium massa eleifend vel.
- Nulla finibus gravida lectus at efficitur. Sed auctor turpis augue, ac fermentum libero ullamcorper nec.
- Duis erat erat, finibus quis sagittis sed, condimentum quis justo. Nulla at placerat arcu, scelerisque dapibus lectus. In hac habitasse platea dictumst.
- Sed efficitur quis nisi ac fringilla. Ut vulputate orci mi. Sed eget magna commodo, molestie nisl ac, tristique est. Donec id viverra turpis.
- Phasellus non quam ullamcorper, facilisis enim quis, fermentum nunc. 
-Vivamus pulvinar non augue non hendrerit. Curabitur in nunc risus. Interdum et malesuada fames ac ante ipsum primis in faucibus.
- In aliquam blandit elit, in maximus ligula viverra sit amet.
- <br>
- <br>
- <br>
-In sagittis lorem ante, quis lacinia nisl efficitur vitae. Nam eleifend arcu non nibh aliquam, eget pulvinar libero hendrerit. Ut eu sodales erat.
- Ut lobortis nulla ut est volutpat, sed placerat mauris condimentum. Nulla interdum, ante nec scelerisque luctus, enim nisl accumsan orci, in fermentum est augue in sem. Etiam vel risus turpis. 
- Nam a fermentum nisl. Vestibulum rhoncus metus in ullamcorper dignissim. Sed a leo a lectus dapibus volutpat ac tristique augue. Aenean sagittis lobortis augue. 
-Morbi fringilla bibendum ligula, ut consequat quam laoreet a. Duis sodales, orci quis fringilla tristique, neque ipsum aliquet elit, vitae rutrum mauris risus sit amet lorem.
- Proin lacinia iaculis condimentum.
- <br>
- <br>
- <br>
- Pellentesque ultrices purus vitae metus mattis faucibus. 
- Donec aliquam egestas est, ut ultricies odio tincidunt id. 
- Nam blandit libero vel ante auctor, eget faucibus metus tempus. 
- Vivamus varius neque vitae nisi varius, venenatis interdum nisl interdum.
- Curabitur sed eros eu magna aliquam euismod vel sed mi. Proin ex nisi, consectetur vitae porta in, fringilla et sem. 
- Praesent nec dui vel leo sollicitudin fringilla. 
- Morbi ut elementum nibh, in dignissim tortor. Maecenas a magna nec enim vehicula lobortis.
- Nam quis malesuada nibh. Curabitur euismod urna sed justo lobortis egestas.
+<h3>Announcements</h3>
+
+<ul>
+  {% for announcement in announcements %}
+  <li>
+    <div>
+      <h4>{{ announcement.title }}</h4>
+      <h5>{{ announcement.author.name }}</h5>
+
+      {{ announcement.content }}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
 
 {% endblock %}
