@@ -53,6 +53,7 @@ setuptools.setup(
         'Flask-Bcrypt',
         'Flask-WTF',
         'Flask-Login',
+        'markdown',
     ],
     cmdclass={ # Override certain commands
         'sdist': sdist_burn_version,

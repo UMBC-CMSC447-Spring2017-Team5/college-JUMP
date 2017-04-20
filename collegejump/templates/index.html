@@ -21,7 +21,7 @@
       <h4>{{ announcement.title }}</h4>
       <h5>{{ announcement.author.name }}</h5>
 
-      {{ announcement.content }}
+      {{ announcement.content | markdown}}
     </div>
   </li>
   {% endfor %}

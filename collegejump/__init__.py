@@ -1,7 +1,8 @@
 import subprocess
 import string
+import markdown
 
-from flask import Flask, request
+from flask import Flask, request, Markup
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -35,6 +36,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 @app.before_first_request
 def prepare_after_init():
     app.db.create_all()
+
+# Register a handy template filter
+@app.template_filter('markdown')
+def markdown_filter(data):
+    return Markup(markdown.markdown(data))
 
 # We import the views here so that the application still mostly works even if
 # the main() function isn't ever run.
