@@ -134,8 +134,7 @@ def edit_accounts_page():
 
     return flask.render_template('edit_accounts.html',
                                  form=form,
-                                 users=models.User.query.all(),
-                                 redirectto=url_for('edit_accounts_page'))
+                                 users=models.User.query.all())
 
 
 

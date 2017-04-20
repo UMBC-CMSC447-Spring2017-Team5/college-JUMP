@@ -31,7 +31,7 @@ class LoginForm(RedirectForm):
     password = fields.PasswordField('Password')
 
 
-class UserInfoForm(RedirectForm):
+class UserInfoForm(FlaskForm):
     name = fields.StringField('Name', [
         validators.required(),
         validators.length(max=models.User.NAME_MAX_LENGTH)])
