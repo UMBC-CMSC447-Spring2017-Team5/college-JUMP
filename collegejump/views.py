@@ -16,15 +16,12 @@ def front_page():
     announcements = models.Announcement.query\
             .order_by(models.Announcement.timestamp.desc()).limit(10)
     return flask.render_template('index.html',
-                                 announcements=announcements,
-                                 __version__=app.config["VERSION"])
+                                 announcements=announcements)
 
 
 @app.route('/calendar')
 def calendar_page():
-    return flask.render_template('calendar.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
+    return flask.render_template('calendar.html', gcal_link="dummylink")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -58,8 +55,7 @@ def login_page():
         except NoResultFound:
             app.logger.info("Attempt to login with unknown email %r", email)
 
-    return flask.render_template('login.html', form=form,
-                                 __version__=app.config["VERSION"])
+    return flask.render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -70,17 +66,13 @@ def logout_page():
 @app.route('/account_settings')
 @login_required
 def account_settings_page():
-    return flask.render_template('account_settings.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
+    return flask.render_template('account_settings.html')
 
 
 @app.route('/announcements')
 @login_required
 def announcements_page():
-    return flask.render_template('announcements.html',
-                                 __version__=app.config["VERSION"],
-                                 gcal_link="dummylink")
+    return flask.render_template('announcements.html')
 
 
 
@@ -119,8 +111,7 @@ def edit_accounts_page():
     return flask.render_template('edit_accounts.html',
                                  form=form,
                                  users=models.User.query.all(),
-                                 redirectto=url_for('edit_accounts_page'),
-                                 __version__=app.config["VERSION"])
+                                 redirectto=url_for('edit_accounts_page'))
 
 
 
@@ -137,5 +128,4 @@ def database_export_endpoint():
 @app.route('/week/<int:week_number>')
 def week_page(week_number):
     return flask.render_template('week_page.html',
-                                 week_number=week_number,
-                                 __version__=app.config["VERSION"])
+                                 week_number=week_number)
