@@ -42,4 +42,6 @@ class UserInfoForm(FlaskForm):
         validators.length(max=models.User.EMAIL_MAX_LENGTH)])
 
     admin = fields.BooleanField('Is Administrator Account?')
-    password = fields.PasswordField('Password')
+    password = fields.StringField('Password',
+                                  [validators.length(max=models.User.NAME_MAX_LENGTH)])
+    #password = fields.PasswordField('Password')

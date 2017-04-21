@@ -100,38 +100,52 @@ def announcement_page(announcement_id=None):
 
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
+@app.route('/edit_accounts/<int:user_id>', methods=['GET', 'POST'])
 #@login_required
-def edit_accounts_page():
-    # If the Create Acct form is successfully POSTed to us here, try to log the user
-    # in. Otherwise, render the page as normal.
-    form = forms.UserInfoForm()
-    query = models.User.query.filter_by(email=form.email.data).first()
+def edit_accounts_page(user_id=None):
+    if user_id is not None:
+        user = models.User.query\
+                .filter(models.User.id == user_id)\
+                .one()
 
-    if query is not None:
+
+        form = forms.UserInfoForm()
+        query = models.User.query.filter_by(email=form.email.data).first()
+
+        if query is not None:
+            if form.validate_on_submit():
+                query.name = form.name.data
+                query.email = form.email.data.lower()
+                query.password = form.password.data
+                query.admin = form.admin.data
+                app.db.session.commit()
+                app.logger.info("Updated  user %r in the database", query)
+                return flask.redirect(flask.url_for('edit_accounts_page',
+                                                    user_id=user_id))
+        else:
+            return flask.render_template('edit_single_account.html',
+                                         user=user, form=form)
+
+    else:
+        form = forms.UserInfoForm()
+        query = models.User.query.filter_by(email=form.email.data).first()
+
         if form.validate_on_submit():
-            query.name = form.name.data
-            query.email = form.email.data.lower()
-            query.password = form.password.data
-            query.admin = form.admin.data
+            user = models.User(form.email.data.lower(), form.password.data)
+            user.name = form.name.data
+            user.admin = form.admin.data
+
+            app.db.session.add(user)
             app.db.session.commit()
-            app.logger.info("Updated  user %r in the database", query)
-            return flask.redirect(flask.url_for('edit_accounts_page'))
 
-    elif form.validate_on_submit():
-        user = models.User(form.email.data.lower(), form.password.data)
-        user.name = form.name.data
-        user.admin = form.admin.data
+            app.logger.info("Created user %r in the database", user)
 
-        app.db.session.add(user)
-        app.db.session.commit()
-
-        app.logger.info("Created user %r in the database", user)
-
-        return flask.redirect(flask.url_for('edit_accounts_page'))
+            return flask.redirect(flask.url_for('edit_accounts_page',
+                                                user_id=user_id))
 
 
 
-    return flask.render_template('edit_accounts.html',
+    return flask.render_template('edit_accounts.html', user_id=user_id,
                                  form=form,
                                  users=models.User.query.all())
 
