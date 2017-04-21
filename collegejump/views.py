@@ -1,6 +1,5 @@
 import datetime
 import flask
-from flask import url_for
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
