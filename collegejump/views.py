@@ -103,28 +103,40 @@ def announcement_page(announcement_id=None):
 @app.route('/edit_accounts/<int:user_id>', methods=['GET', 'POST'])
 #@login_required
 def edit_accounts_page(user_id=None):
-    if user_id is not None:
+
+    delete_form = forms.UserDeleteForm()
+    query = models.User.query.filter_by(id=user_id).first()
+    if query:
+        if delete_form.validate_on_submit():
+            if delete_form.delete.data:
+
+                app.db.session.delete(query)
+                app.db.session.commit()
+                app.logger.info("Deleted user %r in the database", query)
+                return flask.redirect(flask.url_for('edit_accounts_page',
+                                                    delete_form=delete_form,
+                                                    user_id=user_id))
+    elif user_id is not None:
         user = models.User.query\
                 .filter(models.User.id == user_id)\
                 .one()
 
-
         form = forms.UserInfoForm()
         query = models.User.query.filter_by(email=form.email.data).first()
 
-        if query is not None:
-            if form.validate_on_submit():
-                query.name = form.name.data
-                query.email = form.email.data.lower()
+        if form.validate_on_submit():
+            query.name = form.name.data
+            query.email = form.email.data.lower()
+            if form.password.data != "":
                 query.password = form.password.data
-                query.admin = form.admin.data
-                app.db.session.commit()
-                app.logger.info("Updated  user %r in the database", query)
-                return flask.redirect(flask.url_for('edit_accounts_page',
-                                                    user_id=user_id))
+
+            app.db.session.commit()
+            app.logger.info("Updated  user %r in the database", query)
+            return flask.redirect(flask.url_for('edit_accounts_page',
+                                                user_id=user_id))
         else:
             return flask.render_template('edit_single_account.html',
-                                         user=user, form=form)
+                                         user=user, form=form, deleteForm=delete_form)
 
     else:
         form = forms.UserInfoForm()

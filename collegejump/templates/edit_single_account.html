@@ -22,15 +22,21 @@
   <div>
     {{ form.password.label }} {{ form.password(class_="form-control", value=user.password) }}
   </div>
-  <div>
-   {{ form.admin.label }} {{ form.admin(class_="form-control", value=user.admin) }}
-  </div>
   <button type="submit" class="btn btn-primary">Submit</button>
   <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
 </form>
+ <br>
+ <br>
 
-  <br>
-  <br>
+  <form method="POST" action="{{ url_for("edit_accounts_page",user_id = user.id) }}">
+  {{ deleteForm.csrf_token }}
+  <div>
+    {{ deleteForm.delete.label }} {{ deleteForm.delete(class_="form-control") }}
+  </div>
+   <button type="submit" class="btn btn-danger">Submit</button>
+  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
+</form> 
+
 
 </div>
 {% endblock %}
