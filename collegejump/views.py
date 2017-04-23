@@ -110,7 +110,7 @@ def announcement_page(announcement_id=None):
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
 @app.route('/edit_accounts/<int:user_id>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_accounts_page(user_id=None):
 
     delete_form = forms.UserDeleteForm()
@@ -126,18 +126,16 @@ def edit_accounts_page(user_id=None):
 
     if user_id is not None:
         user = models.User.query.get(user_id)
-
         form = forms.UserInfoForm()
-        query = models.User.query.filter_by(email=form.email.data).first()
 
         if form.validate_on_submit():
-            query.name = form.name.data
-            query.email = form.email.data.lower()
+            user.name = form.name.data
+            user.email = form.email.data.lower()
             if form.password.data != "":
-                query.password = form.password.data
+                user.password = form.password.data
 
             app.db.session.commit()
-            app.logger.info("Updated user %r in the database", query)
+            app.logger.info("Updated user %r in the database", user)
             return flask.redirect(flask.url_for('edit_accounts_page'))
 
         else:
@@ -146,7 +144,6 @@ def edit_accounts_page(user_id=None):
 
     else:
         form = forms.UserInfoForm()
-        query = models.User.query.filter_by(email=form.email.data).first()
 
         if form.validate_on_submit():
             user = models.User(form.email.data.lower(), form.password.data)
