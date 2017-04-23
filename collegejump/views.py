@@ -125,9 +125,7 @@ def edit_accounts_page(user_id=None):
             return flask.redirect(flask.url_for('edit_accounts_page'))
 
     if user_id is not None:
-        user = models.User.query\
-                .filter(models.User.id == user_id)\
-                .one()
+        user = models.User.query.get(user_id)
 
         form = forms.UserInfoForm()
         query = models.User.query.filter_by(email=form.email.data).first()
