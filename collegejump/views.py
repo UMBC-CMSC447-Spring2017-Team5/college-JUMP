@@ -25,12 +25,20 @@ def calendar_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
-    # Get the returnto query string, if any.
-    returnto = flask.request.args.get('returnto')
+    # Get the `returnto` or `next` query string.
+    returnto = flask.request.args.get('returnto') \
+            or flask.request.args.get('next')
+
+    # Parse the form if it was given to us.
+    form = forms.LoginForm()
+
+    # If the form was submitted with returnto information, preserve it in case
+    # we have to re-render the template.
+    if form.returnto.data:
+        returnto = form.returnto.data
 
     # If the login form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
-    form = forms.LoginForm()
     if form.validate_on_submit():
         email = form.email.data.lower()
         password = form.password.data

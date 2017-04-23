@@ -11,8 +11,9 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__) # pylint: disable=invalid-name
 app.bcrypt = Bcrypt()
 app.db = SQLAlchemy()
-app.login_manager = LoginManager()
 
+app.login_manager = LoginManager()
+app.login_manager.login_view = 'login_page'
 
 def init_app():
     app.bcrypt.init_app(app)
