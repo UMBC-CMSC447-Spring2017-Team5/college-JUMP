@@ -117,9 +117,11 @@ def edit_accounts_page(user_id=None):
     form = forms.UserInfoForm()
     if delete_form.validate_on_submit():
         if delete_form.delete.data:
-            models.User.query.filter_by(id=user_id).delete()
+            # Retrieve the user for logging, then delete it.
+            user = models.User.query.get(user_id)
+            app.db.session.delete(user)
             app.db.session.commit()
-            app.logger.info("Deleted user from the database")
+            app.logger.info("Deleted user %r from the database", user)
             return flask.redirect(flask.url_for('edit_accounts_page'))
 
     if user_id is not None:
@@ -137,7 +139,7 @@ def edit_accounts_page(user_id=None):
                 query.password = form.password.data
 
             app.db.session.commit()
-            app.logger.info("Updated  user %r in the database", query)
+            app.logger.info("Updated user %r in the database", query)
             return flask.redirect(flask.url_for('edit_accounts_page'))
 
         else:
