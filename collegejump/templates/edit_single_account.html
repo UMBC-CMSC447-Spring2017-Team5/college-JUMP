@@ -33,7 +33,7 @@
   <div>
     {{ deleteForm.delete.label }} {{ deleteForm.delete(class_="form-control") }}
   </div>
-   <button type="submit" class="btn btn-danger">Submit</button>
+   <button type="submit" class="btn btn-danger">Delete {{user.name}} </button>
   <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
 </form> 
 

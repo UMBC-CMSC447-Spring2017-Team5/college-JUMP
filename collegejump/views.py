@@ -105,18 +105,15 @@ def announcement_page(announcement_id=None):
 def edit_accounts_page(user_id=None):
 
     delete_form = forms.UserDeleteForm()
-    query = models.User.query.filter_by(id=user_id).first()
-    if query:
-        if delete_form.validate_on_submit():
-            if delete_form.delete.data:
+    form = forms.UserInfoForm()
+    if delete_form.validate_on_submit():
+        if delete_form.delete.data:
+            models.User.query.filter_by(id=user_id).delete()
+            app.db.session.commit()
+            app.logger.info("Deleted user from the database")
+            return flask.redirect(flask.url_for('edit_accounts_page'))
 
-                app.db.session.delete(query)
-                app.db.session.commit()
-                app.logger.info("Deleted user %r in the database", query)
-                return flask.redirect(flask.url_for('edit_accounts_page',
-                                                    delete_form=delete_form,
-                                                    user_id=user_id))
-    elif user_id is not None:
+    if user_id is not None:
         user = models.User.query\
                 .filter(models.User.id == user_id)\
                 .one()
@@ -132,8 +129,8 @@ def edit_accounts_page(user_id=None):
 
             app.db.session.commit()
             app.logger.info("Updated  user %r in the database", query)
-            return flask.redirect(flask.url_for('edit_accounts_page',
-                                                user_id=user_id))
+            return flask.redirect(flask.url_for('edit_accounts_page'))
+
         else:
             return flask.render_template('edit_single_account.html',
                                          user=user, form=form, deleteForm=delete_form)
@@ -152,8 +149,7 @@ def edit_accounts_page(user_id=None):
 
             app.logger.info("Created user %r in the database", user)
 
-            return flask.redirect(flask.url_for('edit_accounts_page',
-                                                user_id=user_id))
+            return flask.redirect(flask.url_for('edit_accounts_page'))
 
 
 
