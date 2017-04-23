@@ -1,5 +1,6 @@
 from urllib.parse import  urlparse, urljoin
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired
 from wtforms import fields, validators
 import flask
 
@@ -46,3 +47,6 @@ class UserInfoForm(FlaskForm):
 
 class UserDeleteForm(FlaskForm):
     delete = fields.BooleanField('Mark account for deletion?')
+
+class DatabaseUploadForm(FlaskForm):
+    zipfile = FileField(validators=[FileRequired()])

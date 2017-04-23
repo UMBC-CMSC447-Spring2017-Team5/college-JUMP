@@ -1,7 +1,7 @@
 .PHONY: env run test dist dist-clean
 
 run: env
-	env/bin/python3 -m collegejump
+	env/bin/python3 -m collegejump --debug
 
 # Test things
 test: env

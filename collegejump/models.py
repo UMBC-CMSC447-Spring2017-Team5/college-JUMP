@@ -109,6 +109,12 @@ class Announcement(app.db.Model):
     def __repr__(self):
         return '<Announcement {!r}>'.format(self.title)
 
+    @classmethod
+    def transform_csv_row(cls, row):
+        row['timestamp'] = datetime.datetime.strptime(row['timestamp'],
+                                                      "%Y-%m-%d %H:%M:%S.%f")
+        return row
+
 class Semester(app.db.Model):
     """A semester is a collection of weeks meant to make up the content of the
     website during a whole semester."""

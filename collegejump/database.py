@@ -1,6 +1,7 @@
 import csv
 import io
 import zipfile
+import sqlalchemy_utils
 
 from collegejump import app
 
@@ -35,7 +36,8 @@ def export_db():
     return archive_buf
 
 def import_db(archive_path_or_buf):
-    """Import all of the tables in an archive as prepared by `export_db()`."""
+    """DESTROY THE OLD DATABASE and import all of the tables in an archive as
+    prepared by `export_db()`."""
 
     app.db.create_all()
 
@@ -50,9 +52,30 @@ def import_db(archive_path_or_buf):
             table_name = "{}.csv".format(table.name)
             try:
                 with archive.open(table_name, 'r') as table_buf:
+                    app.logger.debug("Opened %r for import", table_name)
                     table_buf_str = io.TextIOWrapper(table_buf, encoding='utf-8')
-                    table_reader = csv.DictReader(table_buf_str, fieldnames=table.columns)
+                    table_reader = csv.DictReader(table_buf_str,
+                                                  fieldnames=[c.name for c in table.columns])
+
+
+                    # Some tables need special treatment, and cannot dump the
+                    # rows directly back into the database. If so, the model
+                    # will have `transform_csv_row` as a classmethod.
+                    model = sqlalchemy_utils.get_class_by_table(app.db.Model, table)
+                    if hasattr(model, 'transform_csv_row'):
+                        app.logger.debug("Using row transformer from model %r for %s",
+                                         model, table.name)
+                        transform = model.transform_csv_row
+                    else:
+                        # No-op
+                        transform = lambda row: row
+
+                    app.logger.warning("Deleting all rows of %s", table.name)
+                    connection.execute(table.delete())
+
                     for row in table_reader:
+                        app.logger.debug("Importing row into %s: %r", table.name, row)
+                        row = transform(row)
                         connection.execute(table.insert(values=row))
             except:
                 transaction.rollback()

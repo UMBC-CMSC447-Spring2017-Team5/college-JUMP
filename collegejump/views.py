@@ -1,6 +1,7 @@
 import datetime
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app
 from collegejump import forms, models, database
@@ -166,6 +167,23 @@ def edit_accounts_page(user_id=None):
                                  users=models.User.query.all())
 
 
+
+@app.route('/database/', methods=['GET', 'POST'])
+@login_required
+def database_page():
+    form = forms.DatabaseUploadForm()
+    if form.validate_on_submit():
+        # The data from the file is in bytes-like in form.zipfile.data, which we
+        # pass to the import function.
+        app.logger.info("Importing database from uploaded file by %r", current_user)
+        try:
+            database.import_db(form.zipfile.data)
+            app.logger.info("Database import complete.")
+            return flask.redirect(flask.url_for("front_page"))
+        except DBAPIError:
+            raise
+
+    return flask.render_template('database.html', form=form)
 
 @app.route('/database/export')
 @login_required
