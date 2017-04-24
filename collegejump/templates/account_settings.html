@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
- {% if current_user.admin==True or current_user.id==user.id %}
+ {% if current_user.admin or current_user.id==user.id %}
 <div class="form-group">
   {{ user.name }}
   <br>

@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+{% if current_user.admin %}
 {{ super() }}
 <h1>  Hello, world!</h2>
 This is the College JUMP Admin Account Editing Page.
@@ -44,5 +45,5 @@ Here you can view and edit your users' account details!
   
   {% endfor %}
 </div>
-
+{% endif %}
 {% endblock %}

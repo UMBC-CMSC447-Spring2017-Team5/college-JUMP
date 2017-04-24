@@ -164,6 +164,7 @@ def announcement_page(announcement_id=None):
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def edit_accounts_page():
     form = forms.UserInfoForm()
 
