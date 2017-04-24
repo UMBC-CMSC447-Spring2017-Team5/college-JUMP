@@ -109,26 +109,48 @@ def account_settings_page(user_id):
 
 
 
-@app.route('/announcement/new')
-@app.route('/announcement/<int:announcement_id>/edit')
+@app.route('/announcement/new', methods=['GET', 'POST'])
+@app.route('/announcement/<int:announcement_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_announcement_page(announcement_id=None):
+    form = forms.AnnouncementForm()
+
     if announcement_id is not None:
-        announcement = models.Announcement.query\
-                .filter(models.Announcement.id == announcement_id)\
-                .one()
+        new_announcement= False
+        announcement = models.Announcement.query.get(announcement_id)
     else:
+        new_announcement = True
         announcement = models.Announcement(current_user.email, '', '')
 
-    return flask.render_template('edit_announcement.html', announcement=announcement)
+
+    # If the form was submitted and valid, change the object and redirect to
+    # viewing it.
+    if form.validate_on_submit() and form.submit.data:
+        # Update the announcement from the form if we're submitting finally.
+        announcement.title = form.title.data
+        announcement.content = form.content.data
+        # If the announcement is brand new, add it to the session.
+        if new_announcement:
+            app.db.session.add(announcement)
+        app.db.session.commit()
+        return flask.redirect(flask.url_for('announcement_page', announcement_id=announcement.id))
+
+    # Otherwise, if we're doing the GET method, fill the form with the original
+    # data.
+    elif flask.request.method == 'GET':
+        form.title.data = announcement.title
+        form.content.data = announcement.content
+
+    return flask.render_template('edit_announcement.html',
+                                 announcement_id=announcement.id,
+                                 author=announcement.author,
+                                 form=form)
 
 @app.route('/announcement/')
 @app.route('/announcement/<int:announcement_id>')
 def announcement_page(announcement_id=None):
     if announcement_id is not None:
-        announcement = models.Announcement.query\
-                .filter(models.Announcement.id == announcement_id)\
-                .one()
+        announcement = models.Announcement.query.get(announcement_id)
         return flask.render_template('announcement.html', announcement=announcement)
 
     # Otherwise
