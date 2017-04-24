@@ -1,72 +1,43 @@
- {% extends "theme.html" %}
+{% extends "theme.html" %}
 
 {% block head %}
 {{ super() }}
-<title>College JUMP calendar demo </title>
+<title>Announcement</title>
 {% endblock %}
 
 {% block content %}
-{{ super() }}
-<h1>  Hello, world!</h2>
-</h1> This is the College JUMP user profile page. </h1>
-
-Here you can view and edit your account details!
-
-<br>
- Name:
-<small id="None" class="form-text text-muted">
-    John Doe
-</small>
-
- <div class="form-group">
-    <label for="exampleInputEmail1">Change Name</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Name">
+ {% if current_user.admin==True or current_user.id==user.id %}
+<div class="form-group">
+  {{ user.name }}
+  <br>
+  <br>                       
+  <form method="POST" action="{{ url_for("account_settings_page",user_id=user.id, user=user) }}">
+  {{ form.csrf_token }}
+  <div>
+    {{ form.name.label }} {{ form.name(class_="form-control",  value= user.name) }}
   </div>
-<button type="submit" class="btn btn-primary">Submit</button>
-
-<br>
-<br>
-<br>
-
- Email Address:
-<small id="None" class="form-text text-muted">
-    JohnDoe1@gmail.com
-</small>
-
- <div class="form-group">
-    <label for="exampleInputEmail1">Change Email</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
+  <div>
+    {{ form.email.label }} {{ form.email(class_="form-control", value=user.email) }}
   </div>
-<button type="submit" class="btn btn-primary">Submit</button>
-
-<br>
-<br>
-<br>
-
- Password:
-<small id="None" class="form-text text-muted">
-    SzechuanSauce3
-</small>
-
- <div class="form-group">
-    <label for="exampleInputEmail1">Change Password</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Password">
+  <div>
+    {{ form.password.label }} {{ form.password(class_="form-control", value=user.password) }}
   </div>
-<button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
+</form>
+ <br>
+ <br>
 
-<br>
-<br>
-<br>
-
- Mentor:
-<small id="None" class="form-text text-muted">
-    Rick
-</small>
-
-<br>
-<br>
-<br>
+  <form method="POST" action="{{ url_for("account_settings_page",user_id=user.id, user=user) }}">
+  {{ deleteForm.csrf_token }}
+  <div>
+    {{ deleteForm.delete.label }} {{ deleteForm.delete(class_="form-control") }}
+  </div>
+   <button type="submit" class="btn btn-danger">Delete {{user.name}} </button>
+  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
+</form> 
 
 
-
+</div>
+{% endif %}
 {% endblock %}

@@ -74,10 +74,39 @@ def logout_page():
     logout_user()
     return flask.redirect(flask.url_for('front_page'))
 
-@app.route('/account_settings')
+@app.route('/account_settings/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-def account_settings_page():
-    return flask.render_template('account_settings.html')
+def account_settings_page(user_id):
+    delete_form = forms.UserDeleteForm()
+    form = forms.UserInfoForm()
+
+    if delete_form.validate_on_submit():
+        if delete_form.delete.data:
+            # Retrieve the user for logging, then delete it.
+            user = models.User.query.get(user_id)
+            app.db.session.delete(user)
+            app.db.session.commit()
+            app.logger.info("Deleted user %r from the database", user)
+            return flask.render_template('index.html')
+
+
+    user = models.User.query.get(user_id)
+
+    if form.validate_on_submit():
+        user.name = form.name.data
+        user.email = form.email.data.lower()
+        if form.password.data != "":
+            user.password = form.password.data
+
+        app.db.session.commit()
+        app.logger.info("Updated user %r in the database", user)
+        return flask.redirect(flask.url_for('account_settings_page',
+                                            user_id=user_id))
+
+
+    return flask.render_template('account_settings.html', user_id=user_id,
+                                 user=user, form=form, deleteForm=delete_form)
+
 
 
 @app.route('/announcement/new')
@@ -109,58 +138,23 @@ def announcement_page(announcement_id=None):
 
 
 @app.route('/edit_accounts', methods=['GET', 'POST'])
-@app.route('/edit_accounts/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-def edit_accounts_page(user_id=None):
-
-    delete_form = forms.UserDeleteForm()
+def edit_accounts_page():
     form = forms.UserInfoForm()
-    if delete_form.validate_on_submit():
-        if delete_form.delete.data:
-            # Retrieve the user for logging, then delete it.
-            user = models.User.query.get(user_id)
-            app.db.session.delete(user)
-            app.db.session.commit()
-            app.logger.info("Deleted user %r from the database", user)
-            return flask.redirect(flask.url_for('edit_accounts_page'))
 
-    if user_id is not None:
-        user = models.User.query.get(user_id)
-        form = forms.UserInfoForm()
+    if form.validate_on_submit():
+        user = models.User(form.email.data.lower(), form.password.data)
+        user.name = form.name.data
+        user.admin = form.admin.data
 
-        if form.validate_on_submit():
-            user.name = form.name.data
-            user.email = form.email.data.lower()
-            if form.password.data != "":
-                user.password = form.password.data
+        app.db.session.add(user)
+        app.db.session.commit()
 
-            app.db.session.commit()
-            app.logger.info("Updated user %r in the database", user)
-            return flask.redirect(flask.url_for('edit_accounts_page'))
+        app.logger.info("Created user %r in the database", user)
 
-        else:
-            return flask.render_template('edit_single_account.html',
-                                         user=user, form=form, deleteForm=delete_form)
+        return flask.redirect(flask.url_for('edit_accounts_page'))
 
-    else:
-        form = forms.UserInfoForm()
-
-        if form.validate_on_submit():
-            user = models.User(form.email.data.lower(), form.password.data)
-            user.name = form.name.data
-            user.admin = form.admin.data
-
-            app.db.session.add(user)
-            app.db.session.commit()
-
-            app.logger.info("Created user %r in the database", user)
-
-            return flask.redirect(flask.url_for('edit_accounts_page'))
-
-
-
-    return flask.render_template('edit_accounts.html', user_id=user_id,
-                                 form=form,
+    return flask.render_template('edit_accounts.html', form=form,
                                  users=models.User.query.all())
 
 
