@@ -76,35 +76,40 @@ def logout_page():
 @app.route('/account_settings/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def account_settings_page(user_id):
-    delete_form = forms.UserDeleteForm()
-    form = forms.UserInfoForm()
+    
+    if current_user.id == user_id or current_user.admin == True:
+        delete_form = forms.UserDeleteForm()
+        form = forms.UserInfoForm()
 
-    if delete_form.validate_on_submit():
-        if delete_form.delete.data:
-            # Retrieve the user for logging, then delete it.
-            user = models.User.query.get(user_id)
-            app.db.session.delete(user)
+
+        if delete_form.validate_on_submit():
+            if delete_form.delete.data:
+                # Retrieve the user for logging, then delete it.
+                user = models.User.query.get(user_id)
+                app.db.session.delete(user)
+                app.db.session.commit()
+                app.logger.info("Deleted user %r from the database", user)
+                return flask.render_template('index.html')
+
+
+        user = models.User.query.get(user_id)
+
+        if form.validate_on_submit():
+            user.name = form.name.data
+            user.email = form.email.data.lower()
+            if form.password.data != "":
+                user.password = form.password.data
+
             app.db.session.commit()
-            app.logger.info("Deleted user %r from the database", user)
-            return flask.render_template('index.html')
-
-
-    user = models.User.query.get(user_id)
-
-    if form.validate_on_submit():
-        user.name = form.name.data
-        user.email = form.email.data.lower()
-        if form.password.data != "":
-            user.password = form.password.data
-
-        app.db.session.commit()
-        app.logger.info("Updated user %r in the database", user)
-        return flask.redirect(flask.url_for('account_settings_page',
+            app.logger.info("Updated user %r in the database", user)
+            return flask.redirect(flask.url_for('account_settings_page',
                                             user_id=user_id))
 
 
-    return flask.render_template('account_settings.html', user_id=user_id,
+        return flask.render_template('account_settings.html', user_id=user_id,
                                  user=user, form=form, deleteForm=delete_form)
+    else: 
+        flask.abort(403)
 
 
 
