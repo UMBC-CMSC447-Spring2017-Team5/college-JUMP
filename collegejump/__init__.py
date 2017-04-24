@@ -1,7 +1,7 @@
 import subprocess
 import string
-import markdown
 from functools import wraps
+import markdown
 
 from flask import Flask, request, abort, Markup
 from flask_bcrypt import Bcrypt
