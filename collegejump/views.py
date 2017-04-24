@@ -116,7 +116,7 @@ def edit_announcement_page(announcement_id=None):
     form = forms.AnnouncementForm()
 
     if announcement_id is not None:
-        new_announcement= False
+        new_announcement = False
         announcement = models.Announcement.query.get(announcement_id)
     else:
         new_announcement = True
