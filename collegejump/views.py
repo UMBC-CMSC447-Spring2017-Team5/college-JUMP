@@ -3,8 +3,7 @@ import flask
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from collegejump import app
-from collegejump import forms, models, database
+from collegejump import app, forms, models, database, admin_required
 
 @app.route('/static/<path:path>')
 def send_static(path):
@@ -111,7 +110,7 @@ def account_settings_page(user_id):
 
 @app.route('/announcement/new', methods=['GET', 'POST'])
 @app.route('/announcement/<int:announcement_id>/edit', methods=['GET', 'POST'])
-@login_required
+@admin_required
 def edit_announcement_page(announcement_id=None):
     form = forms.AnnouncementForm()
 
@@ -182,7 +181,7 @@ def edit_accounts_page():
 
 
 @app.route('/database/', methods=['GET', 'POST'])
-@login_required
+@admin_required
 def database_page():
     form = forms.DatabaseUploadForm()
     if form.validate_on_submit():
@@ -199,7 +198,7 @@ def database_page():
     return flask.render_template('database.html', form=form)
 
 @app.route('/database/export')
-@login_required
+@admin_required
 def database_export_endpoint():
     filename = datetime.datetime.now().strftime("collegejump-export-%Y%m%d.zip")
     return flask.send_file(database.export_db(),

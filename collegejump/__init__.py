@@ -1,10 +1,11 @@
 import subprocess
 import string
 import markdown
+from functools import wraps
 
-from flask import Flask, request, Markup
+from flask import Flask, request, abort, Markup
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 
 # Flask convention is to use `app`
@@ -42,6 +43,18 @@ def prepare_after_init():
 @app.template_filter('markdown')
 def markdown_filter(data):
     return Markup(markdown.markdown(data))
+
+# Register an admin_required handler, for ensuring that users are logged-in
+# admins when they access certain pages.
+def admin_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return app.login_manager.unauthorized()
+        elif not current_user.admin:
+            return abort(401)
+        return func(*args, **kwargs)
+    return decorated_view
 
 # We import the views here so that the application still mostly works even if
 # the main() function isn't ever run.
