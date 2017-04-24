@@ -84,6 +84,10 @@ class User(app.db.Model, UserMixin):
     def load_user(user_id):
         return User.query.get(user_id)
 
+    @classmethod
+    def transform_csv_row(cls, row):
+        row['_password'] = row['_password'].lstrip('b\'').rstrip('\'')
+        return row
 
 class Announcement(app.db.Model):
     TITLE_MAX_LENGTH = 128
