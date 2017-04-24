@@ -1,5 +1,7 @@
 import subprocess
 import string
+import os
+import binascii
 from functools import wraps
 import markdown
 
@@ -37,7 +39,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Register a function to run before other requests.
 @app.before_first_request
 def prepare_after_init():
+    from collegejump import models
+
     app.db.create_all()
+
+    # If there are no admins in the database, create and store SETUP_KEY for
+    # creating the first admin.
+    if models.User.query.filter(models.User.admin is True).count() == 0:
+        app.config['SETUP_KEY'] = binascii.hexlify(os.urandom(16)).decode('utf-8')
+        app.logger.info("No admins in database, created setup key: %s",
+                        app.config['SETUP_KEY'])
 
 # Register a handy template filter
 @app.template_filter('markdown')

@@ -16,6 +16,14 @@ provide the basic setup steps to creating a functioning development environment.
 
 The website is available at a [demo location][].
 
+## First Setup
+
+Upon starting the website for the first time, visit its index page. After doing
+so, a `SETUP_KEY` will be printed in the log of the server. Copy this key, and
+visit `/setup?key=<copied key>`. Enter the details of your desired admin user,
+and press submit. Upon success, you will be directed back to the index, where
+you will have been logged in automatically as this user.
+
 ## Developer's Guide
 
 The College JUMP website is written using Python3 and the Flask web framework.

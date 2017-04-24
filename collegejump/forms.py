@@ -1,10 +1,10 @@
 from urllib.parse import  urlparse, urljoin
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
-from wtforms import fields, validators, widgets
+from wtforms import fields, validators, widgets, ValidationError
 import flask
 
-from collegejump import models
+from collegejump import app, models
 
 def is_safe_url(target):
     ref_url = urlparse(flask.request.host_url)
@@ -44,6 +44,32 @@ class UserInfoForm(FlaskForm):
 
     admin = fields.BooleanField('Is Administrator Account?')
     password = fields.PasswordField('Password')
+
+    def to_user_model(self):
+        user = models.User(self.email.data.lower(), self.password.data)
+        user.name = self.name.data
+        user.admin = self.admin.data
+        return user
+
+class FirstSetupUserInfoForm(UserInfoForm):
+    setup_key = fields.HiddenField()
+
+    # pylint: disable=no-self-argument,no-self-use
+    def validate_setup_key(form, field):
+        """In-line validator to check that setup_token matches the one generated
+        on startup, and to ensure that one was generated at all. This is called
+        automatically as part of the form.validate() process.
+        """
+        if 'SETUP_KEY' not in app.config:
+            raise ValidationError('No SETUP_KEY in use by the application')
+        elif field.data != app.config['SETUP_KEY']:
+            # NOTE: This kind of comparison might be subject to timing attacks, where
+            # an attacker submits random strings and compares how long it takes
+            # to return that they fail in order to deduce the correct string.
+            # This should be changed to a suitable method of comparison, such as
+            # comparison by hash.
+            raise ValidationError('Provided SETUP_KEY does not match application SETUP_KEY')
+
 
 class UserDeleteForm(FlaskForm):
     delete = fields.BooleanField('Mark account for deletion?')
