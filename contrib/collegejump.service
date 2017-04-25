@@ -3,7 +3,11 @@ Description=College JUMP Website
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 -m collegejump --host 0.0.0.0 --port 8088 --prefix=/collegejump
+ExecStart=/usr/bin/python3 -m collegejump \
+          --host 0.0.0.0 \
+          --port 8088 \
+          --db /var/local/collegejump.db \
+          --prefix=/collegejump
 
 [Install]
 WantedBy=default.target
