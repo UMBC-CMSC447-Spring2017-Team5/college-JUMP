@@ -149,6 +149,17 @@ def edit_announcement_page(announcement_id=None):
                                  author=announcement.author,
                                  form=form)
 
+@app.route('/syllabus/')
+@admin_required
+def syllabus_page():
+    all_semesters = models.Semester.query.order_by('order')
+    return flask.render_template("syllabus_root.html", all_semesters=all_semesters)
+
+@app.route('/syllabus/<int:semester_id>', methods=["GET", "POST"])
+@admin_required
+def edit_semester_page(semester_id):
+    """Edit the syllabus for a whole semester."""
+    pass
 @app.route('/announcement/')
 @app.route('/announcement/<int:announcement_id>')
 def announcement_page(announcement_id=None):
