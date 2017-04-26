@@ -18,22 +18,20 @@ enrollment = app.db.Table('enrollment', app.db.metadata,
                                         app.db.ForeignKey('semester.id')))
 
 week_assignments = app.db.Table('week_assignments', app.db.metadata,
-                                app.db.Column('semester_id', app.db.Integer),
-                                app.db.Column('week_number', app.db.Integer),
-                                app.db.Column('assignment_id', app.db.Integer,
-                                              app.db.ForeignKey('assignment.id')),
-                                app.db.ForeignKeyConstraint(
-                                    ['semester_id', 'week_number'],
-                                    ['week.semester_id', 'week.week_number']))
+                                app.db.Column('week_id',
+                                              app.db.Integer,
+                                              app.db.ForeignKey('week.id')),
+                                app.db.Column('assignment_id',
+                                              app.db.Integer,
+                                              app.db.ForeignKey('assignment.id')))
 
 week_documents = app.db.Table('week_documents', app.db.metadata,
-                              app.db.Column('semester_id', app.db.Integer),
-                              app.db.Column('week_number', app.db.Integer),
-                              app.db.Column('document_id', app.db.Integer,
-                                            app.db.ForeignKey('document.id')),
-                              app.db.ForeignKeyConstraint(
-                                  ['semester_id', 'week_number'],
-                                  ['week.semester_id', 'week.week_number']))
+                              app.db.Column('week_id',
+                                            app.db.Integer,
+                                            app.db.ForeignKey('week.id')),
+                              app.db.Column('document_id',
+                                            app.db.Integer,
+                                            app.db.ForeignKey('document.id')))
 
 
 class User(app.db.Model, UserMixin):
@@ -129,15 +127,21 @@ class Semester(app.db.Model):
     # for ordering semesters
     order = app.db.Column(app.db.Integer, unique=True)
 
+    def __init__(self, name, order):
+        self.name = name
+        self.order = order
+
+    def __repr__(self):
+        return '<Semester {!r}>'.format(self.name)
 
 class Week(app.db.Model):
     HEADER_MAX_LENGTH = 64
     INTRO_MAX_LENGTH = 1024
 
     # Weeks are identified as (semester, week number) uniquely.
-    semester_id = app.db.Column(
-        app.db.Integer, app.db.ForeignKey('semester.id'), primary_key=True)
-    week_number = app.db.Column(app.db.Integer, primary_key=True)
+    id = app.db.Column(app.db.Integer, primary_key=True)
+    semester_id = app.db.Column(app.db.Integer, app.db.ForeignKey('semester.id'))
+    week_number = app.db.Column(app.db.Integer)
 
     header = app.db.Column(app.db.String(HEADER_MAX_LENGTH))
     intro = app.db.Column(app.db.String(INTRO_MAX_LENGTH))
@@ -148,6 +152,13 @@ class Week(app.db.Model):
     assignments = app.db.relationship('Assignment', secondary=week_assignments)
     documents = app.db.relationship('Document', secondary=week_documents)
 
+    __table_args__ = tuple(app.db.UniqueConstraint('semester_id', 'week_number'))
+
+    def __init__(self, semester_id, week_number, header, intro):
+        self.semester_id = semester_id
+        self.week_number = week_number
+        self.header = header
+        self.intro = intro
 
 class Assignment(app.db.Model):
     NAME_MAX_LENGTH = 64
