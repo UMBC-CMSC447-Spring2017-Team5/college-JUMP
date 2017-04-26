@@ -1,0 +1,25 @@
+{% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>File Upload Manager</title>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{ url_for('database_export_endpoint') }}" class="btn">Upload Document</a>
+
+<form method="POST"
+      action="{{ url_for('database_page') }}"
+      enctype=multipart/form-data
+      >
+  {{ form.csrf_token }}
+  {{ form.zipfile() }}
+  <button type="submit">Upload File</button>
+</form>
+
+{% if form.errors %}
+{{ form.errors }}
+{% endif %}
+
+{% endblock %}

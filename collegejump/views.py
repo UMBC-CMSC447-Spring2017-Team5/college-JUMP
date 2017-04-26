@@ -249,6 +249,23 @@ def database_page():
 
     return flask.render_template('database.html', form=form)
 
+@app.route('/file/', methods=['GET', 'POST'])
+@admin_required
+def file_page():
+    form = forms.FileUploadForm()
+    if form.validate_on_submit():
+        # The data from the file is in bytes-like in form.zipfile.data, which we
+        # pass to the import function.
+        app.logger.info("Uploading file by %r", current_user)
+        try:
+            #file.import_db(form.zipfile.data) need to refine this
+            app.logger.info("File upload complete.")
+            return flask.redirect(flask.url_for("front_page"))
+        except DBAPIError:
+            raise
+
+    return flask.render_template('database.html', form=form)
+
 @app.route('/database/export')
 @admin_required
 def database_export_endpoint():

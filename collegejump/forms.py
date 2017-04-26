@@ -88,3 +88,6 @@ class AnnouncementForm(FlaskForm):
 
 class DatabaseUploadForm(FlaskForm):
     zipfile = FileField(validators=[FileRequired()])
+
+class FileUploadForm(FlaskForm):
+    zipfile = FileField(validators=[FileRequired()])
