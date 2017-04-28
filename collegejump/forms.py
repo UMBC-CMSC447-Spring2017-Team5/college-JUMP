@@ -31,6 +31,25 @@ class LoginForm(RedirectForm):
     ])
     password = fields.PasswordField('Password')
 
+class WeekForm(FlaskForm):
+    """A form for filling out a single week in a semester."""
+    header = fields.StringField('Header', [
+        validators.required(),
+        validators.length(max=models.Week.HEADER_MAX_LENGTH)])
+    intro = fields.StringField('Intro', [
+        validators.required(),
+        validators.length(max=models.Week.INTRO_MAX_LENGTH)])
+
+class SemesterForm(FlaskForm):
+    """A form for filling out an entire semester's syllabus at once."""
+    name = fields.StringField('Name', [
+        validators.required(),
+        validators.length(max=models.Semester.NAME_MAX_LENGTH)])
+    order = fields.IntegerField('Order', [validators.required()])
+
+    weeks = fields.FieldList(fields.FormField(WeekForm))
+
+    submit = fields.SubmitField('Submit')
 
 class UserInfoForm(FlaskForm):
     name = fields.StringField('Name', [

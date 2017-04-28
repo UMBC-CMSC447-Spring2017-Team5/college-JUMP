@@ -2,6 +2,7 @@ import datetime
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app, forms, models, database, admin_required
 
@@ -159,7 +160,55 @@ def syllabus_page():
 @admin_required
 def edit_semester_page(semester_id):
     """Edit the syllabus for a whole semester."""
-    pass
+    form = forms.SemesterForm()
+
+    # pylint: disable=no-member
+    # Look the semester up by id, eagerly loading the weeks, so they can be
+    # displayed or changed without firing a bunch of extra queries.
+    semester = models.Semester.query\
+            .options(joinedload(models.Semester.weeks)) \
+            .get(semester_id)
+
+    # If POSTing a valid form, apply the changes.
+    if form.validate_on_submit() and form.submit.data is True:
+        semester.name = form.name.data
+        semester.order = form.order.data
+
+        # Iterate through week information in the form, replacing existing weeks
+        # and adding new ones.
+        for i, week_form in enumerate(form.weeks):
+            # If there is already an existing week in the database, replace it.
+            if i < len(semester.weeks):
+                app.logger.debug("Replacing week %d in %r", i, semester)
+                semester.weeks[i].header = week_form.header.data
+                semester.weeks[i].intro = week_form.intro.data
+
+            # Otherwise, create one and add it to the semester.
+            else:
+                app.logger.debug("Creating week %d in %r", i, semester)
+                week = models.Week(semester.id, i,
+                                   week_form.header.data, week_form.intro.data)
+                app.db.session.add(week)
+
+            app.db.session.commit()
+
+    # Whether or not we POSTed, render the template with changes applied.
+    # Pre-fill the form data, if it was cleared. Even if the form wasn't valid,
+    # submitted changes will still be rendered here.
+
+    form.name.data = form.name.data or semester.name
+    form.order.data = form.order.data or semester.order
+
+    # If we are populating the form for the first time, we fill it with Week
+    # forms matching the existing week information.
+    while len(form.weeks) < len(semester.weeks):
+        form.weeks.append_entry()
+        week_num = len(form.weeks)
+        form.weeks[week_num - 1].intro.data = semester.weeks[week_num - 1].intro
+        form.weeks[week_num - 1].header.data = semester.weeks[week_num - 1].header
+
+    return flask.render_template("semester.html", semester=semester, form=form)
+
 @app.route('/announcement/')
 @app.route('/announcement/<int:announcement_id>')
 def announcement_page(announcement_id=None):
