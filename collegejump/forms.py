@@ -50,6 +50,7 @@ class SemesterForm(FlaskForm):
     weeks = fields.FieldList(fields.FormField(WeekForm))
 
     submit = fields.SubmitField('Submit')
+    add_week = fields.SubmitField('Add Week')
 
 class UserInfoForm(FlaskForm):
     name = fields.StringField('Name', [

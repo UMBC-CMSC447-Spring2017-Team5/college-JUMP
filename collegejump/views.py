@@ -207,6 +207,10 @@ def edit_semester_page(semester_id):
         form.weeks[week_num - 1].intro.data = semester.weeks[week_num - 1].intro
         form.weeks[week_num - 1].header.data = semester.weeks[week_num - 1].header
 
+    # If the button to add another week was pressed, add a new empty week.
+    if form.add_week.data is True:
+        form.weeks.append_entry()
+
     return flask.render_template("semester.html", semester=semester, form=form)
 
 @app.route('/announcement/')

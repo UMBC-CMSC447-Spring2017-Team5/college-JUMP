@@ -1,0 +1,29 @@
+{% extends "theme.html" %}
+
+{% block head %}
+{{ super() }}
+<title>Syllabus Overview</title>
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ semester.name }}</h1>
+
+<h3>Weeks</h3>
+<ol>
+  {% for week in semester.weeks %}
+  <li><a href="#">{{ week.header }}</a></li>
+  {% endfor %}
+</ol>
+
+<form method="POST" action="{{ url_for("edit_semester_page", semester_id = semester.id) }}">
+  {{ form.csrf_token }}
+  {{ form.name() }} <br/>
+  {{ form.order() }} <br/>
+  {{ form.weeks() }} <br/>
+  {{ form.add_week() }}
+
+  {{ form.submit() }}
+</form>
+
+{% endblock %}
