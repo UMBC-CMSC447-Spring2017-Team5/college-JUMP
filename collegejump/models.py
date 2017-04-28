@@ -120,7 +120,7 @@ class Announcement(app.db.Model):
 class Semester(app.db.Model):
     """A semester is a collection of weeks meant to make up the content of the
     website during a whole semester."""
-    NAME_MAX_LENGTH = 16
+    NAME_MAX_LENGTH = 32
 
     id = app.db.Column(app.db.Integer, primary_key=True)
     name = app.db.Column(app.db.String(NAME_MAX_LENGTH))

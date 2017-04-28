@@ -15,6 +15,6 @@
   <li><a href="{{ url_for('edit_semester_page', semester_id=semester.id) }}">{{ semester.name }}</a></li>
   {% endfor %}
 </ul>
-<a href="#">Create a Semester</a>
+<a href="{{ url_for('edit_semester_page') }}">Create a Semester</a>
 
 {% endblock %}

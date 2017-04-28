@@ -26,4 +26,8 @@
   {{ form.submit() }}
 </form>
 
+{% if form.errors %}
+{{ form.errors }}
+{% endif %}
+
 {% endblock %}

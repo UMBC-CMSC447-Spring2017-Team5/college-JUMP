@@ -156,23 +156,38 @@ def syllabus_page():
     all_semesters = models.Semester.query.order_by('order')
     return flask.render_template("syllabus_root.html", all_semesters=all_semesters)
 
+@app.route('/syllabus/new', methods=["GET", "POST"])
 @app.route('/syllabus/<int:semester_id>', methods=["GET", "POST"])
 @admin_required
-def edit_semester_page(semester_id):
+def edit_semester_page(semester_id=None):
     """Edit the syllabus for a whole semester."""
     form = forms.SemesterForm()
 
-    # pylint: disable=no-member
-    # Look the semester up by id, eagerly loading the weeks, so they can be
-    # displayed or changed without firing a bunch of extra queries.
-    semester = models.Semester.query\
-            .options(joinedload(models.Semester.weeks)) \
-            .get(semester_id)
+    # If we are loading an existing semester, look it up.
+    if semester_id:
+        # pylint: disable=no-member
+        # Look the semester up by id, eagerly loading the weeks, so they can be
+        # displayed or changed without firing a bunch of extra queries.
+        new_semester = False
+        semester = models.Semester.query\
+                .options(joinedload(models.Semester.weeks)) \
+                .get(semester_id)
+
+    # Otherwise, create a new one to be filled with form data.
+    else:
+        new_semester = True
+        semester = models.Semester(None, None)
 
     # If POSTing a valid form, apply the changes.
     if form.validate_on_submit() and form.submit.data is True:
         semester.name = form.name.data
         semester.order = form.order.data
+
+        # If the semester is new, add it to the session, because it is necessary
+        # to do so before creating weeks for it.
+        if new_semester is True:
+            app.logger.debug("Creating new semester %r", semester)
+            app.db.session.add(semester)
 
         # Iterate through week information in the form, replacing existing weeks
         # and adding new ones.
@@ -190,7 +205,13 @@ def edit_semester_page(semester_id):
                                    week_form.header.data, week_form.intro.data)
                 app.db.session.add(week)
 
-            app.db.session.commit()
+        # Commit at the end of processing the database.
+        app.db.session.commit()
+
+        # If we're creating a new semester here, redirect to the permanent URL.
+        if new_semester is True:
+            return flask.redirect(flask.url_for('edit_semester_page', semester_id=semester.id))
+
 
     # Whether or not we POSTed, render the template with changes applied.
     # Pre-fill the form data, if it was cleared. Even if the form wasn't valid,
