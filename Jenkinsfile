@@ -52,7 +52,6 @@ node {
     stage('Deployment') {
         sh """
             sudo /usr/bin/pip3 install --upgrade \"dist/${pkgFullname}.tar.gz\"
-            sudo /bin/rm -f /var/local/collegejump.db
             sudo /bin/systemctl restart collegejump
         """
     }
