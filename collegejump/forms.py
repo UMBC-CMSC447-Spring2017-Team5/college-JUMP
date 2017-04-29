@@ -40,6 +40,10 @@ class WeekForm(FlaskForm):
         validators.required(),
         validators.length(max=models.Week.INTRO_MAX_LENGTH)])
 
+    new_document = FileField()
+
+    submit = fields.SubmitField('Submit')
+
 class SemesterForm(FlaskForm):
     """A form for filling out an entire semester's syllabus at once."""
     name = fields.StringField('Name', [
@@ -107,7 +111,4 @@ class AnnouncementForm(FlaskForm):
     preview = fields.SubmitField('Update Preview')
 
 class DatabaseUploadForm(FlaskForm):
-    zipfile = FileField(validators=[FileRequired()])
-
-class FileUploadForm(FlaskForm):
     zipfile = FileField(validators=[FileRequired()])

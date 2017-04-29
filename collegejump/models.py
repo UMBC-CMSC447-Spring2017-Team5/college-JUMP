@@ -141,24 +141,27 @@ class Week(app.db.Model):
     # Weeks are identified as (semester, week number) uniquely.
     id = app.db.Column(app.db.Integer, primary_key=True)
     semester_id = app.db.Column(app.db.Integer, app.db.ForeignKey('semester.id'))
-    week_number = app.db.Column(app.db.Integer)
+    week_num = app.db.Column(app.db.Integer)
 
     header = app.db.Column(app.db.String(HEADER_MAX_LENGTH))
     intro = app.db.Column(app.db.String(INTRO_MAX_LENGTH))
 
     semester = app.db.relationship('Semester',
-                                   backref=app.db.backref('weeks', order_by=week_number))
+                                   backref=app.db.backref('weeks', order_by=week_num))
 
     assignments = app.db.relationship('Assignment', secondary=week_assignments)
     documents = app.db.relationship('Document', secondary=week_documents)
 
-    __table_args__ = tuple(app.db.UniqueConstraint('semester_id', 'week_number'))
+    __table_args__ = tuple(app.db.UniqueConstraint('semester_id', 'week_num'))
 
-    def __init__(self, semester_id, week_number, header, intro):
+    def __init__(self, semester_id, week_num, header, intro):
         self.semester_id = semester_id
-        self.week_number = week_number
+        self.week_num = week_num
         self.header = header
         self.intro = intro
+
+    def __repr__(self):
+        return '<Week {!r} in {!r}>'.format(self.week_num, self.semester.name)
 
 class Assignment(app.db.Model):
     NAME_MAX_LENGTH = 64
@@ -174,3 +177,10 @@ class Document(app.db.Model):
     id = app.db.Column(app.db.Integer, primary_key=True)
     name = app.db.Column(app.db.String(NAME_MAX_LENGTH))
     data = app.db.Column(app.db.LargeBinary)
+
+    def __init__(self, name, data):
+        self.name = name
+        self.data = data
+
+    def __repr__(self):
+        return '<Document {!r}>'.format(self.name)

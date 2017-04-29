@@ -1,4 +1,5 @@
 import datetime
+import os
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import DBAPIError
@@ -156,8 +157,8 @@ def syllabus_page():
     all_semesters = models.Semester.query.order_by('order')
     return flask.render_template("syllabus_root.html", all_semesters=all_semesters)
 
-@app.route('/syllabus/new', methods=["GET", "POST"])
-@app.route('/syllabus/<int:semester_id>', methods=["GET", "POST"])
+@app.route('/syllabus/semester/new', methods=["GET", "POST"])
+@app.route('/syllabus/semester/<int:semester_id>', methods=["GET", "POST"])
 @admin_required
 def edit_semester_page(semester_id=None):
     """Edit the syllabus for a whole semester."""
@@ -197,11 +198,12 @@ def edit_semester_page(semester_id=None):
                 app.logger.debug("Replacing week %d in %r", i, semester)
                 semester.weeks[i].header = week_form.header.data
                 semester.weeks[i].intro = week_form.intro.data
+                semester.weeks[i].week_num = i + 1
 
             # Otherwise, create one and add it to the semester.
             else:
                 app.logger.debug("Creating week %d in %r", i, semester)
-                week = models.Week(semester.id, i,
+                week = models.Week(semester.id, i + 1,
                                    week_form.header.data, week_form.intro.data)
                 app.db.session.add(week)
 
@@ -233,6 +235,58 @@ def edit_semester_page(semester_id=None):
         form.weeks.append_entry()
 
     return flask.render_template("semester.html", semester=semester, form=form)
+
+@app.route('/syllabus/semester/<int:semester_id>/week/<int:week_num>', methods=["GET", "POST"])
+@admin_required
+def edit_week_page(semester_id, week_num):
+    """Edit a particular week in a semester."""
+    form = forms.WeekForm()
+
+    # We aren't given the week ID, just the semester ID and week number, so we
+    # look it up by those. The database guarantees that the pair is unique.
+    week = models.Week.query.filter_by(semester_id=semester_id,
+                                       week_num=week_num).one()
+
+    # If the form was submitted, validate it and update the week data from it.
+    if form.validate_on_submit() and form.submit.data is True:
+        app.logger.debug("Updating week %r from form", week)
+        week.header = form.header.data
+        week.intro = form.intro.data
+
+        # If a file was uploaded, extract it into a Document, store that, and
+        # associate it with this week.
+        if form.new_document.has_file():
+            app.logger.debug("Adding document to week %r", week)
+            # Create the Document object using the form data.
+            document = models.Document(os.path.basename(form.new_document.data.filename),
+                                       form.new_document.data.stream.read())
+
+            # Add the Document to the current session.
+            app.db.session.add(document)
+
+            # Associate the document with the week. The ORM will handle the
+            # rest.
+            week.documents.append(document)
+
+        # Flush the changes to the session.
+        app.db.session.commit()
+
+        # If we submitted everything correctly, redirect to this page again to
+        # refresh the form and all the data.
+        return flask.redirect(flask.url_for('edit_week_page',
+                                            semester_id=semester_id,
+                                            week_num=week_num))
+
+    # We reach this point on GET or on unsuccessful POST. Ensure the form is
+    # pre-filled with data if it's blank, (otherwise preserve data) and then
+    # render everything.
+    form.header.data = form.header.data or week.header
+    form.intro.data = form.intro.data or week.intro
+
+    return flask.render_template('edit_week.html',
+                                 week=week,
+                                 form=form,
+                                 show_edit_options=True)
 
 @app.route('/announcement/')
 @app.route('/announcement/<int:announcement_id>')
@@ -317,23 +371,6 @@ def database_page():
         try:
             database.import_db(form.zipfile.data)
             app.logger.info("Database import complete.")
-            return flask.redirect(flask.url_for("front_page"))
-        except DBAPIError:
-            raise
-
-    return flask.render_template('database.html', form=form)
-
-@app.route('/file/', methods=['GET', 'POST'])
-@admin_required
-def file_page():
-    form = forms.FileUploadForm()
-    if form.validate_on_submit():
-        # The data from the file is in bytes-like in form.zipfile.data, which we
-        # pass to the import function.
-        app.logger.info("Uploading file by %r", current_user)
-        try:
-            #file.import_db(form.zipfile.data) need to refine this
-            app.logger.info("File upload complete.")
             return flask.redirect(flask.url_for("front_page"))
         except DBAPIError:
             raise

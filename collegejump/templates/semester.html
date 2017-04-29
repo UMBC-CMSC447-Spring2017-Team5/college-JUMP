@@ -12,7 +12,13 @@
 <h3>Weeks</h3>
 <ol>
   {% for week in semester.weeks %}
-  <li><a href="#">{{ week.header }}</a></li>
+  <li>
+    <a href="{{ url_for('edit_week_page',
+                        semester_id=week.semester_id,
+                        week_num=week.week_num) }}">
+      {{ week.header }}
+    </a>
+  </li>
   {% endfor %}
 </ol>
 
