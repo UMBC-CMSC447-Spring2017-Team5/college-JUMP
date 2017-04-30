@@ -12,6 +12,25 @@
   <h2>CollegeJUMP</h2>
 </div>
 
+{# If this is the first setup, meaning there are no admin users, prompt to enter
+   the SETUP key from the logs. This directs to a form to create the first admin.
+#}
+{%- if config.SETUP_KEY %}
+<div class="jumbotron">
+  <h1 class="display-2">First Setup</h1>
+  <p>
+    If this is your first time running the College JUMP website, you will need
+    to begin by creating an Admin account. This can be done by entering the
+    <code>SETUP_KEY</code> here, which you can find in the console logs on the
+    server hosting this site.
+  </p>
+  <form method="GET" action="{{ url_for('setup_page') }}">
+      <input name="key" placeholder="SETUP_KEY" type="text" class="form-control"/>
+      <input type="submit" class="form-control"/>
+  </form>
+</div>
+{%- endif %}
+
 <h3>Announcements</h3>
 
 <ul>
