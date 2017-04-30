@@ -187,7 +187,10 @@ def edit_semester_page(semester_id=None):
         semester = models.Semester(None, None)
 
     # If POSTing a valid form, apply the changes.
-    if form.validate_on_submit() and form.submit.data is True:
+   # if form.validate_on_submit() and form.submit.data is True:
+    if form.validate_on_submit() and (form.submit.data is True or
+                                      form.add_week.data is True) :
+        form.weeks.append_entry()
         semester.name = form.name.data
         semester.order = form.order.data
 
@@ -199,6 +202,7 @@ def edit_semester_page(semester_id=None):
 
         # Iterate through week information in the form, replacing existing weeks
         # and adding new ones.
+
         for i, week_form in enumerate(form.weeks):
             # If there is already an existing week in the database, replace it.
             if i < len(semester.weeks):
@@ -206,13 +210,13 @@ def edit_semester_page(semester_id=None):
                 semester.weeks[i].header = week_form.header.data
                 semester.weeks[i].intro = week_form.intro.data
                 semester.weeks[i].week_num = i + 1
-
             # Otherwise, create one and add it to the semester.
             else:
                 app.logger.debug("Creating week %d in %r", i, semester)
                 week = models.Week(semester.id, i + 1,
                                    week_form.header.data, week_form.intro.data)
                 app.db.session.add(week)
+
 
         # Commit at the end of processing the database.
         app.db.session.commit()
@@ -236,11 +240,6 @@ def edit_semester_page(semester_id=None):
         week_num = len(form.weeks)
         form.weeks[week_num - 1].intro.data = semester.weeks[week_num - 1].intro
         form.weeks[week_num - 1].header.data = semester.weeks[week_num - 1].header
-
-    # If the button to add another week was pressed, add a new empty week.
-    if form.add_week.data is True:
-        form.weeks.append_entry()
-
     return flask.render_template("semester.html", semester=semester, form=form)
 
 @app.route('/syllabus/semester/<int:semester_id>/week/<int:week_num>', methods=["GET", "POST"])

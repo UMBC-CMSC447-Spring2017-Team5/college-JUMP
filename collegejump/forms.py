@@ -35,10 +35,12 @@ class WeekForm(FlaskForm):
     """A form for filling out a single week in a semester."""
     header = fields.StringField('Header', [
         validators.required(),
-        validators.length(max=models.Week.HEADER_MAX_LENGTH)])
+        validators.length(max=models.Week.HEADER_MAX_LENGTH)],
+        default=u'New Week Header')
     intro = fields.StringField('Intro', [
         validators.required(),
-        validators.length(max=models.Week.INTRO_MAX_LENGTH)])
+        validators.length(max=models.Week.INTRO_MAX_LENGTH)],
+        default=u'New Week Intro' )
 
     new_document = FileField()
 
