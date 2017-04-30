@@ -9,9 +9,11 @@ from flask import Flask, request, abort, Markup
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap
 
 # Flask convention is to use `app`
 app = Flask(__name__) # pylint: disable=invalid-name
+Bootstrap(app)
 app.bcrypt = Bcrypt()
 app.db = SQLAlchemy()
 

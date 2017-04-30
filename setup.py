@@ -50,6 +50,7 @@ setuptools.setup(
         'setuptools',
         'Flask >= 0.12',
         'Flask-SQLAlchemy >= 2.2',
+        'Flask-Bootstrap >= 3.3.7, < 3.3.8',
         'SQLAlchemy-Utils',
         'Flask-Bcrypt',
         'Flask-WTF',
