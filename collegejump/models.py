@@ -52,9 +52,12 @@ class User(app.db.Model, UserMixin):
     mentees = app.db.relationship(
         'User', backref=app.db.backref('mentor', remote_side=[id]))
 
-    def __init__(self, email, plaintext):
-        self.email = email
+
+    def __init__(self, email, plaintext, name=None, admin=False):
+        self.name = name
+        self.email = email.lower()
         self.password = plaintext  # applies hash automatically
+        self.admin = admin
 
     def __repr__(self):
         return '<User {!r}>'.format(self.email)

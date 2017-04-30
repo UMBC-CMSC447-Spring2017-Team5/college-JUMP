@@ -72,9 +72,12 @@ class UserInfoForm(FlaskForm):
 
 
     def to_user_model(self):
-        user = models.User(self.email.data.lower(), self.password.data)
-        user.name = self.name.data
-        user.admin = self.admin.data
+        user = models.User(self.email.data,
+                           self.password.data,
+                           self.name.data,
+                           admin=self.admin.data)
+        # Selected choices on semesters_enrolled are automatically looked up and
+        # turned into actual Semester objects.
         return user
 
 class FirstSetupUserInfoForm(UserInfoForm):
