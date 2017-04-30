@@ -82,34 +82,39 @@ def account_settings_page(user_id):
     if not(current_user.id == user_id or current_user.admin):
         flask.abort(403)
 
+    # Load the user up here before we process the form so that we can use it to
+    # inform the defaults.
+    user = models.User.query.get(user_id)
+
     delete_form = forms.UserDeleteForm()
-    form = forms.UserInfoForm()
+    form = forms.UserInfoForm(
+        name=user.name,
+        email=user.email,
+        semesters_enrolled=[s.id for s in user.semesters])
+    # Populate semester data in the form. This is separate from the initializer
+    # because it requires a database query.
+    form.populate_semesters()
 
     if delete_form.validate_on_submit():
         if delete_form.delete.data:
             # Retrieve the user for logging, then delete it.
-            user = models.User.query.get(user_id)
             app.db.session.delete(user)
             app.db.session.commit()
             app.logger.info("Deleted user %r from the database", user)
-            return flask.render_template('index.html')
-
-    user = models.User.query.get(user_id)
-
+            return flask.redirect('front_page')
 
     if form.validate_on_submit():
         user.name = form.name.data
         user.email = form.email.data.lower()
-        if form.password.data != "":
+        if form.password.data: # non-None, non-empty
             user.password = form.password.data
+
+        user.semesters = list(form.get_semesters_enrolled())
 
         app.db.session.commit()
         app.logger.info("Updated user %r in the database", user)
         return flask.redirect(flask.url_for('account_settings_page',
                                             user_id=user_id))
-
-    # Otherwise, populate semester data in the form.
-    form.populate_semesters()
 
     return flask.render_template('account_settings.html', user_id=user_id,
                                  user=user, form=form, deleteForm=delete_form)

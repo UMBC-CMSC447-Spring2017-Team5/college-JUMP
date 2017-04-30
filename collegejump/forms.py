@@ -70,13 +70,8 @@ class UserInfoForm(FlaskForm):
     password = fields.PasswordField('Password')
 
     # List semesters for the student to be enrolled in, with multiple allowed.
-    # The choices need to be updated before rendering. Selections are coerced on
-    # validation into looked-up real Semester models.
-    # pylint: disable=unnecessary-lambda; query is not bound on initialization
-    semesters_enrolled = fields.SelectMultipleField(
-        'Semesters Enrolled',
-        choices=[],
-        coerce=lambda sid: models.Semester.query.get(sid))
+    # The choices need to be updated before rendering.
+    semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int)
 
     def populate_semesters(self):
         """Populate options for semester enrollment. Must be called after instantiation and before
@@ -84,17 +79,17 @@ class UserInfoForm(FlaskForm):
         """
         self.semesters_enrolled.choices = [(s.id, s.name) for s \
                 in models.Semester.query.order_by('order')]
-        app.logger.debug(self.semesters_enrolled.choices)
 
     def to_user_model(self):
         user = models.User(self.email.data,
                            self.password.data,
                            self.name.data,
                            admin=self.admin.data)
-        # Selected choices on semesters_enrolled are automatically looked up and
-        # turned into actual Semester objects.
-        user.semesters = self.semesters_enrolled.data
+        user.semesters = list(self.get_semesters_enrolled())
         return user
+
+    def get_semesters_enrolled(self):
+        return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
 
 class FirstSetupUserInfoForm(UserInfoForm):
     setup_key = fields.HiddenField()
