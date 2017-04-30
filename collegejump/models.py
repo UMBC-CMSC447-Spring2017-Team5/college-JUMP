@@ -52,6 +52,7 @@ class User(app.db.Model, UserMixin):
     mentees = app.db.relationship(
         'User', backref=app.db.backref('mentor', remote_side=[id]))
 
+    semesters = app.db.relationship('Semester', secondary=enrollment)
 
     def __init__(self, email, plaintext, name=None, admin=False):
         self.name = name

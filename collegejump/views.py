@@ -103,17 +103,16 @@ def account_settings_page(user_id):
         if form.password.data != "":
             user.password = form.password.data
 
-        user.semesters = form.getlist("Yoursemestergoeshere")
         app.db.session.commit()
         app.logger.info("Updated user %r in the database", user)
-        all_semesters = models.Semester.query.order_by('order')
         return flask.redirect(flask.url_for('account_settings_page',
                                             user_id=user_id))
 
-    all_semesters = models.Semester.query.order_by('order')
+    # Otherwise, populate semester data in the form.
+    form.populate_semesters()
+
     return flask.render_template('account_settings.html', user_id=user_id,
-                                 user=user, form=form, deleteForm=delete_form,
-                                 all_semesters=all_semesters)
+                                 user=user, form=form, deleteForm=delete_form)
 
 
 

@@ -10,7 +10,7 @@
 <div class="form-group">
   {{ user.name }}
   <br>
-  <br>                       
+  <br>
   <form method="POST" action="{{ url_for("account_settings_page",user_id=user.id, user=user) }}">
   {{ form.csrf_token }}
   <div>
@@ -22,7 +22,7 @@
   <div>
     {{ form.password.label }} {{ form.password(class_="form-control", value=user.password) }}
   </div>
-  
+
    {{user.name}} is enrolled in the following semesters:
    {% for semester in user.semesters %}
    {{semester.name}}
@@ -30,8 +30,10 @@
    <br>
    <br>
 
-   
+
     Assign {{user.name}} to some semester(s).
+    {{ form.semesters_enrolled() }}
+    {#
     <div class="form-check">
     <label class="form-check-label">
     {% for semester in all_semesters %}
@@ -39,6 +41,7 @@
     {{ semester.name }}
     <br>
     {% endfor %}
+    #}
    </label>
    </div>
   <button type="submit" class="btn btn-primary">Submit</button>
