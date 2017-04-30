@@ -68,6 +68,8 @@ class UserInfoForm(FlaskForm):
 
     admin = fields.BooleanField('Is Administrator Account?')
     password = fields.PasswordField('Password')
+    semesters = fields.FieldList(fields.FormField(SemesterForm))
+
 
     def to_user_model(self):
         user = models.User(self.email.data.lower(), self.password.data)

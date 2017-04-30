@@ -22,8 +22,27 @@
   <div>
     {{ form.password.label }} {{ form.password(class_="form-control", value=user.password) }}
   </div>
+  
+   {{user.name}} is enrolled in the following semesters:
+   {% for semester in user.semesters %}
+   {{semester.name}}
+   {% endfor %}
+   <br>
+   <br>
+
+   
+    Assign {{user.name}} to some semester(s).
+    <div class="form-check">
+    <label class="form-check-label">
+    {% for semester in all_semesters %}
+    <input class="form-check-input" type="checkbox" id="{{ semester.name }}" value="{{ semester.name }}">
+    {{ semester.name }}
+    <br>
+    {% endfor %}
+   </label>
+   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
-  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
+  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>  
 </form>
  <br>
  <br>
