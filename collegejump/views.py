@@ -64,6 +64,8 @@ def login_page():
         except NoResultFound:
             app.logger.info("Attempt to login with unknown email %r", email)
 
+        flask.flash('Login failed.', 'error')
+
     return flask.render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
