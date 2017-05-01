@@ -3,7 +3,7 @@ label for the field will not be printed, and the form field will be offset the
 appropriate amount.
 #}
 {% macro hfield(field, label=True, class="") %}
-<div class="form-group">
+<div class="form-group row">
   {%- if label %}
   {{ field.label(class_="control-label col-sm-2") }}
   {% endif -%}

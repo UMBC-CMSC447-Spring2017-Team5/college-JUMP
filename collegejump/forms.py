@@ -24,7 +24,7 @@ class RedirectForm(FlaskForm):
 
 
 class LoginForm(RedirectForm):
-    email = fields.StringField('Email Address', [
+    email = fields.StringField('Email', [
         validators.required(),
         validators.Email(),
         validators.length(max=models.User.EMAIL_MAX_LENGTH),

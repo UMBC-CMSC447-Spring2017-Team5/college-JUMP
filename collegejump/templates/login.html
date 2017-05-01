@@ -5,15 +5,17 @@
 
 {% block content %}
 
-<div class="well col-xs-12 col-sm-offset-3 col-sm-6">
-  <form method="POST"
-	action="{{ url_for('login_page') }}"
-	class="form form-horizontal">
-    {{ form.hidden_tag() }}
-    {{ formtools.hfield(form.email) }}
-    {{ formtools.hfield(form.password) }}
-    {{ formtools.hfield(form.submit, label=False, class="btn btn-primary") }}
-  </form>
+<div class="row">
+  <div class="well col-xs-12 col-sm-offset-3 col-sm-6">
+    <form method="POST"
+	  action="{{ url_for('login_page') }}"
+	  class="form form-horizontal">
+      {{ form.hidden_tag() }}
+      {{ formtools.hfield(form.email) }}
+      {{ formtools.hfield(form.password) }}
+      {{ formtools.hfield(form.submit, label=False, class="btn btn-primary") }}
+    </form>
+  </div>
 </div>
 
 {% endblock %}
