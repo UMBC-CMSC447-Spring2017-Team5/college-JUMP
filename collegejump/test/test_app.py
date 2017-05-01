@@ -1,7 +1,6 @@
 #!env/bin/python3
 
 import pytest
-import requests
 debug_f = "debug_out"
 
 @pytest.fixture
