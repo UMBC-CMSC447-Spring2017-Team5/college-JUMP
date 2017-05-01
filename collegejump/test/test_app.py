@@ -3,13 +3,13 @@
 import pytest
 debug_f = "debug_out"
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def collegejump():
     import collegejump
     return collegejump
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def app():
     import collegejump
     test_app = collegejump.app.test_client()
