@@ -1,21 +1,13 @@
 {% extends "theme.html" %}
-{% import "_formtools.html" as formtools %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %} Login {% endblock %}
 
 {% block content %}
 
-<div class="row">
-  <div class="well col-xs-12 col-sm-offset-3 col-sm-6">
-    <form method="POST"
-	  action="{{ url_for('login_page') }}"
-	  class="form form-horizontal">
-      {{ form.hidden_tag() }}
-      {{ formtools.hfield(form.email) }}
-      {{ formtools.hfield(form.password) }}
-      {{ formtools.hfield(form.submit, label=False, class="btn btn-primary") }}
-    </form>
-  </div>
+<div class="well col-xs-12 col-sm-offset-3 col-sm-6">
+  {{ wtf.quick_form(form, method='POST', action=url_for('login_page'),
+		    form_type='horizontal',
+		    button_map={'submit': 'primary'}) }}
 </div>
-
 {% endblock %}
