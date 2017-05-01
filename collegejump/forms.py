@@ -30,6 +30,7 @@ class LoginForm(RedirectForm):
         validators.length(max=models.User.EMAIL_MAX_LENGTH),
     ])
     password = fields.PasswordField('Password')
+    submit = fields.SubmitField('Submit')
 
 class WeekForm(FlaskForm):
     """A form for filling out a single week in a semester."""

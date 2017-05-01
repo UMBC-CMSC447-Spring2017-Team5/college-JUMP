@@ -27,17 +27,14 @@ def calendar_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
-    # Get the `returnto` or `next` query string.
+    # Get the `returnto` or `next` query string, otherwise leave blank.
     returnto = flask.request.args.get('returnto') \
-            or flask.request.args.get('next')
+            or flask.request.args.get('next') \
+            or ''
 
-    # Parse the form if it was given to us.
-    form = forms.LoginForm()
-
-    # If the form was submitted with returnto information, preserve it in case
-    # we have to re-render the template.
-    if form.returnto.data:
-        returnto = form.returnto.data
+    # Create the form object with its defaults. If a `returnto` was submitted,
+    # it will be preserved here.
+    form = forms.LoginForm(returnto=returnto)
 
     # If the login form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
@@ -54,7 +51,7 @@ def login_page():
                     app.logger.info("Successful login by %r", user)
                     return form.redirect()
                 else:
-                    # If the login failed, here, it's not because of the
+                    # If the login failed here, it's not because of the
                     # password. Maybe the user is inactive?
                     app.logger.warning("Unexpected login failure by %r", user)
             else:
@@ -62,12 +59,12 @@ def login_page():
 
         except MultipleResultsFound:
             # This is actually really bad, and means the database is very broken.
-            raise
+            app.logger.error("Multiple results found on what should be unique email %r", email)
 
         except NoResultFound:
             app.logger.info("Attempt to login with unknown email %r", email)
 
-    return flask.render_template('login.html', form=form, returnto=returnto)
+    return flask.render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
