@@ -1,7 +1,8 @@
 #!env/bin/python3
 
-import pytest
-debug_f = "debug_out"
+# pylint: disable=R,C,W; refactoring, convention, warnings
+
+import pytest # pylint: disable=import-error
 
 @pytest.fixture(scope="module")
 def collegejump():
@@ -31,29 +32,16 @@ class TestCollegeJUMP():
 
     def test_http_index(self, collegejump, app):
         base_url = 'http://localhost:8088'
-        d = open(debug_f, 'a')
         x = app.get(base_url)
-        d.write("test_http_index\n")
-        d.write(str(x))
-        d.close()
         assert(x.status_code == 200) or (x.status_code == 301)
 
     '''
     Test the rest of the urls via HTTP response codes.
     Errs out when one of the response codes isn't 200 (OK)
-    For debug info check file 'debug_out' off the main directory.
     '''
     def test_http_site(self, collegejump, app):
-        d = open(debug_f, 'a')
-        d.write("test_http_site\n")
-        #add urls here as needed
         url_list = ['/announcement', '/calendar']
         base_url = 'http://localhost:8088/'
         for u in url_list:
-            #d.write(u + '\n')
             x = app.get(u)
-            #d.write(str(x) + '\n')
-            #if(x.status_code != 200):
-                #d.write("test broke on url=" + u)
             assert(x.status_code == 200) or (x.status_code == 301)
-        d.close()
