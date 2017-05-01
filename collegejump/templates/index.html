@@ -24,9 +24,18 @@
     <code>SETUP_KEY</code> here, which you can find in the console logs on the
     server hosting this site.
   </p>
-  <form method="GET" action="{{ url_for('setup_page') }}">
-      <input name="key" placeholder="SETUP_KEY" type="text" class="form-control"/>
-      <input type="submit" class="form-control"/>
+  <form method="GET" action="{{ url_for('setup_page') }}" class="row">
+    <div class="form-group col-xs-12 col-sm-6">
+      <input name="key"
+             type="text"
+             required
+             pattern="[a-fA-F0-9]{32}" {# SETUP_KEY is 8 bytes, hex encoded #}
+             placeholder="SETUP_KEY"
+             class="form-control"/>
+    </div>
+    <div class="form-group col-xs-12 col-sm-6">
+      <input type="submit" class="form-control btn btn-primary"/>
+    </div>
   </form>
 </div>
 {%- endif %}
