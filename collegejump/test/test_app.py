@@ -44,6 +44,25 @@ class TestCollegeJUMP():
             x = client.get(u)
             assert(x.status_code == 200) or (x.status_code == 301)
 
+
+class TestSetupProcess():
+    # This must run before one which succeeds, because after that, /setup is no
+    # longer accessible.
+    def test_setup_wrong_key(self, client):
+        '''Fail to create an admin user on `/setup` with the wrong key'''
+        details = {'name': 'Setup Administrator',
+                   'email': 'setup@email.com',
+                   'password': 'setup password'}
+
+        setup_key = 'phony_setup_key'
+        setup_rv = client.post('/setup', data=dict(
+            setup_key=setup_key,
+            name=details['name'],
+            email=details['email'],
+            password=details['password']), follow_redirects=True)
+
+        assert setup_rv.status_code == 401
+
     def test_setup_key(self, collegejump, client):
         '''Create an admin user with `ADMIN_DETAILS` credentials using the SETUP_KEY.'''
         details = {'name': 'Setup Administrator',
@@ -66,3 +85,8 @@ class TestCollegeJUMP():
         assert logout_rv.status_code == 200
 
         # TODO: Try to log back in as the user
+
+    def test_setup_already_done(self, client):
+        '''Fail to access /setup with 404 after creation.'''
+        setup_rv = client.get('/setup', follow_redirects=True)
+        assert setup_rv.status_code == 404
