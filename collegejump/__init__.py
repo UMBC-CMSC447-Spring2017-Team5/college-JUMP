@@ -47,7 +47,7 @@ def prepare_after_init():
 
     # If there are no admins in the database, create and store SETUP_KEY for
     # creating the first admin.
-    if models.User.query.filter(models.User.admin is True).count() == 0:
+    if models.User.query.filter_by(admin=True).count() == 0:
         app.config['SETUP_KEY'] = binascii.hexlify(os.urandom(16)).decode('utf-8')
         app.logger.info("No admins in database, created setup key: %s",
                         app.config['SETUP_KEY'])
