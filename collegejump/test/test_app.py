@@ -42,6 +42,7 @@ class TestCollegeJUMP():
     Errs out when one of the response codes isn't 200 (OK)
     For debug info check file 'debug_out' off the main directory.
     '''
+    @pytest.mark.xfail(reason="#78")
     def test_http_site(self, collegejump, app):
         d = open(debug_f, 'a')
         d.write("test_http_site\n")
