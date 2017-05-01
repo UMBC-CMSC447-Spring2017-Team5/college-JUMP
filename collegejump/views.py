@@ -186,7 +186,7 @@ def edit_semester_page(semester_id=None):
     # If POSTing a valid form, apply the changes.
    # if form.validate_on_submit() and form.submit.data is True:
     if form.validate_on_submit() and (form.submit.data is True or
-                                      form.add_week.data is True) :
+                                      form.add_week.data is True):
         form.weeks.append_entry()
         semester.name = form.name.data
         semester.order = form.order.data
