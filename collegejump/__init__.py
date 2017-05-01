@@ -35,6 +35,9 @@ except ImportError:
 # Make the version easily accessible
 app.config['VERSION'] = __version__
 
+# Make a random SECRET_KEY. See #26.
+app.config['SECRET_KEY'] = binascii.hexlify(os.urandom(32)).decode('utf-8')
+
 # Set SQLAlchemy options that'll never change
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
