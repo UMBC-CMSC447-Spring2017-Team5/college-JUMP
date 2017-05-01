@@ -1,5 +1,5 @@
 {% extends "bootstrap/base.html" %}
-{% import "_util.html" as util %}
+{% import "bootstrap/utils.html" as utils %}
 
 {% block metas %}
 {{ super() }}
@@ -90,9 +90,7 @@
 
   <div class="container" onclick="closeNav();">
     {% block messages %}
-      {% for flask_alert in get_flashed_messages(with_categories=True) %}
-      {{util.alert(flask_alert)}}
-      {% endfor %}
+      {{ utils.flashed_messages(dismissible=True) }}
     {% endblock messages %}
     {% block content -%}
     {%- endblock content %}
