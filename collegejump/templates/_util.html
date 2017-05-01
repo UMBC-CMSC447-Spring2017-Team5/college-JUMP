@@ -12,10 +12,11 @@
 {%- macro alert(flask_alert) %}
 {%- with category, message = flask_alert %}
 {%- with text_header, level = alert_levels[category] %}
-<div class="alert alert-{{ level }}">
+<div class="alert alert-{{ level }} alert-dismissable fade in">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <strong>{{ text_header }}!</strong>
-  {{ message }}
+  {{ message -}}
 </div>
-{%- endwith %}
-{%- endwith %}
+{%- endwith -%}
+{%- endwith -%}
 {%- endmacro %}

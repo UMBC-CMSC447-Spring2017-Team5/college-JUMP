@@ -49,6 +49,7 @@ def login_page():
                 success = login_user(user)
                 if success:
                     app.logger.info("Successful login by %r", user)
+                    flask.flash('Login successful.', 'success')
                     return form.redirect()
                 else:
                     # If the login failed here, it's not because of the
