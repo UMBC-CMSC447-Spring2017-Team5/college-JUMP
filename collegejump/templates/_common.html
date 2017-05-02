@@ -1,5 +1,5 @@
 
-{% macro announcement(announcement, link=True, edit_link=False, form_shim=False) %}
+{% macro announcement(announcement, link=True, edit_link=False, form_shim=False, smalltext=None) %}
 
 {% if form_shim %} {# Shim the passed form to pretend it's an announcement. #}
   {% set announcement = {
@@ -18,8 +18,10 @@
         {%- else %}
           {{- announcement.title -}}
         {%- endif %}
-        {% if not form_shim %}
         <small>
+          {% if smalltext %}
+          {{ smalltext }}
+          {% else %}
           by {{ announcement.author.name }}
           on {{ announcement.timestamp.strftime("%B %d, %Y") }}
           {%- if edit_link %}
@@ -28,7 +30,7 @@
             </a>
           {%- endif %}
         </small>
-        {% endif %} {# if not form_shim #}
+        {% endif %} {# if smalltext #}
     </h3>
   </div>
   <div class="panel-body">

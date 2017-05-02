@@ -7,6 +7,8 @@ import sys
 
 import werkzeug
 
+GCAL_LINK = 'https://calendar.google.com/calendar/embed?src=umbc.edu_p0a471t6hmiam37dqk97kgefqs%40group.calendar.google.com&ctz=America/New_York'
+
 def main(args):
     # We cannot import app outside of this function, to avoid circular imports.
     from collegejump import app, init_app, __version__
@@ -26,6 +28,9 @@ def main(args):
     app.config["VERSION"] = __version__
 
     app.secret_key = os.urandom(24)
+
+    if args.gcal:
+        app.config['COLLEGEJUMP_GCAL_LINK'] = args.gcal
 
     # If the application is prefixed, such as behind a web proxy, then we need
     # middleware to rewrite urls. Otherwise, do no such rewriting.
@@ -54,6 +59,8 @@ def parse(argv):
     parser.add_argument('--port', default=8088, type=int)
     parser.add_argument('--prefix', default=None)
     parser.add_argument('--db', default='local.db')
+    parser.add_argument('--gcal', default=GCAL_LINK)
+
     parser.add_argument('--debug', action='store_true', default=True)
     parser.add_argument('--version', action='store_true')
 
