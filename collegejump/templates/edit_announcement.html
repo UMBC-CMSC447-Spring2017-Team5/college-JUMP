@@ -1,36 +1,31 @@
 {% extends "theme.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
-{% block head %}
-{{ super() }}
-<title>Announcement</title>
-{% endblock %}
+{% block title %} Announcement {% endblock %}
 
 {% block content %}
-<h1>  Hello, world!</h2>
-</h1> This is the College JUMP Announcements Creation/Edit Page </h2>
 
-<form method="POST"
-      action="{{ url_for("edit_announcement_page", announcement_id=announcement_id) }}"
-      />
-  {{ form.csrf_token }}
-  <div class="form-group">
-    {{ author.name }}
-    {{ form.title }} <br/>
-    {{ form.content(rows="20", cols="80") }}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    {{ 'New' if announcement_id == None else 'Edit' }} Announcement
   </div>
-  {{ form.submit(class="btn btn-primary") }}
-  {{ form.preview(class="btn") }}
-</form>
-
-{% if form.errors %}
-<div>
-  {{ form.errors }}
+  <div class="panel-body">
+    {{ wtf.quick_form(form, method="POST",
+		      action=url_for("edit_announcement_page", announcement_id=announcement_id),
+		      form_type="horizontal",
+		      button_map={"submit": "primary"}) }}
+  </div>
 </div>
-{% endif %}
 
 {% if form.content.data %}
-<h1>Preview</h1>
-{{ form.content.data | markdown }}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    {{ form.title.data }}
+  </div>
+  <div class="panel-body">
+    {{ form.content.data | markdown }}
+  </div>
+</div>
 {% endif %}
 
 {% endblock %}
