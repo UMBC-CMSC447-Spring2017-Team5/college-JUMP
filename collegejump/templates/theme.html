@@ -6,11 +6,11 @@
 <meta charset="utf-8"/>
 {% endblock %}
 
-{% block static %}
+{% block styles %}
 {{ super() }}
 <!-- Main Css stylesheet for pages-->
 <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}" />
-{% endblock %}
+{% endblock styles %}
 
 {% block body -%}
   {% block navbar %}
@@ -88,7 +88,7 @@
   </div>
   {%- endblock sidenav %}
 
-  <div class="container" onclick="closeNav();">
+  <div class="container">
     {% block messages %}
       {{ utils.flashed_messages(dismissible=True) }}
     {% endblock messages %}
@@ -96,12 +96,14 @@
     {%- endblock content %}
   </div>
 
-  <footer class="footer"  onclick="closeNav()">
+  <footer class="footer">
     <div class="container">
       {% block footer %}
-      <p class="text-muted">
-	{{ config.VERSION }}
-      </p>
+      <div class="text-muted">
+        <a href="https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP">
+          {{ config.VERSION }}
+        </a>
+      </div>
       {% endblock %}
     </div>
   </footer>

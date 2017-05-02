@@ -4,25 +4,32 @@ html {
   min-height: 100%;
 }
 
+body {
+  margin-bottom: 60px;
+}
 
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
   height: 60px;
   background-color: #f5f5f5;
 }
 
+.footer > .container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
 
-body {
-     padding-top: 65px;
-    font-family: "Georgia";
-    font-size: 20px;
-    text-align: left;
-    margin-bottom: 60px;
-    font-family: "Lato", sans-serif;
-    transition: background-color .5s;
+.footer > .container > * {
+  margin: 20px 0;
+}
+
+.vertical-align {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .sidenav {
