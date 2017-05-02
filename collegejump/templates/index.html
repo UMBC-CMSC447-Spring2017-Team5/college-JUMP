@@ -1,9 +1,7 @@
 {% extends "theme.html" %}
+{% import "_common.html" as common %}
 
-{% block head %}
-{{ super() }}
-<title>College JUMP Front page</title>
-{% endblock %}
+{% block title %} College JUMP </title> {% endblock %}
 
 {% block content %}
 {{ super() }}
@@ -40,19 +38,12 @@
 </div>
 {%- endif %}
 
-<h3>Announcements</h3>
-
-<ul>
-  {% for announcement in announcements %}
-  <li>
-    <div>
-      <h4>{{ announcement.title }}</h4>
-      <h5>{{ announcement.author.name }}</h5>
-
-      {{ announcement.content | markdown}}
-    </div>
-  </li>
-  {% endfor %}
-</ul>
+{% for announcement in announcements %}
+  {{ common.announcement(announcement, link=True, edit_link=current_user.admin) }}
+{% else %} {# If there are no announcements #}
+  <p class="text-muted">
+  No announcements to show.
+  </p>
+{% endfor %}
 
 {% endblock %}

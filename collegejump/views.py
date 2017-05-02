@@ -143,9 +143,12 @@ def edit_announcement_page(announcement_id=None):
         announcement.content = form.content.data
         # If the announcement is brand new, add it to the session.
         if new_announcement:
+            flask.flash('Announcement posted successfully!', 'success')
             app.db.session.add(announcement)
+        else:
+            flask.flash('Announcement updated successfully!', 'success')
         app.db.session.commit()
-        return flask.redirect(flask.url_for('announcement_page', announcement_id=announcement.id))
+        return flask.redirect(flask.url_for('front_page'))
 
     # Otherwise, if we're doing the GET method, fill the form with the original
     # data.

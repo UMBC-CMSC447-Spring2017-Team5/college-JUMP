@@ -1,0 +1,39 @@
+
+{% macro announcement(announcement, link=True, edit_link=False, form_shim=False) %}
+
+{% if form_shim %} {# Shim the passed form to pretend it's an announcement. #}
+  {% set announcement = {
+    'title': announcement.title.data,
+    'content': announcement.content.data
+  }%}
+{% endif %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>
+        {%- if link and not form_shim %}
+          <a href="{{ url_for("announcement_page", announcement_id=announcement.id) }}">
+            {{- announcement.title -}}
+          </a>
+        {%- else %}
+          {{- announcement.title -}}
+        {%- endif %}
+        {% if not form_shim %}
+        <small>
+          by {{ announcement.author.name }}
+          on {{ announcement.timestamp.strftime("%B %d, %Y") }}
+          {%- if edit_link %}
+            <a href="{{ url_for("edit_announcement_page", announcement_id=announcement.id) }}">
+              Edit
+            </a>
+          {%- endif %}
+        </small>
+        {% endif %} {# if not form_shim #}
+    </h3>
+  </div>
+  <div class="panel-body">
+    {{ announcement.content | markdown }}
+  </div>
+</div>
+
+{% endmacro %}

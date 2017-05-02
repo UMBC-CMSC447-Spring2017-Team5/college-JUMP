@@ -1,5 +1,6 @@
 {% extends "theme.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "_common.html" as common %}
 
 {% block title %} Announcement {% endblock %}
 
@@ -17,15 +18,6 @@
   </div>
 </div>
 
-{% if form.content.data %}
-<div class="panel panel-default">
-  <div class="panel-heading">
-    {{ form.title.data }}
-  </div>
-  <div class="panel-body">
-    {{ form.content.data | markdown }}
-  </div>
-</div>
-{% endif %}
+{{ common.announcement(form, link=False, edit_link=False, form_shim=True) }}
 
 {% endblock %}
