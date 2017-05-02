@@ -75,10 +75,10 @@ def logout_page():
     logout_user()
     return flask.redirect(flask.url_for('front_page'))
 
-@app.route('/account_settings/<int:user_id>', methods=['GET', 'POST'])
+@app.route('/account/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def account_settings_page(user_id):
-
+    # Unless the user is editing their own account, or is an admin, deny access.
     if not(current_user.id == user_id or current_user.admin):
         flask.abort(403)
 
@@ -86,23 +86,26 @@ def account_settings_page(user_id):
     # inform the defaults.
     user = models.User.query.get(user_id)
 
-    delete_form = forms.UserDeleteForm()
     form = forms.UserInfoForm(
         name=user.name,
         email=user.email,
+        admin=user.admin,
         semesters_enrolled=[s.id for s in user.semesters])
     # Populate semester data in the form. This is separate from the initializer
     # because it requires a database query.
     form.populate_semesters()
 
-    if delete_form.validate_on_submit():
-        if delete_form.delete.data:
-            # Retrieve the user for logging, then delete it.
-            app.db.session.delete(user)
-            app.db.session.commit()
-            app.logger.info("Deleted user %r from the database", user)
-            return flask.redirect('front_page')
+    # We check if the user is to be deleted. For this, we don't yet validate the
+    # form, because not all of the fields need to be valid.
+    if flask.request.method == 'POST' and form.delete.data:
+        # Retrieve the user for logging, then delete it.
+        app.db.session.delete(user)
+        app.db.session.commit()
+        app.logger.info("Deleted user %r from the database", user)
+        flask.flash("Deleted user '{}'".format(user.email), 'success')
+        return flask.redirect(flask.url_for('front_page'))
 
+    # Otherwise, we update the user information.
     if form.validate_on_submit():
         user.name = form.name.data
         user.email = form.email.data.lower()
@@ -112,12 +115,12 @@ def account_settings_page(user_id):
         user.semesters = list(form.get_semesters_enrolled())
 
         app.db.session.commit()
-        app.logger.info("Updated user %r in the database", user)
+        app.logger.info("Updated user %r", user)
+        flask.flash("Updated user '{}'".format(user.email))
         return flask.redirect(flask.url_for('account_settings_page',
                                             user_id=user_id))
 
-    return flask.render_template('account_settings.html', user_id=user_id,
-                                 user=user, form=form, deleteForm=delete_form)
+    return flask.render_template('account_settings.html', user=user, form=form)
 
 
 

@@ -1,4 +1,5 @@
 {% extends "theme.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block head %}
 {{ super() }}
@@ -6,54 +7,17 @@
 {% endblock %}
 
 {% block content %}
- {% if current_user.admin or current_user.id==user.id %}
-<div class="form-group">
-  {{ user.name }}
-  <br>
-  <br>
-  <form method="POST" action="{{ url_for("account_settings_page",user_id=user.id, user=user) }}">
-  {{ form.csrf_token }}
-  <div>
-    {{ form.name.label }} {{ form.name(class_="form-control") }}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>{{ user.name }}</h3>
   </div>
-  <div>
-    {{ form.email.label }} {{ form.email(class_="form-control") }}
+  <div class="panel-body">
+    {{ wtf.quick_form(form, method="POST",
+                      action=url_for("account_settings_page", user_id=user.id),
+                      form_type='horizontal',
+                      button_map={'submit': 'primary', 'delete': 'danger'}) }}
   </div>
-  <div>
-    {{ form.password.label }} {{ form.password(class_="form-control") }}
-  </div>
-
-   {{user.name}} is enrolled in the following semesters:
-   <ul>
-     {% for semester in user.semesters %}
-     <li>{{semester.name}}</li>
-     {% endfor %}
-   </ul>
-   <br>
-   <br>
-
-
-    Assign {{user.name}} to some semester(s). <br/>
-    {{ form.semesters_enrolled() }}
-   </label>
-   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>  
-</form>
-
-{% if form.errors %} {{ form.errors }} {% endif %}
- <br>
- <br>
-
-  <form method="POST" action="{{ url_for("account_settings_page",user_id=user.id, user=user) }}">
-  {{ deleteForm.csrf_token }}
-  <div>
-    {{ deleteForm.delete.label }} {{ deleteForm.delete(class_="form-control") }}
-  </div>
-   <button type="submit" class="btn btn-danger">Delete {{user.name}} </button>
-  <input type=hidden value="{{ redirectto or '' }}" name=redirectto>
-</form> 
-
 </div>
-{% endif %}
+
 {% endblock %}

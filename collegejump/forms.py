@@ -76,6 +76,9 @@ class UserInfoForm(FlaskForm):
     # The choices need to be updated before rendering.
     semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int)
 
+    submit = fields.SubmitField('Submit')
+    delete = fields.SubmitField('Delete')
+
     def populate_semesters(self):
         """Populate options for semester enrollment. Must be called after instantiation and before
         rendering.
@@ -113,9 +116,6 @@ class FirstSetupUserInfoForm(UserInfoForm):
             # comparison by hash.
             raise ValidationError('Provided SETUP_KEY does not match application SETUP_KEY')
 
-
-class UserDeleteForm(FlaskForm):
-    delete = fields.BooleanField('Mark account for deletion?')
 
 class AnnouncementForm(FlaskForm):
     title = fields.StringField('Title', [
