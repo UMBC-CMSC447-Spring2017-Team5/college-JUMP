@@ -7,6 +7,7 @@ import sys
 
 import werkzeug
 
+# pylint: disable=line-too-long
 GCAL_LINK = 'https://calendar.google.com/calendar/embed?src=umbc.edu_p0a471t6hmiam37dqk97kgefqs%40group.calendar.google.com&ctz=America/New_York'
 
 def main(args):
