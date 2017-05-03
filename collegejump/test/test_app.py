@@ -47,7 +47,7 @@ class TestCollegeJUMP():
     # Tests that a non-logged in user cannot access certain pages
     #@pytest.mark.xfail(reason="#81")   # '/week/0' should require login
     def test_requires_login(self, client):
-         url_list = ['/logout', '/account_settings/0', '/announcement/new', 
+         url_list = ['/logout', '/account/0', '/announcement/new', 
          '/announcement/0/edit', '/syllabus', '/syllabus/semester/new', '/syllabus/semester/0',
          '/syllabus/semester/0/week/0', '/edit_accounts', '/database', '/database/export']
          for u in url_list:
