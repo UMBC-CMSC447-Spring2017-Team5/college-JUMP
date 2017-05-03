@@ -313,7 +313,7 @@ def announcement_page(announcement_id=None):
     return flask.render_template('all_announcements.html', announcements=announcements)
 
 
-@app.route('/edit_accounts', methods=['GET', 'POST'])
+@app.route('/account/all', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_accounts_page():

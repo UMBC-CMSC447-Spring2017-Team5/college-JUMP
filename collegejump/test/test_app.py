@@ -49,7 +49,7 @@ class TestCollegeJUMP():
     def test_requires_login(self, client):
          url_list = ['/logout', '/account/0', '/announcement/new', 
          '/announcement/0/edit', '/syllabus', '/syllabus/semester/new', '/syllabus/semester/0',
-         '/syllabus/semester/0/week/0', '/edit_accounts', '/database', '/database/export']
+         '/syllabus/semester/0/week/0', '/account/all', '/database', '/database/export']
          for u in url_list:
            x = client.get(u, follow_redirects=True)
            assert bytes("Login", encoding='UTF-8') in x.data
