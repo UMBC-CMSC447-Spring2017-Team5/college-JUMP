@@ -55,7 +55,7 @@
 
 	    <!-- Links for any authenticated user -->
 	    {% if current_user.is_authenticated %}
-	    <li><a href="{{ url_for("account_settings_page", user_id=current_user.id, user=current_user) }}">Account Settings</a></li>
+	    <li><a href="{{ url_for("account_settings_page", user_id=current_user.id) }}">Account Settings</a></li>
 	    {% endif %}
 	    <!-- -->
 
