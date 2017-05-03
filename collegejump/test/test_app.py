@@ -111,7 +111,7 @@ class TestUser():
 
 
     def test_create_student_user(self, client):
-      x = client.post('/edit_accounts', data=dict(
+      x = client.post('/account/all', data=dict(
       name='Katherine',
       email='katherine@email.com',
       admin=False,
@@ -124,7 +124,7 @@ class TestUser():
       assert x.status_code == 200
 
     def test_create_user_invalid_email(self, client):
-      x = client.post('/edit_accounts', data=dict(
+      x = client.post('/account/all', data=dict(
       name='Brad',
       email='brad',
       admin=False,
