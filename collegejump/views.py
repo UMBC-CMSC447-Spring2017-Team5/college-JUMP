@@ -2,7 +2,7 @@ import datetime
 import os
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app, forms, models, database, admin_required
@@ -164,11 +164,19 @@ def edit_announcement_page(announcement_id=None):
                                  author=announcement.author,
                                  form=form)
 
-@app.route('/syllabus/')
+@app.route('/syllabus/', methods=["GET", "POST"])
 @admin_required
 def syllabus_page():
+    form = forms.SemesterForm()
+    if form.validate_on_submit():
+        semester = models.Semester(form.name.data, form.order.data)
+        app.db.session.add(semester)
+        app.db.session.commit()
+
+        return flask.redirect(flask.url_for('syllabus_page'))
+
     all_semesters = models.Semester.query.order_by('order')
-    return flask.render_template("syllabus_root.html", all_semesters=all_semesters)
+    return flask.render_template("syllabus_root.html", all_semesters=all_semesters, form=form)
 
 @app.route('/syllabus/semester/new', methods=["GET", "POST"])
 @app.route('/syllabus/semester/<int:semester_id>', methods=["GET", "POST"])
