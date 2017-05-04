@@ -307,7 +307,7 @@ def announcement_page(announcement_id=None):
 @login_required
 @admin_required
 def edit_accounts_page():
-    form = forms.UserInfoForm()
+    form = forms.UserInfoAdminForm()
 
     if form.validate_on_submit():
         user = form.to_user_model()
