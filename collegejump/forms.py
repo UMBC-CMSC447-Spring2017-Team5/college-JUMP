@@ -60,13 +60,21 @@ class UserInfoForm(FlaskForm):
         validators.required(),
         validators.length(max=models.User.NAME_MAX_LENGTH)])
 
+    password = fields.PasswordField('Password')
+    submit = fields.SubmitField('Submit')
+
+    def to_user_model(self):
+        user = models.User(self.password.data, self.name.data)  
+        return user
+        
+class UserInfoAdminForm(UserInfoForm):
+    
     email = fields.StringField('Email Address', [
         validators.required(),
         validators.Email(),
         validators.length(max=models.User.EMAIL_MAX_LENGTH)])
-
+        
     admin = fields.BooleanField('Is Administrator Account?')
-    password = fields.PasswordField('Password')
 
     # List semesters for the student to be enrolled in, with multiple allowed.
     # The choices need to be updated before rendering.

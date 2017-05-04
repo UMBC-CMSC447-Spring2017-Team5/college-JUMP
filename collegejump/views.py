@@ -75,25 +75,30 @@ def logout_page():
     logout_user()
     return flask.redirect(flask.url_for('front_page'))
 
-@app.route('/account/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def account_settings_page(user_id):
+    
     # Unless the user is editing their own account, or is an admin, deny access.
-    if not(current_user.id == user_id or current_user.admin):
-        flask.abort(403)
-
+    if current_user.admin:
     # Load the user up here before we process the form so that we can use it to
-    # inform the defaults.
-    user = models.User.query.get(user_id)
-
-    form = forms.UserInfoForm(
-        name=user.name,
-        email=user.email,
-        admin=user.admin,
-        semesters_enrolled=[s.id for s in user.semesters])
+        user = models.User.query.get(user_id)
+        
     # Populate semester data in the form. This is separate from the initializer
     # because it requires a database query.
-    form.populate_semesters()
+        form = forms.UserInfoAdminForm(forms.UserInfoForm(
+                                 name=user.name),
+                                 email=user.email,
+                                 admin=user.admin,
+                                 semesters_enrolled=[s.id for s 
+                                                     in user.semesters])
+        form.populate_semesters()
+        
+    elif current_user.id == user_id:
+    # Load the user up here before we process the form so that we can use it to
+       user = models.User.query.get(user_id)
+       form = forms.UserInfoForm(name=user.name)
+    else:
+        return flask.abort(403)
 
     # We check if the user is to be deleted. For this, we don't yet validate the
     # form, because not all of the fields need to be valid.
@@ -108,13 +113,15 @@ def account_settings_page(user_id):
     # Otherwise, we update the user information.
     if form.validate_on_submit():
         user.name = form.name.data
-        user.email = form.email.data.lower()
         if form.password.data: # non-None, non-empty
             user.password = form.password.data
+            
+        if current_user.admin:
+            user.email = form.email.data.lower()
+            user.admin = form.admin.data
+            user.semesters = list(form.get_semesters_enrolled())
 
-        user.semesters = list(form.get_semesters_enrolled())
-
-        app.db.session.commit()
+        app.db.session.commit() 
         app.logger.info("Updated user %r", user)
         flask.flash("Updated user '{}'".format(user.email))
         return flask.redirect(flask.url_for('account_settings_page',
