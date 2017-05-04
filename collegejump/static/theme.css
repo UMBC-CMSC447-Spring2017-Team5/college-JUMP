@@ -45,10 +45,10 @@ nav .navbar {
 }
 
 #syllabus-nav {
-    height: 100%;
+    height: 90%;
     width: 200px;
     position: absolute;
-    top: 0;
+    top: 51px;
     left: 0;
     background-color: #efefef;
     padding: 8px;
