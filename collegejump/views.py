@@ -75,34 +75,34 @@ def logout_page():
     logout_user()
     return flask.redirect(flask.url_for('front_page'))
 
+@app.route('/account/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def account_settings_page(user_id):
-    
-    # Unless the user is editing their own account, or is an admin, deny access.
+    # Load the user up here before we process the form so that we can use it to
+    user = models.User.query.get(user_id)
+
+    # Unless the user is editing their own account, or is an admin, deny
+    # access. If the user is an admin, serve them a complete form with more
+    # fields, otherwise, give them a limited form.
     if current_user.admin:
-    # Load the user up here before we process the form so that we can use it to
-        user = models.User.query.get(user_id)
-        
-    # Populate semester data in the form. This is separate from the initializer
-    # because it requires a database query.
-        form = forms.UserInfoAdminForm(forms.UserInfoForm(
-                                 name=user.name),
-                                 email=user.email,
-                                 admin=user.admin,
-                                 semesters_enrolled=[s.id for s 
-                                                     in user.semesters])
+        # Populate semester data in the form. This is separate from the initializer
+        # because it requires a database query.
+        form = forms.UserInfoAdminForm(name=user.name,
+                                       email=user.email,
+                                       admin=user.admin,
+                                       semesters_enrolled=[s.id for s in user.semesters])
         form.populate_semesters()
-        
+
     elif current_user.id == user_id:
-    # Load the user up here before we process the form so that we can use it to
-       user = models.User.query.get(user_id)
-       form = forms.UserInfoForm(name=user.name)
+        form = forms.UserInfoForm(name=user.name)
     else:
         return flask.abort(403)
 
     # We check if the user is to be deleted. For this, we don't yet validate the
     # form, because not all of the fields need to be valid.
-    if flask.request.method == 'POST' and form.delete.data:
+    if flask.request.method == 'POST' \
+            and isinstance(form, forms.UserInfoAdminForm) \
+            and form.delete.data:
         # Retrieve the user for logging, then delete it.
         app.db.session.delete(user)
         app.db.session.commit()
@@ -115,21 +115,19 @@ def account_settings_page(user_id):
         user.name = form.name.data
         if form.password.data: # non-None, non-empty
             user.password = form.password.data
-            
-        if current_user.admin:
+
+        if isinstance(form, forms.UserInfoAdminForm):
             user.email = form.email.data.lower()
             user.admin = form.admin.data
             user.semesters = list(form.get_semesters_enrolled())
 
-        app.db.session.commit() 
+        app.db.session.commit()
         app.logger.info("Updated user %r", user)
         flask.flash("Updated user '{}'".format(user.email))
         return flask.redirect(flask.url_for('account_settings_page',
                                             user_id=user_id))
 
     return flask.render_template('account_settings.html', user=user, form=form)
-
-
 
 @app.route('/announcement/new', methods=['GET', 'POST'])
 @app.route('/announcement/<int:announcement_id>/edit', methods=['GET', 'POST'])

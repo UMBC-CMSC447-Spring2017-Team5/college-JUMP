@@ -80,7 +80,6 @@ class UserInfoAdminForm(UserInfoForm):
     # The choices need to be updated before rendering.
     semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int)
 
-    submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
 
     def populate_semesters(self):
