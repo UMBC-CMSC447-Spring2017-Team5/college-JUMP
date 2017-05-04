@@ -56,7 +56,7 @@
 
 	    <!-- Links for any authenticated user -->
 	    {% if current_user.is_authenticated %}
-	    <li><a href="{{ url_for("account_settings_page", user_id=current_user.id, user=current_user) }}">Account Settings</a></li>
+	    <li><a href="{{ url_for("account_settings_page", user_id=current_user.id) }}">Account Settings</a></li>
 	    {% endif %}
 	    <!-- -->
 
@@ -78,42 +78,39 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-  {% endblock %}
-  
- <div class="body">
-  <div class="row">
-    <nav class="col-sm-2">
-      <ul class="nav nav-pills nav-stacked"  data-spy="affix";data-offset-top="205"; >
-      
-       {% if current_user.is_authenticated %}
-        <li><h4>Assignments</h4></li>
+  {% endblock navbar %}
+
+  {% block sidenav %}
+  <nav id="syllabus-nav">
+    <ul class="nav nav-pills nav-stacked">
+      {% if current_user.is_authenticated %}
         {% for semester in current_user.semesters %}
-        <li><h5>{{ semester.name }}</h5></li>
+          <li><h5>{{ semester.name }}</h5></li>
 
-        {% for week in semester.weeks %}
-        <li><a href="{{ url_for('edit_week_page',semester_id=week.semester_id,
-            week_num=week.week_num) }}"><h6>{{ week.header }}</h6></a></li>
+          {% for week in semester.weeks %}
+          <li>
+            <a href="{{ url_for('edit_week_page',
+                                semester_id=week.semester_id,
+                                week_num=week.week_num) }}">
+              {{ week.header }}
+            </a>
+          </li>
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+    </ul>
+  </nav>
+  {% endblock sidenav %}
 
-        {% endfor %}
-        <br>
-        {% endfor %}
-        {% endif %}
-      </ul>
-    </nav>
-    
-    <div class="col-sm-6">   
-    <div class="main content">
+  {% block maincontainer %}
+  <div class="container">
     {% block messages %}
-      {{ utils.flashed_messages(dismissible=True) }}
+    {{ utils.flashed_messages(dismissible=True) }}
     {% endblock messages %}
     {% block content -%}
     {%- endblock content %}
-    </div>
-    </div>
   </div>
-</div>
-
-
+  {% endblock maincontainer %}
 
   <footer class="footer">
     <div class="container">
@@ -127,6 +124,5 @@
     </div>
   </footer>
 
-  
 {%- endblock body %}
 
