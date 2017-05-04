@@ -178,83 +178,60 @@ def syllabus_page():
     all_semesters = models.Semester.query.order_by('order')
     return flask.render_template("syllabus_root.html", all_semesters=all_semesters, form=form)
 
-@app.route('/syllabus/semester/new', methods=["GET", "POST"])
 @app.route('/syllabus/semester/<int:semester_id>', methods=["GET", "POST"])
 @admin_required
-def edit_semester_page(semester_id=None):
+def edit_semester_page(semester_id):
     """Edit the syllabus for a whole semester."""
-    form = forms.SemesterForm()
+    # pylint: disable=no-member
+    # Look the semester up by id, eagerly loading the weeks, so they can be
+    # displayed or changed without firing a bunch of extra queries.
+    semester = models.Semester.query\
+            .options(joinedload(models.Semester.weeks)) \
+            .get(semester_id)
 
-    # If we are loading an existing semester, look it up.
-    if semester_id:
-        # pylint: disable=no-member
-        # Look the semester up by id, eagerly loading the weeks, so they can be
-        # displayed or changed without firing a bunch of extra queries.
-        new_semester = False
-        semester = models.Semester.query\
-                .options(joinedload(models.Semester.weeks)) \
-                .get(semester_id)
+    semester_form = forms.SemesterForm(name=semester.name,
+                                       order=semester.order)
+    week_form = forms.WeekForm()
 
-    # Otherwise, create a new one to be filled with form data.
-    else:
-        new_semester = True
-        semester = models.Semester(None, None)
+    # If the delete button is pressed on the semester, delete it without
+    # validating the rest of the input.
+    if flask.request.method == 'POST' and semester_form.delete.data:
+        app.logger.info("Deleting %r", semester)
+        app.db.session.delete(semester)
+        app.db.session.commit()
+        flask.flash("Deleted semester '{}'".format(semester.name), 'success')
+        return flask.redirect(flask.url_for('syllabus_page'))
 
-    # If POSTing a valid form, apply the changes.
-   # if form.validate_on_submit() and form.submit.data is True:
-    if form.validate_on_submit() and (form.submit.data is True or
-                                      form.add_week.data is True):
-        form.weeks.append_entry()
-        semester.name = form.name.data
-        semester.order = form.order.data
-
-        # If the semester is new, add it to the session, because it is necessary
-        # to do so before creating weeks for it.
-        if new_semester is True:
-            app.logger.debug("Creating new semester %r", semester)
-            app.db.session.add(semester)
-
-        # Iterate through week information in the form, replacing existing weeks
-        # and adding new ones.
-
-        for i, week_form in enumerate(form.weeks):
-            # If there is already an existing week in the database, replace it.
-            if i < len(semester.weeks):
-                app.logger.debug("Replacing week %d in %r", i, semester)
-                semester.weeks[i].header = week_form.header.data
-                semester.weeks[i].intro = week_form.intro.data
-                semester.weeks[i].week_num = i + 1
-            # Otherwise, create one and add it to the semester.
-            else:
-                app.logger.debug("Creating week %d in %r", i, semester)
-                week = models.Week(semester.id, i + 1,
-                                   week_form.header.data, week_form.intro.data)
-                app.db.session.add(week)
-
+    # If POSTing a valid semester form, apply the changes.
+    if semester_form.validate_on_submit():
+        semester.name = semester_form.name.data
+        semester.order = semester_form.order.data
 
         # Commit at the end of processing the database.
         app.db.session.commit()
 
-        # If we're creating a new semester here, redirect to the permanent URL.
-        if new_semester is True:
-            return flask.redirect(flask.url_for('edit_semester_page', semester_id=semester.id))
+        # Redirect, so the page is loaded again by GET with changes made.
+        flask.flash("Updated semester '{}'".format(semester.name), 'success')
+        return flask.redirect(flask.url_for('edit_semester_page', semester_id=semester.id))
 
+    # If POSTing a valid new week, create it and attach it to this semester as
+    # the last week.
+    if week_form.validate_on_submit():
+        week = models.Week(semester_id, len(semester.weeks) + 1,
+                           week_form.header.data,
+                           week_form.intro.data)
+        app.logger.debug("Creating new week %r", week)
+        app.db.session.add(week)
+        app.db.session.commit()
+        app.logger.info("Creating %r", week)
+        flask.flash("Created week {} in semester '{}'".format(week.week_num, semester.name),
+                    'success')
+        return flask.redirect(flask.url_for('edit_semester_page', semester_id=semester.id))
 
-    # Whether or not we POSTed, render the template with changes applied.
-    # Pre-fill the form data, if it was cleared. Even if the form wasn't valid,
-    # submitted changes will still be rendered here.
-
-    form.name.data = form.name.data or semester.name
-    form.order.data = form.order.data or semester.order
-
-    # If we are populating the form for the first time, we fill it with Week
-    # forms matching the existing week information.
-    while len(form.weeks) < len(semester.weeks):
-        form.weeks.append_entry()
-        week_num = len(form.weeks)
-        form.weeks[week_num - 1].intro.data = semester.weeks[week_num - 1].intro
-        form.weeks[week_num - 1].header.data = semester.weeks[week_num - 1].header
-    return flask.render_template("semester.html", semester=semester, form=form)
+    return flask.render_template("semester.html",
+                                 semester=semester,
+                                 semester_form=semester_form,
+                                 week_form=week_form)
 
 @app.route('/syllabus/semester/<int:semester_id>/week/<int:week_num>', methods=["GET", "POST"])
 @admin_required

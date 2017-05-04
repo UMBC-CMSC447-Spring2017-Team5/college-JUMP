@@ -1,41 +1,51 @@
 {% extends "theme.html" %}
 
-{% block head %}
-{{ super() }}
-<title>Syllabus Overview</title>
-{% endblock %}
+{% block title %}{{ semester.name }}{% endblock %}
 
 {% block content %}
 
-<h1>{{ semester.name }}</h1>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>{{ semester.name }}</h3>
+  </div>
+  <div class="panel-body">
+    {% if semester.weeks %}
+    <div class="list-group">
+      {% for week in semester.weeks %}
+      <a class="list-group-item"
+         href="{{ url_for("edit_week_page", semester_id=semester.id, week_num=week.week_num) }}">
+        Week {{ week.week_num }}: {{ week.header }}
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">No weeks to show.</p>
+    {% endif %}
+  </div>
+</div>
 
-<h3>Weeks</h3>
-<ol>
-  {% for week in semester.weeks %}
-  <li>
-    <a href="{{ url_for('edit_week_page',
-                        semester_id=week.semester_id,
-                        week_num=week.week_num) }}">
-      {{ week.header }}
-    </a>
-  </li>
-  {% endfor %}
-</ol>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>Edit Semester</h3>
+  </div>
+  <div class="panel-body">
+    {{ wtf.quick_form(semester_form, method="POST",
+                      action=url_for("edit_semester_page", semester_id=semester.id),
+                      form_type="horizontal",
+                      button_map={"submit": "primary", "delete": "danger"}) }}
+  </div>
+</div>
 
-<form method="POST" action="{{ url_for("edit_semester_page", semester_id = semester.id) }}">
-  {{ form.csrf_token }}
-  {{ form.name() }} <br/>
-  {{ form.order() }} <br/>
- <div id="hide" style="display:none">
-  {{ form.weeks() }} <br/>
- </div>
-  {{ form.add_week() }}
-
-  {{ form.submit() }}
-</form>
-
-{% if form.errors %}
-{{ form.errors }}
-{% endif %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>New Week</h3>
+  </div>
+  <div class="panel-body">
+    {{ wtf.quick_form(week_form, method="POST",
+                      action=url_for("edit_semester_page", semester_id=semester.id),
+                      form_type="horizontal",
+                      button_map={"submit": "primary"}) }}
+  </div>
+</div>
 
 {% endblock %}
