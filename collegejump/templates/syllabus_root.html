@@ -8,18 +8,16 @@
     <h3>Semesters</h3>
   </div>
   <div class="panel-body">
-    {% if all_semesters %}
     <div class="list-group">
       {% for semester in all_semesters %}
       <a class="list-group-item"
          href="{{ url_for("edit_semester_page", semester_id=semester.id) }}">
         {{ semester.name }}
       </a>
+      {% else %}
+      <div class="text-muted">No semesters to show.</div>
       {% endfor %}
     </div>
-    {% else %}
-    <p class="text-muted">No semesters to show.</p>
-    {% endif %}
   </div>
 </div>
 
