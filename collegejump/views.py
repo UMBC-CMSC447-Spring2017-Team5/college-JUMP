@@ -334,6 +334,7 @@ def announcement_page(announcement_id=None):
 @admin_required
 def edit_accounts_page():
     form = forms.UserInfoAdminForm()
+    form.populate_semesters()
 
     if form.validate_on_submit():
         user = form.to_user_model()
