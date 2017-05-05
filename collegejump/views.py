@@ -347,6 +347,12 @@ def edit_accounts_page():
     return flask.render_template('edit_accounts.html', form=form,
                                  users=models.User.query.all())
 
+@app.route('/document/<int:document_id>')
+@login_required
+def document_page(document_id):
+    document = models.Document.query.get(document_id)
+    return flask.send_file(document.data, attachment_filename=document.name)
+
 @app.route('/database/', methods=['GET', 'POST'])
 @admin_required
 def database_page():
