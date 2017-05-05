@@ -100,8 +100,12 @@ class UserInfoAdminForm(UserInfoForm):
     def get_semesters_enrolled(self):
         return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
 
-class FirstSetupUserInfoForm(UserInfoForm):
-    setup_key = fields.HiddenField()
+class FirstSetupUserInfoForm(UserInfoAdminForm):
+    setup_key = fields.StringField('Setup Key', [
+        validators.required(),
+        validators.Regexp('[a-zA-Z0-9]{32}',
+                          message='Must resemble 4eb27b69ddc1d1b8866c0beb4de3d643'),
+    ])
 
     # pylint: disable=no-self-argument,no-self-use
     def validate_setup_key(form, field):

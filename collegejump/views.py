@@ -12,12 +12,37 @@ def send_static(path):
     return flask.send_from_directory('static', path)
 
 
-@app.route('/')
+@app.route('/', methods=["GET", "POST"])
 def front_page():
+
+    # If setup mode is happening, render a FirstSetupUserInfoForm.
+    if 'SETUP_KEY' in app.config:
+        setup_form = forms.FirstSetupUserInfoForm()
+    else:
+        setup_form = None
+
+
+    if setup_form and setup_form.validate_on_submit():
+        user = setup_form.to_user_model()
+        user.admin = True # A user created this way is always an admin
+
+        app.db.session.add(user)
+        app.db.session.commit()
+
+        # Now that the user is created, log it and delete the SETUP_KEY.
+        app.logger.info("Created user %r using SETUP_KEY, disabling SETUP_KEY", user)
+        del app.config['SETUP_KEY']
+
+        # Log the created user in automatically.
+        login_user(user)
+
+        return flask.redirect(flask.url_for("front_page"))
+
     announcements = models.Announcement.query\
             .order_by(models.Announcement.timestamp.desc()).limit(10)
     return flask.render_template('index.html',
-                                 announcements=announcements)
+                                 announcements=announcements,
+                                 setup_form=setup_form)
 
 
 @app.route('/calendar')
@@ -321,46 +346,6 @@ def edit_accounts_page():
 
     return flask.render_template('edit_accounts.html', form=form,
                                  users=models.User.query.all())
-
-@app.route('/setup', methods=['GET', 'POST'])
-def setup_page():
-    # If the SETUP_KEY isn't set in the config, it isn't first setup, and we
-    # should just pretend this page doesn't exist.
-    if 'SETUP_KEY' not in app.config:
-        flask.abort(404)
-
-    # Otherwise, continue trying to process the form. Checking of the SETUP_KEY
-    # is handled by the form automagically.
-    form = forms.FirstSetupUserInfoForm()
-    if form.validate_on_submit():
-        user = form.to_user_model()
-        user.admin = True # A user created this way is always an admin
-
-        app.db.session.add(user)
-        app.db.session.commit()
-
-        # Now that the user is created, log it and delete the SETUP_KEY.
-        app.logger.info("Created user %r using SETUP_KEY, disabling SETUP_KEY", user)
-        del app.config['SETUP_KEY']
-
-        # Log the created user in automatically.
-        login_user(user)
-
-        return flask.redirect(flask.url_for("front_page"))
-
-    # If the method was GET, pull `key` from the query parameters in to the
-    # form, to get included in the subsequent POST automatically.
-    if flask.request.method == 'GET':
-        form.setup_key.data = flask.request.args.get('key')
-        app.logger.debug("Filling setup form with key in query parameter: %r",
-                         form.setup_key.data)
-
-    # No matter what, check that what is now in the form parameter is correct,
-    # otherwise, show them nothing.
-    if form.setup_key.data != app.config['SETUP_KEY']:
-        flask.abort(401) # unauthorized
-
-    return flask.render_template('setup.html', form=form)
 
 @app.route('/database/', methods=['GET', 'POST'])
 @admin_required

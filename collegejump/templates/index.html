@@ -13,27 +13,19 @@
 {# If this is the first setup, meaning there are no admin users, prompt to enter
    the SETUP key from the logs. This directs to a form to create the first admin.
 #}
-{%- if config.SETUP_KEY %}
+{%- if setup_form %}
 <div class="jumbotron">
   <h1 class="display-2">First Setup</h1>
   <p>
-    If this is your first time running the College JUMP website, you will need
-    to begin by creating an Admin account. This can be done by entering the
-    <code>SETUP_KEY</code> here, which you can find in the console logs on the
-    server hosting this site.
+    If this is your first time running the College JUMP website, create an Admin
+    account here. To complete this form, you will need the
+    <code>SETUP_KEY</code>, which was printed in the console logs on the server
+    hosting this site.
   </p>
-  <form method="GET" action="{{ url_for('setup_page') }}" class="row">
-    <div class="form-group col-xs-12 col-sm-6">
-      <input name="key"
-             type="text"
-             required
-             pattern="[a-fA-F0-9]{32}" {# SETUP_KEY is 8 bytes, hex encoded #}
-             placeholder="SETUP_KEY"
-             class="form-control"/>
-    </div>
-    <div class="form-group col-xs-12 col-sm-6">
-      <input type="submit" class="form-control btn btn-primary"/>
-    </div>
+  {{ wtf.quick_form(setup_form, method="POST",
+                    action=url_for("front_page"),
+                    form_type="horizontal",
+                    button_map={"submit": "primary"}) }}
   </form>
 </div>
 {%- endif %}
