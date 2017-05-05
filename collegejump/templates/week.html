@@ -1,0 +1,10 @@
+{% extends "theme.html" %}
+{% import "_common.html" as common %}
+
+{% block title %}{{ week.header }}{% endblock %}
+
+{% block content %}
+
+{{ common.week(week) }}
+
+{% endblock %}

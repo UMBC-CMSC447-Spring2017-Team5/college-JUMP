@@ -382,7 +382,17 @@ def database_export_endpoint():
                            mimetype='application/zip')
 
 
-@app.route('/week/<int:week_number>')
-def week_page(week_number):
-    return flask.render_template('week_page.html',
-                                 week_number=week_number)
+@app.route('/semester/<int:semester_id>/week/<int:week_num>')
+@login_required
+def week_page(semester_id, week_num):
+    # We aren't given the week ID, just the semester ID and week number, so we
+    # look it up by those. The database guarantees that the pair is unique.
+    week = models.Week.query.filter_by(semester_id=semester_id,
+                                       week_num=week_num).one()
+
+    # Unless the user is an admin, ensure that the current user is assigned to
+    # the semester before we allow them to view it.
+    if (not current_user.admin) and (week.semester not in current_user.semesters):
+        return flask.abort(403)
+
+    return flask.render_template('week.html', week=week)
