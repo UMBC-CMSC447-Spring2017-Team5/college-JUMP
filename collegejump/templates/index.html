@@ -35,6 +35,9 @@
 {% else %} {# If there are no announcements #}
   <p class="text-muted">
   No announcements to show.
+  {%- if current_user.admin %}
+  <a href="{{ url_for("edit_announcement_page") }}">Write one?</a>
+  {%- endif %}
   </p>
 {% endfor %}
 
