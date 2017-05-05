@@ -39,3 +39,27 @@
 </div>
 
 {% endmacro %}
+
+{% macro week(week) %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>{{ week.header }}</h3>
+  </div>
+  <div class="panel-body">
+    <p class="text-primary">
+    {{ week.intro | markdown }}
+    </p>
+
+    <div class="row">
+      {% for document in week.documents %}
+      <a href="{{ url_for("document_page", document_id=document.id) }}"
+         class="col-xs-6 col-md-3">
+        {{ document.name }}
+      </a>
+      {% else %}
+      <p class="text-muted col-xs-12">No documents to show.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

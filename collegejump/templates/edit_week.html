@@ -1,46 +1,26 @@
 {% extends "theme.html" %}
+{% import "_common.html" as common %}
 
-{% block head %}
-{{ super() }}
-<title>Edit Week</title>
-{% endblock %}
+{% block title %}Edit {{ week.header }}{% endblock %}
 
 {% block content %}
 
-<h1>{{ week.semester.name }}</h1>
-<h2>Week {{ week.week_num }}</h2>
+<div class="panel panel-default">
 
-<h3>{{ week.header }}</h3>
+{{ common.week(week) }}
 
-{{ week.intro | markdown }}
-
-<h4>Documents</h4>
-<ul>
-  {% for document in week.documents %}
-  <li>{{document.name}}</li>
-  {% endfor %}
-</ul>
-
-{% block edit_form %}
-  {% if show_edit_options %}
-    <form method="POST"
-          enctype="multipart/form-data"
-          action="{{ url_for("edit_week_page",
-                             semester_id=week.semester_id,
-                             week_num=week.week_num) }}">
-      {{ form.csrf_token }}
-      {{ form.header() }} <br/>
-      {{ form.intro() }} <br/>
-      {{ form.new_document() }} <br/>
-
-      {{ form.submit() }}
-    </form>
-
-    {% if form.errors %}
-    {{ form.errors }}
-    {% endif %}
-
-  {% endif %}
-{% endblock %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Edit Week
+  </div>
+  <div class="panel-body">
+    {{ wtf.quick_form(form, method="POST",
+		      action=url_for("edit_week_page",
+                                     semester_id=week.semester_id,
+                                     week_num=week.week_num),
+		      form_type="horizontal",
+		      button_map={"submit": "primary"}) }}
+  </div>
+</div>
 
 {% endblock %}

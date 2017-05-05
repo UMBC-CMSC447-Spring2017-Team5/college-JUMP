@@ -300,6 +300,7 @@ def edit_week_page(semester_id, week_num):
 
         # If we submitted everything correctly, redirect to this page again to
         # refresh the form and all the data.
+        flask.flash("Updated week '{}'".format(week.header), 'success')
         return flask.redirect(flask.url_for('edit_week_page',
                                             semester_id=semester_id,
                                             week_num=week_num))

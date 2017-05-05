@@ -39,7 +39,8 @@ class WeekForm(FlaskForm):
         [validators.required(), validators.length(max=models.Week.HEADER_MAX_LENGTH)])
     intro = fields.StringField(
         'Intro',
-        [validators.required(), validators.length(max=models.Week.INTRO_MAX_LENGTH)])
+        [validators.required(), validators.length(max=models.Week.INTRO_MAX_LENGTH)],
+        widget=widgets.TextArea())
 
     new_document = FileField()
 
