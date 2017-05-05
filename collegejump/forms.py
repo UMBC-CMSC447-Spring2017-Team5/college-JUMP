@@ -45,6 +45,7 @@ class WeekForm(FlaskForm):
     new_document = FileField()
 
     submit = fields.SubmitField('Submit')
+    delete = fields.SubmitField('Delete')
 
 class SemesterForm(FlaskForm):
     """A form for filling out an entire semester's syllabus at once."""

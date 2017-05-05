@@ -219,9 +219,15 @@ def edit_semester_page(semester_id):
             .options(joinedload(models.Semester.weeks)) \
             .get(semester_id)
 
+    # Construct a form for editing the current semester.
     semester_form = forms.SemesterForm(name=semester.name,
                                        order=semester.order)
+
+    # Construct a form for making a new week in this semester. Because it is
+    # new, it doesn't need the delete button or file upload field.
     week_form = forms.WeekForm()
+    del week_form.delete
+    del week_form.new_document
 
     # If the delete button is pressed on the semester, delete it without
     # validating the rest of the input.
@@ -273,6 +279,23 @@ def edit_week_page(semester_id, week_num):
     # look it up by those. The database guarantees that the pair is unique.
     week = models.Week.query.filter_by(semester_id=semester_id,
                                        week_num=week_num).one()
+
+    # If the delete button was pressed, delete the week.
+    if flask.request.method == 'POST' and form.delete.data:
+        app.db.session.delete(week)
+
+        # Iterate through all of the other weeks in the semester, and change
+        # their week numbers to match.
+        for other_week in week.semester.weeks:
+            # If this week is after what we're deleting, shift it back.
+            if other_week.week_num > week.week_num:
+                other_week.week_num -= 1
+
+        app.db.session.commit()
+        app.logger.info("Deleted week %r from the database", week)
+        flask.flash("Deleted week '{}'".format(week.header), 'success')
+        return flask.redirect(flask.url_for("edit_semester_page",
+                                            semester_id=week.semester_id))
 
     # If the form was submitted, validate it and update the week data from it.
     if form.validate_on_submit() and form.submit.data is True:
