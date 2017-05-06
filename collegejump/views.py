@@ -18,6 +18,11 @@ def front_page():
     # If setup mode is happening, render a FirstSetupUserInfoForm.
     if 'SETUP_KEY' in app.config:
         setup_form = forms.FirstSetupUserInfoForm()
+        # Remove some fields from this form, because it's a new user, which is
+        # automatically an admin.
+        del setup_form.admin
+        del setup_form.semesters_enrolled
+        del setup_form.delete
     else:
         setup_form = None
 
@@ -107,27 +112,32 @@ def account_settings_page(user_id):
     user = models.User.query.get(user_id)
 
     # Unless the user is editing their own account, or is an admin, deny
-    # access. If the user is an admin, serve them a complete form with more
-    # fields, otherwise, give them a limited form.
-    if current_user.admin:
-        # Populate semester data in the form. This is separate from the initializer
-        # because it requires a database query.
-        form = forms.UserInfoAdminForm(name=user.name,
-                                       email=user.email,
-                                       admin=user.admin,
-                                       semesters_enrolled=[s.id for s in user.semesters])
-        form.populate_semesters()
-
-    elif current_user.id == user_id:
-        form = forms.UserInfoForm(name=user.name)
-    else:
+    # access.
+    if (not current_user.admin) and (current_user.id != user.id):
         return flask.abort(403)
+
+    # Construct a pre-filled form.
+    # Populate semester data in the form. This is separate from the initializer
+    # because it requires a database query.
+    form = forms.UserInfoForm(name=user.name,
+                              email=user.email,
+                              admin=user.admin,
+                              semesters_enrolled=[s.id for s in user.semesters])
+    form.populate_semesters()
+
+    # If the user is not an admin, serve them a limited form. If the user
+    # submits a form with these filled anyway, they will be deleted at this
+    # stage.
+    if not current_user.admin:
+        del form.email
+        del form.admin
+        del form.semesters_enrolled
+        del form.delete
+
 
     # We check if the user is to be deleted. For this, we don't yet validate the
     # form, because not all of the fields need to be valid.
-    if flask.request.method == 'POST' \
-            and isinstance(form, forms.UserInfoAdminForm) \
-            and form.delete.data:
+    if flask.request.method == 'POST' and form.delete and form.delete.data:
         # Retrieve the user for logging, then delete it.
         app.db.session.delete(user)
         app.db.session.commit()
@@ -141,10 +151,12 @@ def account_settings_page(user_id):
         if form.password.data: # non-None, non-empty
             user.password = form.password.data
 
-        if isinstance(form, forms.UserInfoAdminForm):
-            user.email = form.email.data.lower()
-            user.admin = form.admin.data
-            user.semesters = list(form.get_semesters_enrolled())
+            if form.email is not None:
+                user.email = form.email.data.lower()
+            if user.admin is not None:
+                user.admin = form.admin.data
+            if user.semesters is not None:
+                user.semesters = list(form.get_semesters_enrolled())
 
         app.db.session.commit()
         app.logger.info("Updated user %r", user)
@@ -356,7 +368,9 @@ def announcement_page(announcement_id=None):
 @login_required
 @admin_required
 def edit_accounts_page():
-    form = forms.UserInfoAdminForm()
+    # Generate a form for a new user. Since it is a new user, it does not need the delete field.
+    form = forms.UserInfoForm()
+    del form.delete
     form.populate_semesters()
 
     if form.validate_on_submit():

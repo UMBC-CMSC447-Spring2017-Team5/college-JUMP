@@ -63,14 +63,7 @@ class UserInfoForm(FlaskForm):
         validators.length(max=models.User.NAME_MAX_LENGTH)])
 
     password = fields.PasswordField('Password')
-    submit = fields.SubmitField('Submit')
 
-    def to_user_model(self):
-        user = models.User(self.password.data, self.name.data)  
-        return user
-        
-class UserInfoAdminForm(UserInfoForm):
-    
     email = fields.StringField('Email Address', [
         validators.required(),
         validators.Email(),
@@ -82,27 +75,34 @@ class UserInfoAdminForm(UserInfoForm):
     # The choices need to be updated before rendering.
     semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int)
 
+    submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
 
     def populate_semesters(self):
         """Populate options for semester enrollment. Must be called after instantiation and before
         rendering.
         """
-        self.semesters_enrolled.choices = [(s.id, s.name) for s \
-                in models.Semester.query.order_by('order')]
+        # Sometimes, fields get deleted for tweaking. Make sure the one we're
+        # operating one is not, otherwise do nothing.
+        if self.semesters_enrolled is not None:
+            self.semesters_enrolled.choices = [(s.id, s.name) for s \
+                    in models.Semester.query.order_by('order')]
 
     def to_user_model(self):
         user = models.User(self.email.data,
                            self.password.data,
                            self.name.data,
-                           admin=self.admin.data)
+                           admin=(self.admin.data if self.admin else False))
         user.semesters = list(self.get_semesters_enrolled())
         return user
 
     def get_semesters_enrolled(self):
-        return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
+        if self.semesters_enrolled is not None:
+            return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
+        else:
+            return []
 
-class FirstSetupUserInfoForm(UserInfoAdminForm):
+class FirstSetupUserInfoForm(UserInfoForm):
     setup_key = fields.StringField('Setup Key', [
         validators.required(),
         validators.Regexp('[a-zA-Z0-9]{32}',
