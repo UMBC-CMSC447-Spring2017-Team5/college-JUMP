@@ -40,13 +40,13 @@ class WeekForm(FlaskForm):
     header = fields.StringField(
         'Header',
         [validators.required(), validators.length(max=models.Week.HEADER_MAX_LENGTH)],
-        description=" Students will see this header on their side-bar in its \
+        description=" Students will see this title on their side-bar next to its \
         corresponding week.")
     intro = fields.StringField(
         'Intro',
         [validators.required(), validators.length(max=models.Week.INTRO_MAX_LENGTH)],
         widget=widgets.TextArea(),
-    description=" The Intro is the title in the assignement page for this week.")
+    description=" The intro is the content of the assignement for this week.")
 
     new_document = FileField()
 
