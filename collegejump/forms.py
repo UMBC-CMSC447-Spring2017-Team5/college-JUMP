@@ -74,14 +74,13 @@ class UserInfoForm(FlaskForm):
         validators.length(max=models.User.NAME_MAX_LENGTH)],
                               description="Enter full legal name.")
 
-    password = fields.PasswordField('Password')
-
     email = fields.StringField('Email Address', [
         validators.required(),
         validators.Email(),
         validators.length(max=models.User.EMAIL_MAX_LENGTH)],
-                               description="Email addresses are case INSENSITIVE.")
+                          description="Email addresses are case INSENSITIVE.")
 
+    password = fields.PasswordField('Password')
     admin = fields.BooleanField('Administrator Account?',
                                 description="Check to make the account an administror.")
 
