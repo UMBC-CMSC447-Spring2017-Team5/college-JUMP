@@ -1,4 +1,5 @@
 import datetime
+import io
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -188,3 +189,7 @@ class Document(app.db.Model):
 
     def __repr__(self):
         return '<Document {!r}>'.format(self.name)
+
+    def file_like(self):
+        """Return a file-like representation of the data of this file."""
+        return io.BytesIO(self.data)

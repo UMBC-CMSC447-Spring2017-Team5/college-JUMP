@@ -402,7 +402,9 @@ def edit_accounts_page():
 @login_required
 def document_page(document_id):
     document = models.Document.query.get(document_id)
-    return flask.send_file(document.data, attachment_filename=document.name)
+    return flask.send_file(document.file_like(),
+                           attachment_filename=document.name,
+                           as_attachment=True)
 
 @app.route('/database/', methods=['GET', 'POST'])
 @admin_required
