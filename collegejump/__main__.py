@@ -62,7 +62,7 @@ def parse(argv):
     parser.add_argument('--db', default='local.db')
     parser.add_argument('--gcal', default=GCAL_LINK)
 
-    parser.add_argument('--debug', action='store_true', default=True)
+    parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--version', action='store_true')
 
     return parser.parse_args(argv)
