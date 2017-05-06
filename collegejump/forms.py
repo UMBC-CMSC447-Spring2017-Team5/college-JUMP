@@ -136,7 +136,8 @@ class AnnouncementForm(FlaskForm):
                                  widget=widgets.TextArea())
 
     submit = fields.SubmitField('Submit')
-    preview = fields.SubmitField('Update Preview')
+    preview = fields.SubmitField('Preview')
+    delete = fields.SubmitField('Delete')
 
 class DatabaseUploadForm(FlaskForm):
     zipfile = FileField(validators=[FileRequired()])

@@ -178,7 +178,20 @@ def edit_announcement_page(announcement_id=None):
     else:
         new_announcement = True
         announcement = models.Announcement(current_user.email, '', '')
+        # Remove the delete button if we're editing a new announcement.
+        del form.delete
 
+    # If we're deleting the announcement, we don't even need to validate the
+    # whole form, just check for the delete button. We do have to be careful
+    # that it hasn't been deleted, though.
+    if flask.request.method == 'POST' and form.delete and form.delete.data:
+        # At this point, the announcement already exists and is in the
+        # database, so we can safely delete it.
+        app.db.session.delete(announcement)
+        app.db.session.commit()
+        app.logger.info("Deleted announcement %r from the database", announcement)
+        flask.flash("Deleted announcement '{}'".format(announcement.title), 'success')
+        return flask.redirect(flask.url_for("front_page"))
 
     # If the form was submitted and valid, change the object and redirect to
     # viewing it.

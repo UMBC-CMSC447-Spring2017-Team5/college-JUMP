@@ -13,7 +13,7 @@
     {{ wtf.quick_form(form, method="POST",
 		      action=url_for("edit_announcement_page", announcement_id=announcement_id),
 		      form_type="horizontal",
-		      button_map={"submit": "primary"}) }}
+		      button_map={"submit": "primary", "delete": "danger"}) }}
   </div>
 </div>
 
