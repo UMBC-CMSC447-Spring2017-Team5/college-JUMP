@@ -346,10 +346,9 @@ def edit_week_page(semester_id, week_num):
         # Flush the changes to the session.
         app.db.session.commit()
 
-        # If we submitted everything correctly, redirect to this page again to
-        # refresh the form and all the data.
+        # If we submitted everything correctly, redirect to the view page.
         flask.flash("Updated week '{}'".format(week.header), 'success')
-        return flask.redirect(flask.url_for('edit_week_page',
+        return flask.redirect(flask.url_for('week_page',
                                             semester_id=semester_id,
                                             week_num=week_num))
 

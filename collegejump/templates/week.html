@@ -5,6 +5,6 @@
 
 {% block content %}
 
-{{ common.week(week) }}
+{{ common.week(week, edit_link=current_user.admin) }}
 
 {% endblock %}

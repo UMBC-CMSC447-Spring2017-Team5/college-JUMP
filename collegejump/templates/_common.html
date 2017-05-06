@@ -40,10 +40,21 @@
 
 {% endmacro %}
 
-{% macro week(week) %}
+{% macro week(week, edit_link=False) %}
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3>{{ week.header }}</h3>
+    <h3>
+      {{ week.header }}
+      {%- if edit_link %}
+      <small>
+        <a href="{{ url_for("edit_week_page",
+                            semester_id=week.semester_id,
+                            week_num=week.week_num) }}">
+          Edit
+        </a>
+      </small>
+      {%- endif %}
+    </h3>
   </div>
   <div class="panel-body">
     <p class="text-primary">
