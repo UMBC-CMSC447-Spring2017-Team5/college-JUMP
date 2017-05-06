@@ -452,3 +452,9 @@ def week_page(semester_id, week_num):
         return flask.abort(403)
 
     return flask.render_template('week.html', week=week)
+
+@app.errorhandler(401)
+@app.errorhandler(403)
+@app.errorhandler(404)
+def http_error_page(error):
+    return flask.render_template('error.html', error=error), error.code
