@@ -3,6 +3,13 @@
 
 {% block title %}Edit {{ week.header }}{% endblock %}
 
+{% block breadcrumbs %}
+{{ common.breadcrumbs([
+    ('Syllabus',         url_for('syllabus_page')),
+    (week.semester.name, url_for('edit_semester_page', semester_id=week.semester.id))
+  ], 'Week ' + week.week_num|string) }}
+{% endblock %}
+
 {% block content %}
 
 {{ common.week(week) }}

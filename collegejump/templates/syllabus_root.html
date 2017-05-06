@@ -1,6 +1,11 @@
 {% extends "theme.html" %}
+{% import "_common.html" as common %}
 
 {% block title %}Syllabus Overview{% endblock %}
+
+{% block breadcrumbs %}
+{{ common.breadcrumbs([], 'Syllabus') }}
+{% endblock %}
 
 {% block content %}
 <div class="panel panel-default">

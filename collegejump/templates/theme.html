@@ -96,6 +96,7 @@
 
   {% block maincontainer %}
   <div class="container">
+    {% block breadcrumbs %}{% endblock %}
     {% block messages %}
     {{ utils.flashed_messages(dismissible=True) }}
     {% endblock messages %}

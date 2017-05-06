@@ -74,3 +74,12 @@
   </div>
 </div>
 {% endmacro %}
+
+{% macro breadcrumbs(crumbs, current) %}
+<ul class="breadcrumb">
+  {% for text, link in crumbs %}
+    <li><a href="{{link}}">{{text}}</a></li>
+  {% endfor %}
+  <li class="active">{{current}}</li>
+</ul>
+{% endmacro %}
