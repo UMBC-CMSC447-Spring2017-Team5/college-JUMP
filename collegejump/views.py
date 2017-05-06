@@ -66,6 +66,11 @@ def login_page():
     # it will be preserved here.
     form = forms.LoginForm(returnto=returnto)
 
+    # If the user is already logged in, skip the login page and return them to
+    # wherever returnto is.
+    if current_user.is_authenticated:
+        return form.redirect()
+
     # If the login form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
     if form.validate_on_submit():
