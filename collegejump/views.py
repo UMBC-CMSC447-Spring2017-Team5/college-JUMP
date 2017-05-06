@@ -2,7 +2,7 @@ import datetime
 import os
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy.exc import DBAPIError, IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app, forms, models, database, admin_required
@@ -423,7 +423,7 @@ def database_page():
             database.import_db(form.zipfile.data)
             app.logger.info("Database import complete.")
             return flask.redirect(flask.url_for("front_page"))
-        except DBAPIError:
+        except SQLAlchemyError:
             raise
 
     return flask.render_template('database.html', form=form)
