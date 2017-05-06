@@ -73,7 +73,7 @@ def login_page():
         password = form.password.data
 
         try:
-            user = models.User.query.filter_by(email=email).one()
+            user = models.User.query.filter_by(email=email.lower()).one()
             if user.check_password(password):
                 # Modify the session so that the user is logged in.
                 success = login_user(user)
@@ -90,10 +90,10 @@ def login_page():
 
         except MultipleResultsFound:
             # This is actually really bad, and means the database is very broken.
-            app.logger.error("Multiple results found on what should be unique email %r", email)
+            app.logger.error("Multiple results found on what should be unique email %r", email.lower())
 
         except NoResultFound:
-            app.logger.info("Attempt to login with unknown email %r", email)
+            app.logger.info("Attempt to login with unknown email %r", email.lower())
 
         flask.flash('Login failed.', 'error')
 
@@ -120,7 +120,7 @@ def account_settings_page(user_id):
     # Populate semester data in the form. This is separate from the initializer
     # because it requires a database query.
     form = forms.UserInfoForm(name=user.name,
-                              email=user.email,
+                              email=user.email.lower(),
                               admin=user.admin,
                               semesters_enrolled=[s.id for s in user.semesters])
     form.populate_semesters()
@@ -142,7 +142,7 @@ def account_settings_page(user_id):
         app.db.session.delete(user)
         app.db.session.commit()
         app.logger.info("Deleted user %r from the database", user)
-        flask.flash("Deleted user '{}'".format(user.email), 'success')
+        flask.flash("Deleted user '{}'".format(user.email.lower()), 'success')
         return flask.redirect(flask.url_for('front_page'))
 
     # Otherwise, we update the user information.
@@ -160,7 +160,7 @@ def account_settings_page(user_id):
 
         app.db.session.commit()
         app.logger.info("Updated user %r", user)
-        flask.flash("Updated user '{}'".format(user.email))
+        flask.flash("Updated user '{}'".format(user.email.lower()))
         return flask.redirect(flask.url_for('account_settings_page',
                                             user_id=user_id))
 
@@ -177,7 +177,7 @@ def edit_announcement_page(announcement_id=None):
         announcement = models.Announcement.query.get(announcement_id)
     else:
         new_announcement = True
-        announcement = models.Announcement(current_user.email, '', '')
+        announcement = models.Announcement(current_user.email.lower(), '', '')
         # Remove the delete button if we're editing a new announcement.
         del form.delete
 

@@ -27,20 +27,26 @@ class LoginForm(RedirectForm):
     email = fields.StringField('Email', [
         validators.required(),
         validators.Email(),
-        validators.length(max=models.User.EMAIL_MAX_LENGTH),
-    ])
-    password = fields.PasswordField('Password')
+        validators.length(max=models.User.EMAIL_MAX_LENGTH)],
+        description="Email addresses  are case INSENSITIVE.")
+    
+    password = fields.PasswordField('Password',
+    description="Never share tell your password with anyone.")
+    
     submit = fields.SubmitField('Submit')
 
 class WeekForm(FlaskForm):
     """A form for filling out a single week in a semester."""
     header = fields.StringField(
         'Header',
-        [validators.required(), validators.length(max=models.Week.HEADER_MAX_LENGTH)])
+        [validators.required(), validators.length(max=models.Week.HEADER_MAX_LENGTH)],
+        description=" Students will see this header on their side-bar in its \
+        corresponding week.")
     intro = fields.StringField(
         'Intro',
         [validators.required(), validators.length(max=models.Week.INTRO_MAX_LENGTH)],
-        widget=widgets.TextArea())
+        widget=widgets.TextArea(),
+    description=" The Intro is the title in the assignement page for this week.")
 
     new_document = FileField()
 
@@ -52,7 +58,9 @@ class SemesterForm(FlaskForm):
     name = fields.StringField('Name', [
         validators.required(),
         validators.length(max=models.Semester.NAME_MAX_LENGTH)])
-    order = fields.IntegerField('Order', [validators.required()])
+    order = fields.IntegerField('Order', [validators.required()],
+    description="Counting order determines the order semesters are displayed \
+    on the syllabus poge and assignement sidebar.")
 
     submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
@@ -60,20 +68,27 @@ class SemesterForm(FlaskForm):
 class UserInfoForm(FlaskForm):
     name = fields.StringField('Name', [
         validators.required(),
-        validators.length(max=models.User.NAME_MAX_LENGTH)])
+        validators.length(max=models.User.NAME_MAX_LENGTH)],
+        description="Enter full legal name.")
 
     password = fields.PasswordField('Password')
 
     email = fields.StringField('Email Address', [
         validators.required(),
         validators.Email(),
-        validators.length(max=models.User.EMAIL_MAX_LENGTH)])
+        validators.length(max=models.User.EMAIL_MAX_LENGTH)],
+        description="Email addresses are case INSENSITIVE.")
         
-    admin = fields.BooleanField('Is Administrator Account?')
+    admin = fields.BooleanField('Administrator Account?',
+    description="Check to make the account an administror.")
 
     # List semesters for the student to be enrolled in, with multiple allowed.
     # The choices need to be updated before rendering.
-    semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int)
+    semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int,
+                                                    description="Select semesters to enroll the \
+                                                    student in. Select multiple semesters by \
+                                                    clicking and draging the mouse over a group of\
+                                                    choices.")
 
     submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
@@ -127,13 +142,17 @@ class FirstSetupUserInfoForm(UserInfoForm):
 
 
 class AnnouncementForm(FlaskForm):
-    title = fields.StringField('Title', [
+    title = fields.StringField('Title',[
         validators.required(),
-        validators.length(max=models.Announcement.TITLE_MAX_LENGTH)])
+        validators.length(max=models.Announcement.TITLE_MAX_LENGTH)],
+        description="Enter a descriptive title for the new anouncement here.")
+      
     content = fields.StringField('Content', [
         validators.required(),
         validators.length(max=models.Announcement.CONTENT_MAX_LENGTH)],
-                                 widget=widgets.TextArea())
+                                 widget=widgets.TextArea(),
+        description="Enter content for the announcement. All content entered \
+        here will be viewable on the home page by all users - including guests.")
 
     submit = fields.SubmitField('Submit')
     preview = fields.SubmitField('Preview')

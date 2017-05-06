@@ -77,7 +77,7 @@
     <ul class="nav nav-pills nav-stacked">
       {% if current_user.is_authenticated %}
         {% for semester in current_user.semesters %}
-          <li><h5>{{ semester.name }}</h5></li>
+           <li><h5>Semester: {{ semester.name }}</h5></li>
 
           {% for week in semester.weeks %}
           <li>
