@@ -95,7 +95,8 @@ def login_page():
 
         except MultipleResultsFound:
             # This is actually really bad, and means the database is very broken.
-            app.logger.error("Multiple results found on what should be unique email %r", email.lower())
+            app.logger.error("Multiple results found on what should\
+                              be unique email %r", email.lower())
 
         except NoResultFound:
             app.logger.info("Attempt to login with unknown email %r", email.lower())
@@ -392,7 +393,7 @@ def edit_accounts_page():
 
     if form.validate_on_submit():
         user = form.to_user_model()
-        
+
         existing = models.User.query.filter_by(email=user.email).one()
         if existing is not None:
             flask.flash('User with that email already exists.', 'error')

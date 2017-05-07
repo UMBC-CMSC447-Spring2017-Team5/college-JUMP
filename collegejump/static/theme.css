@@ -45,12 +45,6 @@ nav .navbar {
 }
 
 #syllabus-nav {
-    height: 90%;
-    width: 200px;
-    position: absolute;
-    top: 52px;
-    left: 0;
-    background-color: #efefef;
     padding: 8px;
 }
 

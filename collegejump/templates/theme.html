@@ -77,17 +77,23 @@
     </div><!-- /.container-fluid -->
   </nav>
   {% endblock navbar %}
+  
+
+  {% block maincontainer %}
+  
   {% block sidenav %}
+ <div class="row">
+  <div class="col-sm-2">
   <nav id="syllabus-nav">
     <ul class="nav nav-pills nav-stacked">
       {% if current_user.is_authenticated %}
         {% for semester in current_user.semesters %}
-           <li><h6><b>Semester :{{ semester.name }}</b></h6></li>
+           <li><h6><b>Semester: {{ semester.name }}</b></h6></li>
          <ul class="nav flex-column">
           {% for week in semester.weeks %}
           <li class="nav-item">
           
-            <a class="btn btn-success" href="{{ url_for('week_page',
+            <a class="btn btn-success btn-sm" href="{{ url_for('week_page',
                                 semester_id=week.semester_id,
                                 week_num=week.week_num) }}">
               Week {{ week.week_num }}: {{ week.header }}
@@ -100,19 +106,21 @@
     </ul>
   </nav>
   {% endblock sidenav %}
-
-  {% block maincontainer %}
-  <div class="container">
+  
+  
+  </div>
+  <div class="col-sm-8">
     {% block breadcrumbs %}{% endblock %}
     {% block messages %}
     {{ utils.flashed_messages(dismissible=True) }}
     {% endblock messages %}
     {% block content -%}
     {%- endblock content %}
-  </div>
+    </div>
   {% endblock maincontainer %}
-
-  <footer class="footer">
+ </row>
+ 
+<footer class="footer">
     <div class="container">
       {% block footer %}
       <div class="text-muted">
@@ -122,7 +130,6 @@
       </div>
       {% endblock %}
     </div>
-  </footer>
-
+</footer>
 {%- endblock body %}
 

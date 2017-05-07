@@ -28,11 +28,11 @@ class LoginForm(RedirectForm):
         validators.required(),
         validators.Email(),
         validators.length(max=models.User.EMAIL_MAX_LENGTH)],
-        description="Email addresses  are case INSENSITIVE.")
-    
+                               description="Email addresses  are case INSENSITIVE.")
+
     password = fields.PasswordField('Password',
-    description="Never share tell your password with anyone.")
-    
+                                    description="Never share tell your password with anyone.")
+
     submit = fields.SubmitField('Submit')
 
 class WeekForm(FlaskForm):
@@ -46,7 +46,7 @@ class WeekForm(FlaskForm):
         'Intro',
         [validators.required(), validators.length(max=models.Week.INTRO_MAX_LENGTH)],
         widget=widgets.TextArea(),
-    description=" The intro is the content of the assignement for this week.\
+        description=" The intro is the content of the assignement for this week.\
     Use this guide to learn how to manipulate Markdown to write content to this field:\
     https://daringfireball.net/projects/markdown/basics")
 
@@ -61,7 +61,8 @@ class SemesterForm(FlaskForm):
         validators.required(),
         validators.length(max=models.Semester.NAME_MAX_LENGTH)])
     order = fields.IntegerField('Order', [validators.required()],
-    description="Counting order determines the order semesters are displayed \
+                                description="Counting order \
+                                determines the order semesters are displayed \
     on the syllabus poge and assignement sidebar.")
 
     submit = fields.SubmitField('Submit')
@@ -71,7 +72,7 @@ class UserInfoForm(FlaskForm):
     name = fields.StringField('Name', [
         validators.required(),
         validators.length(max=models.User.NAME_MAX_LENGTH)],
-        description="Enter full legal name.")
+                              description="Enter full legal name.")
 
     password = fields.PasswordField('Password')
 
@@ -79,10 +80,10 @@ class UserInfoForm(FlaskForm):
         validators.required(),
         validators.Email(),
         validators.length(max=models.User.EMAIL_MAX_LENGTH)],
-        description="Email addresses are case INSENSITIVE.")
-        
+                               description="Email addresses are case INSENSITIVE.")
+
     admin = fields.BooleanField('Administrator Account?',
-    description="Check to make the account an administror.")
+                                description="Check to make the account an administror.")
 
     # List semesters for the student to be enrolled in, with multiple allowed.
     # The choices need to be updated before rendering.
@@ -116,8 +117,7 @@ class UserInfoForm(FlaskForm):
     def get_semesters_enrolled(self):
         if self.semesters_enrolled is not None:
             return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
-        else:
-            return []
+        return []
 
 class FirstSetupUserInfoForm(UserInfoForm):
     setup_key = fields.StringField('Setup Key', [
@@ -144,16 +144,18 @@ class FirstSetupUserInfoForm(UserInfoForm):
 
 
 class AnnouncementForm(FlaskForm):
-    title = fields.StringField('Title',[
+    title = fields.StringField('Title', [
         validators.required(),
         validators.length(max=models.Announcement.TITLE_MAX_LENGTH)],
-        description="Enter a descriptive title for the new anouncement here.")
-      
+                               description="Enter a descriptive title \
+                               for the new anouncement here.")
+
     content = fields.StringField('Content', [
         validators.required(),
         validators.length(max=models.Announcement.CONTENT_MAX_LENGTH)],
                                  widget=widgets.TextArea(),
-        description="Enter content for the announcement. All content entered \
+                                 description="Enter content for the announcement.\
+                               All content entered \
         here will be viewable on the home page by all users - including guests. \
         Use this guide to learn how to manipulate Markdown to write content to this field: \
         https://daringfireball.net/projects/markdown/basics")
