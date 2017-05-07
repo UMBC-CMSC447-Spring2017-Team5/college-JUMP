@@ -392,6 +392,11 @@ def edit_accounts_page():
 
     if form.validate_on_submit():
         user = form.to_user_model()
+        
+        existing = models.User.query.filter_by(email=user.email).one()
+        if existing is not None:
+            flask.flash('User with that email already exists.', 'error')
+            return flask.redirect(flask.url_for('edit_accounts_page'))
 
         app.db.session.add(user)
         app.db.session.commit()
