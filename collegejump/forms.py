@@ -1,6 +1,7 @@
 from urllib.parse import  urlparse, urljoin
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from wtforms import fields, validators, widgets, ValidationError
 import flask
 
@@ -12,6 +13,33 @@ def is_safe_url(target):
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
 
+
+class UserField(fields.StringField):
+    """Field for specifying a user by email. Automatically ensures that user is
+    present in the database, and allows access to the user model as `field.user()`.
+    """
+
+    # Override __init__ to add the Email validator after any other validators.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.usermodel = None
+
+    # pylint: disable=unused-argument
+    def post_validate(self, form, validation_stopped):
+        # As the final stage in validation, transform the given email into a
+        # looked-up user. This is guaranteed to run after all other validators.
+        # If lookup fails, raise a validation error, which will be caught and
+        # displayed.
+
+        # If validation was stopped, do not look up the user.
+        if not validation_stopped:
+            try:
+                self.usermodel = models.User.query.filter_by(email=self.data.lower()).one()
+            except NoResultFound as e:
+                raise ValidationError("No user with email {!r} found".format(self.data.lower()))
+
+    def user(self):
+        return self.usermodel
 
 class RedirectForm(FlaskForm):
     returnto = fields.HiddenField()
