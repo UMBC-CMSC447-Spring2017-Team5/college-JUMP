@@ -35,7 +35,7 @@ class UserField(fields.StringField):
         if not validation_stopped:
             try:
                 self.usermodel = models.User.query.filter_by(email=self.data.lower()).one()
-            except NoResultFound as e:
+            except NoResultFound:
                 raise ValidationError("No user with email {!r} found".format(self.data.lower()))
 
     def user(self):
@@ -102,11 +102,12 @@ class UserInfoForm(FlaskForm):
         validators.length(max=models.User.NAME_MAX_LENGTH)],
                               description="Enter full legal name.")
 
-    email = fields.StringField('Email Address', [
-        validators.required(),
-        validators.Email(),
-        validators.length(max=models.User.EMAIL_MAX_LENGTH)],
-                          description="Email addresses are case INSENSITIVE.")
+    email = fields.StringField('Email Address',
+                               validators=[
+                                   validators.required(),
+                                   validators.Email(),
+                                   validators.length(max=models.User.EMAIL_MAX_LENGTH)],
+                               description="Email addresses are case INSENSITIVE.")
 
     password = fields.PasswordField('Password')
     admin = fields.BooleanField('Administrator Account?',
@@ -160,6 +161,22 @@ class UserInfoForm(FlaskForm):
         if self.semesters_enrolled is not None:
             return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
         return []
+
+    # pylint: disable=no-self-argument
+    def validate_email(form, field):
+        """One-off validator to ensure that the given email is unique to this
+        user, and no other exists in the database.
+        """
+        # If the data matches the object used to construct the form, do not search the database.
+        if field.data == field.object_data:
+            return
+
+        # Build the query to check existence.
+        exists_query = models.User.query.filter_by(email=field.data).exists()
+        # Execute the query and select only the True/False result
+        exists = app.db.session.query(exists_query).scalar()
+        if exists:
+            raise ValidationError('Another user has that email address')
 
 class FirstSetupUserInfoForm(UserInfoForm):
     setup_key = fields.StringField('Setup Key', [

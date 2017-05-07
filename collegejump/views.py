@@ -385,20 +385,22 @@ def edit_accounts_page():
     del form.delete
     form.populate_semesters()
 
+    # The form validates all input, including uniqueness of the email, and
+    # other database properties. If we encounter a database error at this
+    # point, it is an actual error.
     if form.validate_on_submit():
-        user = form.to_user_model()
+        try:
+            user = form.to_user_model()
+            app.db.session.add(user)
+            app.db.session.commit()
 
-        existing = models.User.query.filter_by(email=user.email).one()
-        if existing is not None:
-            flask.flash('User with that email already exists.', 'error')
+            app.logger.info("Created user %r in the database", user)
             return flask.redirect(flask.url_for('edit_accounts_page'))
 
-        app.db.session.add(user)
-        app.db.session.commit()
-
-        app.logger.info("Created user %r in the database", user)
-
-        return flask.redirect(flask.url_for('edit_accounts_page'))
+        except SQLAlchemyError as e:
+            app.logger.error('User input caused: %s', e)
+            flask.flash('Database error', 'error')
+            # Upon this error, do not redirect, so that the form remains filled.
 
     return flask.render_template('edit_accounts.html', form=form,
                                  users=models.User.query.all())
