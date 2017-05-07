@@ -156,12 +156,12 @@ def account_settings_page(user_id):
         if form.password.data: # non-None, non-empty
             user.password = form.password.data
 
-            if form.email is not None:
-                user.email = form.email.data.lower()
-            if user.admin is not None:
-                user.admin = form.admin.data
-            if user.semesters is not None:
-                user.semesters = list(form.get_semesters_enrolled())
+        if form.email is not None:
+            user.email = form.email.data.lower()
+        if user.admin is not None:
+            user.admin = form.admin.data
+        if user.semesters is not None:
+            user.semesters = list(form.get_semesters_enrolled())
 
         app.db.session.commit()
         app.logger.info("Updated user %r", user)

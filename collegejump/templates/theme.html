@@ -77,21 +77,22 @@
     </div><!-- /.container-fluid -->
   </nav>
   {% endblock navbar %}
-
   {% block sidenav %}
   <nav id="syllabus-nav">
     <ul class="nav nav-pills nav-stacked">
       {% if current_user.is_authenticated %}
         {% for semester in current_user.semesters %}
-           <li><h5>Semester: {{ semester.name }}</h5></li>
-
+           <li><h6><b>Semester :{{ semester.name }}</b></h6></li>
+         <ul class="nav flex-column">
           {% for week in semester.weeks %}
-          <li>
-            <a href="{{ url_for('week_page',
+          <li class="nav-item">
+          
+            <a class="btn btn-success btn-sm" href="{{ url_for('week_page',
                                 semester_id=week.semester_id,
                                 week_num=week.week_num) }}">
               Week {{ week.week_num }}: {{ week.header }}
             </a>
+            <br>
           </li>
           {% endfor %}
         {% endfor %}

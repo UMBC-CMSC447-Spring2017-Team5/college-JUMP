@@ -47,6 +47,7 @@ class WeekForm(FlaskForm):
         [validators.required(), validators.length(max=models.Week.INTRO_MAX_LENGTH)],
         widget=widgets.TextArea(),
     description=" The intro is the content of the assignement for this week.\
+    Use this guide to learn how to manipulate Markdown to write content to this field:\
     https://daringfireball.net/projects/markdown/basics")
 
     new_document = FileField()
@@ -154,6 +155,7 @@ class AnnouncementForm(FlaskForm):
                                  widget=widgets.TextArea(),
         description="Enter content for the announcement. All content entered \
         here will be viewable on the home page by all users - including guests. \
+        Use this guide to learn how to manipulate Markdown to write content to this field: \
         https://daringfireball.net/projects/markdown/basics")
 
     submit = fields.SubmitField('Submit')
