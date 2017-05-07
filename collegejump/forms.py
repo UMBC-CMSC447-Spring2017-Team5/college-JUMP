@@ -103,6 +103,7 @@ class UserInfoForm(FlaskForm):
                               description="Enter full legal name.")
 
     email = fields.StringField('Email Address',
+                               filters=[lambda s: s.lower() if s else s],
                                validators=[
                                    validators.required(),
                                    validators.Email(),
@@ -113,7 +114,9 @@ class UserInfoForm(FlaskForm):
     admin = fields.BooleanField('Administrator Account?',
                                 description="Check to make the account an administror.")
 
-    mentor = UserField('Mentor Email', [validators.optional()])
+    mentor = UserField('Mentor Email',
+                       filters=[lambda s: s.lower() if s else s],
+                       validators=[validators.optional()])
 
     # List semesters for the student to be enrolled in, with multiple allowed.
     # The choices need to be updated before rendering.
@@ -145,7 +148,7 @@ class UserInfoForm(FlaskForm):
                                admin=(self.admin.data if self.admin else False))
         else:
             if self.email:
-                user.email = self.email.data.lower()
+                user.email = self.email.data
             if self.password and self.password.data: # optional when not creating uesr
                 user.password = self.password.data
             user.name = self.name.data
