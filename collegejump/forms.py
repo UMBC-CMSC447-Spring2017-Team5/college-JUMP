@@ -114,9 +114,10 @@ class UserInfoForm(FlaskForm):
     admin = fields.BooleanField('Administrator Account?',
                                 description="Check to make the account an administror.")
 
-    mentor = UserField('Mentor Email',
-                       filters=[lambda s: s.lower() if s else s],
-                       validators=[validators.optional()])
+    mentors = fields.StringField('Mentor Emails',
+                                 filters=[lambda s: s.lower().replace(' ','') if s else s],
+                                 validators=[validators.optional()],
+                                 description="List of mentor emails, comma separated")
 
     # List semesters for the student to be enrolled in, with multiple allowed.
     # The choices need to be updated before rendering.
@@ -155,8 +156,10 @@ class UserInfoForm(FlaskForm):
             if self.admin:
                 user.admin = self.admin.data
 
-        if self.mentor and self.mentor.user():
-            user.mentors = [self.mentor.user()]
+        if self.mentors and self.mentors.data:
+            user.mentors = [models.User.query.filter_by(email=mentor_email).one()
+                            for mentor_email in self.mentors.data.split(',')]
+
         user.semesters = list(self.get_semesters_enrolled())
         return user
 
@@ -165,7 +168,7 @@ class UserInfoForm(FlaskForm):
             return (models.Semester.query.get(sid) for sid in self.semesters_enrolled.data)
         return []
 
-    # pylint: disable=no-self-argument
+    # pylint: disable=no-self-argument,no-self-use
     def validate_email(form, field):
         """One-off validator to ensure that the given email is unique to this
         user, and no other exists in the database.
@@ -180,6 +183,24 @@ class UserInfoForm(FlaskForm):
         exists = app.db.session.query(exists_query).scalar()
         if exists:
             raise ValidationError('Another user has that email address')
+
+    # pylint: disable=no-self-argument,no-self-use
+    def validate_mentors(form, field):
+        """One-off validator to ensure that each of the list of given emails
+        exists, and is not the entered email.
+        """
+        for mentor_email in field.data.split(','):
+            # Check that this email is not the same as this user.
+            if mentor_email == form.email.data or mentor_email == form.email.object_data:
+                raise ValidationError('A user cannot be their own mentor')
+
+            # Build the query to check existence.
+            exists_query = models.User.query.filter_by(email=mentor_email).exists()
+            # Execute the query and select only the True/False result
+            exists = app.db.session.query(exists_query).scalar()
+            if not exists:
+                raise ValidationError('No user exists with email {}'.format(mentor_email))
+
 
 class FirstSetupUserInfoForm(UserInfoForm):
     setup_key = fields.StringField('Setup Key', [

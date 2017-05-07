@@ -6,7 +6,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from collegejump import app
 
 # pylint: disable=invalid-name
-mentorships = app.db.Table('mentee_mentors', app.db.metadata,
+mentorships = app.db.Table('mentorships', app.db.metadata,
                            app.db.Column('mentee_id', app.db.Integer,
                                          app.db.ForeignKey('user.id')),
                            app.db.Column('mentor_id', app.db.Integer,
@@ -48,10 +48,11 @@ class User(app.db.Model, UserMixin):
 
     admin = app.db.Column(app.db.Boolean)
 
-    mentor_id = app.db.Column(
-        app.db.Integer, app.db.ForeignKey('user.id'), nullable=True)
-    mentees = app.db.relationship(
-        'User', backref=app.db.backref('mentors', remote_side=[id], uselist=True))
+    mentors = app.db.relationship('User',
+                                  secondary=mentorships,
+                                  primaryjoin=mentorships.c.mentee_id==id,
+                                  secondaryjoin=mentorships.c.mentor_id==id,
+                                  backref='mentees')
 
     semesters = app.db.relationship('Semester', secondary=enrollment)
 
