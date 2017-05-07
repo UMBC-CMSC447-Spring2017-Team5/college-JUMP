@@ -153,16 +153,8 @@ def account_settings_page(user_id):
 
     # Otherwise, we update the user information.
     if form.validate_on_submit():
-        user.name = form.name.data
-        if form.password.data: # non-None, non-empty
-            user.password = form.password.data
-
-        if form.email is not None:
-            user.email = form.email.data.lower()
-        if user.admin is not None:
-            user.admin = form.admin.data
-        if user.semesters is not None:
-            user.semesters = list(form.get_semesters_enrolled())
+        # Fill out the data using the existing model.
+        form.to_user_model(user=user)
 
         app.db.session.commit()
         app.logger.info("Updated user %r", user)

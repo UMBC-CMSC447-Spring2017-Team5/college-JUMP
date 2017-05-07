@@ -133,11 +133,22 @@ class UserInfoForm(FlaskForm):
             self.semesters_enrolled.choices = [(s.id, s.name) for s \
                     in models.Semester.query.order_by('order')]
 
-    def to_user_model(self):
-        user = models.User(self.email.data,
-                           self.password.data,
-                           self.name.data,
-                           admin=(self.admin.data if self.admin else False))
+    def to_user_model(self, user=None):
+        """Create a new user model, or fill out data in an existing one."""
+        if user is None:
+            user = models.User(self.email.data,
+                               self.password.data,
+                               self.name.data,
+                               admin=(self.admin.data if self.admin else False))
+        else:
+            if self.email:
+                user.email = self.email.data.lower()
+            if self.password and self.password.data: # optional when not creating uesr
+                user.password = self.password.data
+            user.name = self.name.data
+            if self.admin:
+                user.admin = self.admin.data
+
         user.semesters = list(self.get_semesters_enrolled())
         return user
 
