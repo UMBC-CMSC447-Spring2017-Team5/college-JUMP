@@ -51,7 +51,7 @@ class User(app.db.Model, UserMixin):
     mentor_id = app.db.Column(
         app.db.Integer, app.db.ForeignKey('user.id'), nullable=True)
     mentees = app.db.relationship(
-        'User', backref=app.db.backref('mentor', remote_side=[id]))
+        'User', backref=app.db.backref('mentors', remote_side=[id], uselist=True))
 
     semesters = app.db.relationship('Semester', secondary=enrollment)
 

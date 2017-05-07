@@ -21,6 +21,7 @@ def front_page():
         # Remove some fields from this form, because it's a new user, which is
         # automatically an admin.
         del setup_form.admin
+        del setup_form.mentor
         del setup_form.semesters_enrolled
         del setup_form.delete
     else:
@@ -128,6 +129,7 @@ def account_settings_page(user_id):
     form = forms.UserInfoForm(name=user.name,
                               email=user.email.lower(),
                               admin=user.admin,
+                              mentor=(user.mentors[0].email if user.mentors else None),
                               semesters_enrolled=[s.id for s in user.semesters])
     form.populate_semesters()
 
@@ -137,9 +139,9 @@ def account_settings_page(user_id):
     if not current_user.admin:
         del form.email
         del form.admin
+        del form.mentor
         del form.semesters_enrolled
         del form.delete
-
 
     # We check if the user is to be deleted. For this, we don't yet validate the
     # form, because not all of the fields need to be valid.

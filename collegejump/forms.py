@@ -112,6 +112,8 @@ class UserInfoForm(FlaskForm):
     admin = fields.BooleanField('Administrator Account?',
                                 description="Check to make the account an administror.")
 
+    mentor = UserField('Mentor Email', [validators.optional()])
+
     # List semesters for the student to be enrolled in, with multiple allowed.
     # The choices need to be updated before rendering.
     semesters_enrolled = fields.SelectMultipleField('Semesters Enrolled', choices=[], coerce=int,
@@ -149,6 +151,8 @@ class UserInfoForm(FlaskForm):
             if self.admin:
                 user.admin = self.admin.data
 
+        if self.mentor and self.mentor.user():
+            user.mentors = [self.mentor.user()]
         user.semesters = list(self.get_semesters_enrolled())
         return user
 
