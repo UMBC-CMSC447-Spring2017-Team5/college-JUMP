@@ -25,14 +25,19 @@
 		data-target="#bs-example-navbar-collapse-1"
 		aria-expanded="false">
 	</button>
+    <img src="{{ url_for('send_static',path='shriver.jpeg') }}" width="50" height="50"
+      class="d-inline-block align-top"alt="Responsive image" 
+       href="{{ url_for('front_page') }}"> </img>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-	<ul class="nav navbar-nav">
+	 <ul class="nav navbar-nav">
+     
 	  <li><a href="{{ url_for('front_page') }}" >Home</a></li>
 	  <li><a href="{{ url_for('calendar_page') }}">Calendar</a></li>
 	  <li><a href="{{ url_for('announcement_page') }}">Announcements</a></li>
+    
 	</ul>
 
 
@@ -62,8 +67,9 @@
 	    </li>
 	    <!-- -->
 	  </ul>
-	  <a class="navbar-brand" id="pics" href="{{ url_for('front_page') }}"> <img src="{{ url_for('send_static',path='cj.jpg') }}"
-								    width="50" height="50"  class="img-fluid" alt="Responsive image"> </a>
+	  <img src="{{ url_for('send_static',path='cj.jpg') }}" width="50" height="50"
+      class="d-inline-block align-top"alt="Responsive image" 
+       href="{{ url_for('front_page') }}"> </img>
 	</div>
 
 
