@@ -1,0 +1,21 @@
+{% extends "theme.html" %}
+
+{% block title %}{{ error.code }} Error{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+  <h1>{{ error.code }} {{ error.name }}</h1>
+
+  {% if error.code == 500 %}
+  <p class="text-info">
+  You have found an issue with the application programming. Please visit the
+  <a href="https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP">bug tracker</a>
+  and file an issue.
+  </p>
+  {% endif %}
+
+  <p class="text-primary">{{ error.description }}</p>
+</div>
+
+{% endblock %}

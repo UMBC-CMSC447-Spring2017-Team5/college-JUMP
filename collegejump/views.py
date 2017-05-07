@@ -2,7 +2,7 @@ import datetime
 import os
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy.exc import DBAPIError, IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from collegejump import app, forms, models, database, admin_required
@@ -65,6 +65,11 @@ def login_page():
     # Create the form object with its defaults. If a `returnto` was submitted,
     # it will be preserved here.
     form = forms.LoginForm(returnto=returnto)
+
+    # If the user is already logged in, skip the login page and return them to
+    # wherever returnto is.
+    if current_user.is_authenticated:
+        return form.redirect()
 
     # If the login form is successfully POSTed to us here, try to log the user
     # in. Otherwise, render the page as normal.
@@ -418,7 +423,7 @@ def database_page():
             database.import_db(form.zipfile.data)
             app.logger.info("Database import complete.")
             return flask.redirect(flask.url_for("front_page"))
-        except DBAPIError:
+        except SQLAlchemyError:
             raise
 
     return flask.render_template('database.html', form=form)
@@ -447,3 +452,9 @@ def week_page(semester_id, week_num):
         return flask.abort(403)
 
     return flask.render_template('week.html', week=week)
+
+@app.errorhandler(401)
+@app.errorhandler(403)
+@app.errorhandler(404)
+def http_error_page(error):
+    return flask.render_template('error.html', error=error), error.code
