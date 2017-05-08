@@ -20,9 +20,10 @@ The website is available at a [demo location][].
 
 Upon starting the website for the first time, visit its index page. After doing
 so, a `SETUP_KEY` will be printed in the log of the server. Copy this key, and
-visit `/setup?key=<copied key>`. Enter the details of your desired admin user,
-and press submit. Upon success, you will be directed back to the index, where
-you will have been logged in automatically as this user.
+enter it in the form that is presented on the front page. Enter the details of
+your desired admin user, and press submit. Upon success, you will be directed
+back to the index, where you will have been logged in automatically as this
+user.
 
 ## Developer's Guide
 
