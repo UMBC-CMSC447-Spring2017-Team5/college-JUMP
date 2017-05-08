@@ -1,10 +1,13 @@
 import datetime
 import os
+import random
+import traceback
 import flask
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
+from werkzeug.exceptions import HTTPException, InternalServerError
 from collegejump import app, forms, models, database, admin_required
 
 @app.route('/static/<path:path>')
@@ -14,7 +17,6 @@ def send_static(path):
 
 @app.route('/', methods=["GET", "POST"])
 def front_page():
-
     # If setup mode is happening, render a FirstSetupUserInfoForm.
     if 'SETUP_KEY' in app.config:
         setup_form = forms.FirstSetupUserInfoForm()
@@ -455,8 +457,35 @@ def week_page(semester_id, week_num):
 
     return flask.render_template('week.html', week=week)
 
+@app.route('/incident/<int:number>')
+@admin_required
+def incident_page(number):
+    try:
+        incident = models.Incident.query.get(number)
+    except NoResultFound:
+        flask.abort(404)
+
+    return flask.render_template("incident.html", incident=incident)
+
 @app.errorhandler(401)
 @app.errorhandler(403)
 @app.errorhandler(404)
+@app.errorhandler(SQLAlchemyError)
 def http_error_page(error):
+    # If we are catching some non-http exception it is an application error.
+    if not isinstance(error, HTTPException):
+        # Replace the specific error with this generic one.
+        original = error
+
+        # Attach additional information for reporting.
+        error = InternalServerError()
+        error.incident_number = random.randint(2**8, 2**16)
+        error.original = original
+        error.traceback = '\n'.join(traceback.format_exception(None, original, original.__traceback__))
+
+        # Log it, so if the recipient isn't an admin, the admins can later find
+        # this in the logs.
+        app.logger.error("Incident %d; please submit the following code to\n%s\n%s",
+                         error.incident_number, app.config['REPOSITORY_ISSUES'], error.traceback)
+
     return flask.render_template('error.html', error=error), error.code

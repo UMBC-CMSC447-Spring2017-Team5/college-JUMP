@@ -41,6 +41,10 @@ app.config['SECRET_KEY'] = binascii.hexlify(os.urandom(32)).decode('utf-8')
 # Set SQLAlchemy options that'll never change
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Set the repository links here, so they're less hard-coded elsewhere
+app.config['REPOSITORY_HOME'] = 'https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP'
+app.config['REPOSITORY_ISSUES'] = app.config['REPOSITORY_HOME'] + '/issues'
+
 # Register a function to run before other requests.
 @app.before_first_request
 def prepare_after_init():

@@ -7,15 +7,27 @@
 <div class="jumbotron">
   <h1>{{ error.code }} {{ error.name }}</h1>
 
+  <p class="text-primary">
   {% if error.code == 500 %}
-  <p class="text-info">
-  You have found an issue with the application programming. Please visit the
-  <a href="https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP">bug tracker</a>
-  and file an issue.
-  </p>
+    This is an issue with the application programming.
+    {% if current_user.admin %}
+      Please report this issue
+      (<span class="highlight">Incident {{ error.incident_number }}</span>)
+      to the
+      <a href="{{ config['REPOSITORY_ISSUES'] }}" class="btn btn-primary">bug tracker</a>
+      and supply this information:
+      <pre>
+      {{- error.traceback -}}
+      </pre>
+    {% else %}
+      Please contact the site administrators, and ask them to report
+      <span class="highlight">Incident {{ error.incident_number }}</span>.
+    {% endif %}
+  {% else %}
+    {{ error.description }}
   {% endif %}
+  </p>
 
-  <p class="text-primary">{{ error.description }}</p>
 </div>
 
 {% endblock %}
