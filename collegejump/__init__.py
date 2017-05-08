@@ -25,7 +25,6 @@ def init_app():
     app.bcrypt.init_app(app)
     app.db.init_app(app)
     app.login_manager.init_app(app)
-    CSRFProtect(app)
 
 try:
     from collegejump._version import __version__
@@ -46,6 +45,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Set the repository links here, so they're less hard-coded elsewhere
 app.config['REPOSITORY_HOME'] = 'https://github.com/UMBC-CMSC447-Spring2017-Team5/college-JUMP'
 app.config['REPOSITORY_ISSUES'] = app.config['REPOSITORY_HOME'] + '/issues'
+
+# Disable CSRF. This is very bad practice, but we are having CSRF issues on the
+# demo website that we cannot resolve in the time allowed.
+app.config['WTF_CSRF_CHECK_DEFAULT'] = False
 
 # Register a function to run before other requests.
 @app.before_first_request
