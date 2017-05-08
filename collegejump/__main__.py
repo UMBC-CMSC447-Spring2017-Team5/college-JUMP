@@ -22,6 +22,10 @@ def main(args):
     level = logging.INFO
     if args.debug:
         level = logging.DEBUG
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setFormatter(logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"))
+    app.logger.addHandler(stdout_handler)
     app.logger.setLevel(level)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(
