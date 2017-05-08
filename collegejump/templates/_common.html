@@ -60,20 +60,30 @@
     <p class="text-primary">
     {{ week.intro | markdown }}
     </p>
+    {% if week.assignments|length > 0 %}
     <hr>
-    <h3>Documents</h3>
-    <h5>Click on a file to download it.</h5>
+    {% with assignment = week.assignments[0] %}
+      <h4>{{ assignment.name }}</h4>
+      {{ assignment.instructions | markdown }}
+    {% endwith %}
+    {% endif %}
+
+    {% if week.documents|length > 0 %}
+    <hr>
+    <h4>Documents</h4>
+    <p class="text-info">Click on a file to download it.</p>
     <div class="row">
       {% for document in week.documents %}
-      <button class="col-xs-6 col-md-2" 
+      <button class="col-xs-6 col-md-2 btn" 
       href="{{ url_for("document_page", document_id=document.id) }}"
       class="btn btn-primary" role="button" aria-pressed="true">
       {{ document.name }}
       </button>
-      {% else %}
-      <p class="text-muted col-xs-12">No documents to show.</p>
       {% endfor %}
     </div>
+    {% else %}
+    <p class="text-muted col-xs-12">No documents to show.</p>
+    {% endif %}
   </div>
 </div>
 {% endmacro %}

@@ -102,6 +102,16 @@ class WeekForm(FlaskForm):
     Use this guide to learn how to manipulate Markdown to write content to this field:\
     https://daringfireball.net/projects/markdown/basics")
 
+    assignment_name = fields.StringField('Assignment Name', [
+        validators.optional(),
+        validators.length(max=models.Assignment.NAME_MAX_LENGTH)])
+
+    assignment_instructions = fields.TextAreaField(
+        'Assignment Instructions',
+        [validators.optional(), validators.length(max=models.Assignment.INSTRUCTIONS_MAX_LENGTH)],
+        description="Students will be presented with a text box, and their \
+                responses sent to their mentors.")
+
     new_document = FileField()
 
     submit = fields.SubmitField('Submit')
@@ -115,7 +125,7 @@ class SemesterForm(FlaskForm):
     order = fields.IntegerField('Order', [validators.required()],
                                 description="Counting order \
                                 determines the order semesters are displayed \
-    on the syllabus poge and assignement sidebar.")
+    on the syllabus page and assignment sidebar.")
 
     submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')

@@ -155,7 +155,7 @@ class Week(app.db.Model):
     semester = app.db.relationship('Semester',
                                    backref=app.db.backref('weeks', order_by=week_num))
 
-    assignments = app.db.relationship('Assignment', secondary=week_assignments)
+    assignments = app.db.relationship('Assignment', secondary=week_assignments, uselist=True)
     documents = app.db.relationship('Document', secondary=week_documents)
 
     __table_args__ = tuple(app.db.UniqueConstraint('semester_id', 'week_num'))
@@ -171,9 +171,11 @@ class Week(app.db.Model):
 
 class Assignment(app.db.Model):
     NAME_MAX_LENGTH = 64
+    INSTRUCTIONS_MAX_LENGTH = 4096
 
     id = app.db.Column(app.db.Integer, primary_key=True)
     name = app.db.Column(app.db.String(NAME_MAX_LENGTH))
+    instructions = app.db.Column(app.db.String(INSTRUCTIONS_MAX_LENGTH))
     questions = app.db.Column(app.db.Text)  # a JSON blob
 
 

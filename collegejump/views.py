@@ -237,7 +237,8 @@ def edit_semester_page(semester_id):
     # new, it doesn't need the delete button or file upload field.
     week_form = forms.WeekForm()
     del week_form.delete
-    del week_form.new_document
+    del week_form.assignment_name
+    del week_form.assignment_instructions
 
     # If the delete button is pressed on the semester, delete it without
     # validating the rest of the input.
@@ -283,12 +284,19 @@ def edit_semester_page(semester_id):
 @admin_required
 def edit_week_page(semester_id, week_num):
     """Edit a particular week in a semester."""
-    form = forms.WeekForm()
 
     # We aren't given the week ID, just the semester ID and week number, so we
     # look it up by those. The database guarantees that the pair is unique.
     week = models.Week.query.filter_by(semester_id=semester_id,
                                        week_num=week_num).one()
+    # Retrieve the single assignment we support. Some day, we should support
+    # multiple.
+    assignment = week.assignments[0] if week.assignments else models.Assignment()
+
+    form = forms.WeekForm(header=week.header,
+                          intro=week.intro,
+                          assignment_name=assignment.name,
+                          assignment_instructions=assignment.instructions)
 
     # If the delete button was pressed, delete the week.
     if flask.request.method == 'POST' and form.delete.data:
@@ -307,11 +315,30 @@ def edit_week_page(semester_id, week_num):
         return flask.redirect(flask.url_for("edit_semester_page",
                                             semester_id=week.semester_id))
 
-    # If the form was submitted, validate it and update the week data from it.
-    if form.validate_on_submit() and form.submit.data is True:
+    # Otherwise, if the form was submitted, validate it and update the week data from it.
+    elif form.validate_on_submit() and form.submit.data is True:
         app.logger.debug("Updating week %r from form", week)
         week.header = form.header.data
         week.intro = form.intro.data
+
+        # Construct an assignment, or re-fill an existing one. Right now, this
+        # is just a single element list, though in the future it should be made
+        # for multiple.
+        assignment.name = form.assignment_name.data \
+                if form.assignment_name else None
+        assignment.instructions = form.assignment_instructions.data \
+                if form.assignment_instructions else None
+
+        # If the assignment has content, ensure it is attached to the week.
+        # Otherwise, leave the week blank.
+        if assignment.name or assignment.instructions:
+            # It has content; make sure it's in the session.
+            if assignment not in app.db.session:
+                app.db.session.add(assignment)
+            week.assignments = [assignment] # we only support 1
+
+        else:
+            week.assignments = []
 
         # If a file was uploaded, extract it into a Document, store that, and
         # associate it with this week.
@@ -336,12 +363,6 @@ def edit_week_page(semester_id, week_num):
         return flask.redirect(flask.url_for('week_page',
                                             semester_id=semester_id,
                                             week_num=week_num))
-
-    # We reach this point on GET or on unsuccessful POST. Ensure the form is
-    # pre-filled with data if it's blank, (otherwise preserve data) and then
-    # render everything.
-    form.header.data = form.header.data or week.header
-    form.intro.data = form.intro.data or week.intro
 
     return flask.render_template('edit_week.html',
                                  week=week,
