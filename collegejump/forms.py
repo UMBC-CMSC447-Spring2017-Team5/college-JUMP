@@ -2,7 +2,8 @@ from urllib.parse import  urlparse, urljoin
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from wtforms import fields, validators, widgets, ValidationError
+from wtforms import fields, validators, widgets
+from wtforms.validators import StopValidation, ValidationError
 import flask
 
 from collegejump import app, models
@@ -52,16 +53,39 @@ class RedirectForm(FlaskForm):
 
 
 class LoginForm(RedirectForm):
-    email = fields.StringField('Email', [
-        validators.required(),
-        validators.Email(),
-        validators.length(max=models.User.EMAIL_MAX_LENGTH)],
-                               description="Email addresses  are case INSENSITIVE.")
+    email = fields.StringField('Email',
+                               filters=[lambda s: s.lower() if s else s],
+                               validators = [
+                                   validators.required(),
+                                   validators.Email(),
+                                   validators.length(max=models.User.EMAIL_MAX_LENGTH)],
+                               description="Email addresses are case insensitive.")
 
-    password = fields.PasswordField('Password',
-                                    description="Never share tell your password with anyone.")
+    password = fields.PasswordField('Password', [validators.required()],
+                                    description="Never share your password with anyone.")
 
     submit = fields.SubmitField('Submit')
+
+    user_model = None
+
+    # pylint: disable=no-self-argument,no-self-use
+    def validate_email(form, field):
+        """One-off validator to ensure that the given user exists."""
+        # Get the user and store it, for convenience.
+        try:
+            form.user_model = models.User.query.filter_by(email=field.data).one()
+        except NoResultFound:
+            raise StopValidation('No user with that email exists')
+
+    # pylint: disable=no-self-argument,no-self-use
+    def validate_password(form, field):
+        """One-off validator to ensure that the password matches. This always
+        runs after the email validator, so if it passed, we can assume `_user`
+        is filled.
+        """
+        if form.user_model is not None:
+            if not form.user_model.check_password(field.data):
+                raise ValidationError('Incorrect password')
 
 class WeekForm(FlaskForm):
     """A form for filling out a single week in a semester."""

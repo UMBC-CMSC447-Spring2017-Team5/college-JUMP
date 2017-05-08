@@ -74,37 +74,20 @@ def login_page():
     if current_user.is_authenticated:
         return form.redirect()
 
-    # If the login form is successfully POSTed to us here, try to log the user
-    # in. Otherwise, render the page as normal.
+    # If the form was POSTed, validate it. If it passes validation, then the
+    # User's credentials are correct, and they may be logged in.
     if form.validate_on_submit():
-        email = form.email.data.lower()
-        password = form.password.data
-
-        try:
-            user = models.User.query.filter_by(email=email.lower()).one()
-            if user.check_password(password):
-                # Modify the session so that the user is logged in.
-                success = login_user(user)
-                if success:
-                    app.logger.info("Successful login by %r", user)
-                    flask.flash('Login successful.', 'success')
-                    return form.redirect()
-                else:
-                    # If the login failed here, it's not because of the
-                    # password. Maybe the user is inactive?
-                    app.logger.warning("Unexpected login failure by %r", user)
-            else:
-                app.logger.info("Wrong password for %r", user)
-
-        except MultipleResultsFound:
-            # This is actually really bad, and means the database is very broken.
-            app.logger.error("Multiple results found on what should\
-                              be unique email %r", email.lower())
-
-        except NoResultFound:
-            app.logger.info("Attempt to login with unknown email %r", email.lower())
-
-        flask.flash('Login failed.', 'error')
+        # During validation, the user object is stored as `user_model`.
+        success = login_user(form.user_model)
+        if success:
+            app.logger.info("Successful login by %r", form.user_model)
+            flask.flash('Login successful.', 'success')
+            return form.redirect()
+        else:
+            # If the login failed here, it's not because of the
+            # password. Maybe the user is inactive?
+            app.logger.warning("Unexpected login failure by %r", form.user_model)
+            flask.flash('Unexpected login failure', 'error')
 
     return flask.render_template('login.html', form=form)
 
@@ -391,18 +374,12 @@ def edit_accounts_page():
     # other database properties. If we encounter a database error at this
     # point, it is an actual error.
     if form.validate_on_submit():
-        try:
-            user = form.to_user_model()
-            app.db.session.add(user)
-            app.db.session.commit()
+        user = form.to_user_model()
+        app.db.session.add(user)
+        app.db.session.commit()
 
-            app.logger.info("Created user %r in the database", user)
-            return flask.redirect(flask.url_for('edit_accounts_page'))
-
-        except SQLAlchemyError as e:
-            app.logger.error('User input caused: %s', e)
-            flask.flash('Database error', 'error')
-            # Upon this error, do not redirect, so that the form remains filled.
+        app.logger.info("Created user %r in the database", user)
+        return flask.redirect(flask.url_for('edit_accounts_page'))
 
     return flask.render_template('edit_accounts.html', form=form,
                                  users=models.User.query.all())
@@ -423,12 +400,9 @@ def database_page():
         # The data from the file is in bytes-like in form.zipfile.data, which we
         # pass to the import function.
         app.logger.info("Importing database from uploaded file by %r", current_user)
-        try:
-            database.import_db(form.zipfile.data)
-            app.logger.info("Database import complete.")
-            return flask.redirect(flask.url_for("front_page"))
-        except SQLAlchemyError:
-            raise
+        database.import_db(form.zipfile.data)
+        app.logger.info("Database import complete.")
+        return flask.redirect(flask.url_for("front_page"))
 
     return flask.render_template('database.html', form=form)
 
