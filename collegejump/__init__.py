@@ -10,6 +10,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
+from flask_wtf.csrf import CSRFProtect
 
 # Flask convention is to use `app`
 app = Flask(__name__) # pylint: disable=invalid-name
@@ -24,6 +25,7 @@ def init_app():
     app.bcrypt.init_app(app)
     app.db.init_app(app)
     app.login_manager.init_app(app)
+    CSRFProtect(app)
 
 try:
     from collegejump._version import __version__
