@@ -130,6 +130,23 @@ class SemesterForm(FlaskForm):
     submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
 
+    # pylint: disable=no-self-argument,no-self-use
+    def validate_order(form, field):
+        """One-off validator to ensure that the given order is unique to this
+        semester, and no other exists in the database.
+        """
+        # If the data matches the object used to construct the form, do not search the database.
+        if field.data == field.object_data:
+            return
+
+        # Retrieve a matching semester, if there is one. If NoResultFound, then
+        # there's no issue.
+        try:
+            other = models.Semester.query.filter_by(order=field.data).one()
+            raise ValidationError('The semester {!r} has the same order'.format(other.name))
+        except NoResultFound:
+            pass
+
 class UserInfoForm(FlaskForm):
     name = fields.StringField('Name', [
         validators.required(),

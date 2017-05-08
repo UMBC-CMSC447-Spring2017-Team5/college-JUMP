@@ -196,3 +196,14 @@ class Document(app.db.Model):
     def file_like(self):
         """Return a file-like representation of the data of this file."""
         return io.BytesIO(self.data)
+
+class Submission(app.db.Model):
+    id = app.db.Column(app.db.Integer, primary_key=True)
+
+    text = app.db.Column(app.db.Text)
+
+    author_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'))
+    author = app.db.relationship('User')
+
+    assignment_id = app.db.Column(app.db.Integer, app.db.ForeignKey('assignment.id'))
+    assignment = app.db.relationship('Assignment')
