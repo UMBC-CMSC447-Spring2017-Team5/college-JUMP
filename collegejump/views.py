@@ -474,12 +474,47 @@ def week_page(semester_id, week_num):
             .filter_by(author=current_user, assignment=assignment) \
             .order_by('timestamp desc')
 
+    submissions_to_grade = models.Submission.query \
+            .filter(models.Submission.author_id.in_([m.id for m in current_user.mentees]),
+                    models.Submission.assignment == assignment) \
+            .order_by('timestamp desc')
+
     return flask.render_template('week.html',
                                  week=week,
                                  submissions=submissions,
                                  submissions_to_grade=submissions_to_grade,
                                  answer_form=answer_form)
 
+@app.route('/submission/<submission_id>', methods=["GET", "POST"])
+@login_required
+def feedback_page(submission_id):
+    # Get the `returnto` or `next` query string, otherwise leave blank.
+    returnto = flask.request.args.get('returnto') \
+            or flask.request.args.get('next') \
+            or ''
+
+    # Look up the response.
+    submission = models.Submission.query.get(submission_id)
+
+    if current_user not in submission.author.mentors:
+        flask.abort(403)
+
+    feedback_form = forms.FeedbackForm(returnto=returnto)
+
+    if feedback_form.validate_on_submit():
+        feedback = models.Feedback()
+        feedback.submission = submission
+        feedback.text = feedback_form.feedback.data
+        feedback.timestamp = datetime.datetime.now()
+        feedback.author = current_user
+
+        app.db.session.add(feedback)
+        app.db.session.commit()
+        return feedback_form.redirect()
+
+    return flask.render_template("feedback.html",
+                                 submission=submission,
+                                 feedback_form=feedback_form)
 
 @app.errorhandler(401)
 @app.errorhandler(403)

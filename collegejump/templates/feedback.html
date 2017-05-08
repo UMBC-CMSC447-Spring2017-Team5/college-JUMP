@@ -1,0 +1,16 @@
+{% extends "theme.html" %}
+{% import "_common.html" as common %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Give Feedback{% endblock %}
+
+{% block content %}
+
+{{ common.submission(submission) }}
+
+{{ wtf.quick_form(feedback_form,
+                  action="", method="POST",
+                  form_type="horizontal",
+                  button_map={'submit': 'primary'}) }}
+
+{% endblock %}

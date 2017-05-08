@@ -99,27 +99,39 @@
 </div>
 {% endmacro %}
 
-{% macro submission(submission) %}
+{% macro submission(submission, feedback_link=False, returnto=None) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3>Response to {{ submission.assignment.name }}
-      <small>{{ submission.timestamp.strftime("%B %d, %Y") }}</small>
+      <small>
+        {{ submission.timestamp.strftime("%B %d, %Y") }}
+        {% if feedback_link %}
+        <a href="{{ url_for("feedback_page",
+                            submission_id=submission.id,
+                            returnto=returnto) }}">
+          Give Feedback
+        </a>
+        {% endif %}
+      </small>
     </h3>
   </div>
   <div class="panel-body">
     <p>{{submission.assignment.instructions }}</p>
     <blockquote>
       {{submission.text}}
-      <footer>by {{submission.author.name}}</footer>
+      <footer>{{submission.author.name}}</footer>
     </blockquote>
 
-    {% for feedback in submission.all_feedback %}
+    {% if submission.all_feedback %}
     <hr>
+    <h4>Feedback</h4>
+    {% for feedback in submission.all_feedback %}
     <blockquote>
       {{ feedback.text }}
-      <footer>by {{feedback.author.name}}</footer>
+      <footer>{{feedback.author.name}}</footer>
     </blockquote>
     {% endfor %}
+    {% endif %}
   </div>
 </div>
 {% endmacro %}

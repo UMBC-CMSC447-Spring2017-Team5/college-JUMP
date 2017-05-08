@@ -302,5 +302,9 @@ class AnswerForm(FlaskForm):
     response = fields.TextAreaField('Response')
     submit = fields.SubmitField('Submit')
 
+class FeedbackForm(RedirectForm):
+    feedback = fields.TextAreaField('Feedback')
+    submit = fields.SubmitField('Submit')
+
 class DatabaseUploadForm(FlaskForm):
     zipfile = FileField(validators=[FileRequired()])

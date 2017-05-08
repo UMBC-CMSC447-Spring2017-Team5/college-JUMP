@@ -11,4 +11,12 @@
 {{ common.submission(submission) }}
 {% endfor %}
 
+{% for submission in submissions_to_grade %}
+{{ common.submission(submission,
+                     feedback_link=True,
+                     returnto=url_for("week_page",
+                                      semester_id=week.semester_id,
+                                      week_num=week.week_num)) }}
+{% endfor %}
+
 {% endblock %}
