@@ -55,7 +55,7 @@ def front_page():
 
 @app.route('/calendar')
 def calendar_page():
-    return flask.render_template('calendar.html', gcal_link="dummylink")
+    return flask.render_template('calendar.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -160,6 +160,8 @@ def edit_announcement_page(announcement_id=None):
     if announcement_id is not None:
         new_announcement = False
         announcement = models.Announcement.query.get(announcement_id)
+        if announcement is None:
+            return flask.abort(404)
     else:
         new_announcement = True
         announcement = models.Announcement(current_user.email.lower(), '', '')
@@ -228,6 +230,8 @@ def edit_semester_page(semester_id):
     semester = models.Semester.query\
             .options(joinedload(models.Semester.weeks)) \
             .get(semester_id)
+    if semester is None:
+        return flask.abort(404)
 
     # Construct a form for editing the current semester.
     semester_form = forms.SemesterForm(name=semester.name,
@@ -287,8 +291,11 @@ def edit_week_page(semester_id, week_num):
 
     # We aren't given the week ID, just the semester ID and week number, so we
     # look it up by those. The database guarantees that the pair is unique.
-    week = models.Week.query.filter_by(semester_id=semester_id,
-                                       week_num=week_num).one()
+    try:
+        week = models.Week.query.filter_by(semester_id=semester_id,
+                                           week_num=week_num).one()
+    except NoResultFound:
+        return flask.abort(404)
     # Retrieve the single assignment we support. Some day, we should support
     # multiple.
     assignment = week.assignments[0] if week.assignments else models.Assignment()
@@ -374,6 +381,8 @@ def edit_week_page(semester_id, week_num):
 def announcement_page(announcement_id=None):
     if announcement_id is not None:
         announcement = models.Announcement.query.get(announcement_id)
+        if announcement is None:
+            return flask.abort(404)
         return flask.render_template('announcement.html', announcement=announcement)
 
     # Otherwise
@@ -409,6 +418,8 @@ def edit_accounts_page():
 @login_required
 def document_page(document_id):
     document = models.Document.query.get(document_id)
+    if document is None:
+        return flask.abort(404)
     return flask.send_file(document.file_like(),
                            attachment_filename=document.name,
                            as_attachment=True)
@@ -442,8 +453,11 @@ def database_export_endpoint():
 def week_page(semester_id, week_num):
     # We aren't given the week ID, just the semester ID and week number, so we
     # look it up by those. The database guarantees that the pair is unique.
-    week = models.Week.query.filter_by(semester_id=semester_id,
-                                       week_num=week_num).one()
+    try:
+        week = models.Week.query.filter_by(semester_id=semester_id,
+                                           week_num=week_num).one()
+    except NoResultFound:
+        return flask.abort(404)
 
     # Select the first assignment if any.
     assignment = week.assignments[0] if week.assignments else None
@@ -495,9 +509,11 @@ def feedback_page(submission_id):
 
     # Look up the response.
     submission = models.Submission.query.get(submission_id)
+    if submission is None:
+        return flask.abort(404)
 
     if current_user not in submission.author.mentors:
-        flask.abort(403)
+        return flask.abort(403)
 
     feedback_form = forms.FeedbackForm(returnto=returnto)
 
