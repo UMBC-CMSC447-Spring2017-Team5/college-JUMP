@@ -1,3 +1,4 @@
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% macro announcement(announcement, link=True, edit_link=False, form_shim=False, smalltext=None) %}
 
@@ -40,7 +41,7 @@
 
 {% endmacro %}
 
-{% macro week(week, edit_link=False) %}
+{% macro week(week, answer_form=None, edit_link=False) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3>
@@ -65,6 +66,16 @@
     {% with assignment = week.assignments[0] %}
       <h4>{{ assignment.name }}</h4>
       {{ assignment.instructions | markdown }}
+
+      {% if answer_form %}
+        {{ wtf.quick_form(answer_form, method="POST",
+                          action="",
+                          form_type='horizontal',
+                          button_map={'submit': 'primary'}) }}
+        <p class="text-muted">
+        Responses will be submitted to your mentors for grading.
+      </p>
+      {% endif %}
     {% endwith %}
     {% endif %}
 
@@ -84,6 +95,31 @@
     {% else %}
     <p class="text-muted col-xs-12">No documents to show.</p>
     {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro submission(submission) %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>Response to {{ submission.assignment.name }}
+      <small>{{ submission.timestamp.strftime("%B %d, %Y") }}</small>
+    </h3>
+  </div>
+  <div class="panel-body">
+    <p>{{submission.assignment.instructions }}</p>
+    <blockquote>
+      {{submission.text}}
+      <footer>by {{submission.author.name}}</footer>
+    </blockquote>
+
+    {% for feedback in submission.all_feedback %}
+    <hr>
+    <blockquote>
+      {{ feedback.text }}
+      <footer>by {{feedback.author.name}}</footer>
+    </blockquote>
+    {% endfor %}
   </div>
 </div>
 {% endmacro %}

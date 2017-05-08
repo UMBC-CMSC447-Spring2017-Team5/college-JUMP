@@ -298,5 +298,9 @@ class AnnouncementForm(FlaskForm):
     preview = fields.SubmitField('Preview')
     delete = fields.SubmitField('Delete')
 
+class AnswerForm(FlaskForm):
+    response = fields.TextAreaField('Response')
+    submit = fields.SubmitField('Submit')
+
 class DatabaseUploadForm(FlaskForm):
     zipfile = FileField(validators=[FileRequired()])

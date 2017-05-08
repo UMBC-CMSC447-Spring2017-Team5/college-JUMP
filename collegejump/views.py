@@ -437,7 +437,7 @@ def database_export_endpoint():
                            mimetype='application/zip')
 
 
-@app.route('/semester/<int:semester_id>/week/<int:week_num>')
+@app.route('/semester/<int:semester_id>/week/<int:week_num>', methods=["GET", "POST"])
 @login_required
 def week_page(semester_id, week_num):
     # We aren't given the week ID, just the semester ID and week number, so we
@@ -445,12 +445,41 @@ def week_page(semester_id, week_num):
     week = models.Week.query.filter_by(semester_id=semester_id,
                                        week_num=week_num).one()
 
+    # Select the first assignment if any.
+    assignment = week.assignments[0] if week.assignments else None
+
     # Unless the user is an admin, ensure that the current user is assigned to
     # the semester before we allow them to view it.
     if (not current_user.admin) and (week.semester not in current_user.semesters):
         return flask.abort(403)
 
-    return flask.render_template('week.html', week=week)
+    # If there is an assignment, prepare a form to receive submissions.
+    answer_form = forms.AnswerForm() if assignment else None
+
+    if answer_form and answer_form.validate_on_submit():
+        # This is an answer submission, so create a Submission.
+        submission = models.Submission()
+        submission.text = answer_form.response.data
+        submission.timestamp = datetime.datetime.now()
+        submission.author = current_user
+        submission.assignment = assignment
+
+        app.db.session.add(submission)
+        app.db.session.commit()
+        return flask.redirect(flask.url_for("week_page",
+                                            semester_id=semester_id,
+                                            week_num=week_num))
+
+    submissions = models.Submission.query \
+            .filter_by(author=current_user, assignment=assignment) \
+            .order_by('timestamp desc')
+
+    return flask.render_template('week.html',
+                                 week=week,
+                                 submissions=submissions,
+                                 submissions_to_grade=submissions_to_grade,
+                                 answer_form=answer_form)
+
 
 @app.errorhandler(401)
 @app.errorhandler(403)

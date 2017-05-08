@@ -5,6 +5,10 @@
 
 {% block content %}
 
-{{ common.week(week, edit_link=current_user.admin) }}
+{{ common.week(week, answer_form, edit_link=current_user.admin) }}
+
+{% for submission in submissions %}
+{{ common.submission(submission) }}
+{% endfor %}
 
 {% endblock %}

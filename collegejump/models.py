@@ -201,9 +201,22 @@ class Submission(app.db.Model):
     id = app.db.Column(app.db.Integer, primary_key=True)
 
     text = app.db.Column(app.db.Text)
+    timestamp = app.db.Column(app.db.DateTime())
 
     author_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'))
     author = app.db.relationship('User')
 
     assignment_id = app.db.Column(app.db.Integer, app.db.ForeignKey('assignment.id'))
-    assignment = app.db.relationship('Assignment')
+    assignment = app.db.relationship('Assignment', backref='submissions')
+
+class Feedback(app.db.Model):
+    id = app.db.Column(app.db.Integer, primary_key=True)
+
+    text = app.db.Column(app.db.Text)
+    timestamp = app.db.Column(app.db.DateTime())
+
+    submission_id = app.db.Column(app.db.Integer, app.db.ForeignKey('submission.id'))
+    submission = app.db.relationship('Submission', backref='all_feedback')
+
+    author_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'))
+    author = app.db.relationship('User')
