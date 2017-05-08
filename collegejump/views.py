@@ -457,16 +457,6 @@ def week_page(semester_id, week_num):
 
     return flask.render_template('week.html', week=week)
 
-@app.route('/incident/<int:number>')
-@admin_required
-def incident_page(number):
-    try:
-        incident = models.Incident.query.get(number)
-    except NoResultFound:
-        flask.abort(404)
-
-    return flask.render_template("incident.html", incident=incident)
-
 @app.errorhandler(401)
 @app.errorhandler(403)
 @app.errorhandler(404)
