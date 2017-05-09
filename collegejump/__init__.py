@@ -25,6 +25,7 @@ def init_app():
     app.bcrypt.init_app(app)
     app.db.init_app(app)
     app.login_manager.init_app(app)
+    CSRFProtect(app)
 
 try:
     from collegejump._version import __version__
@@ -48,7 +49,7 @@ app.config['REPOSITORY_ISSUES'] = app.config['REPOSITORY_HOME'] + '/issues'
 
 # Disable CSRF. This is very bad practice, but we are having CSRF issues on the
 # demo website that we cannot resolve in the time allowed.
-app.config['WTF_CSRF_CHECK_DEFAULT'] = False
+app.config['WTF_CSRF_ENABLED'] = False
 
 # Register a function to run before other requests.
 @app.before_first_request
