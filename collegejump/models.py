@@ -93,19 +93,18 @@ class User(app.db.Model, UserMixin):
             # If the user is an admin, show all semesters.
             return Semester.query.order_by(Semester.order.desc())
 
-        elif len(self.mentees) == 0:
+        elif self.mentees:
             # If the user is a student, show just the enrolled semesters.
             return sorted(self.semesters, key=lambda s: s.order, reverse=True)
 
-        else:
-            # If the user is a mentor, include themselves and their students as
-            # persons of interest, then query on those semesters.
-            poi = [self] + self.mentees
-            poi_ids = [p.id for p in poi]
-            return app.db.session.query(Semester) \
-                                 .join(enrollment) \
-                                 .filter(enrollment.c.user_id.in_(poi_ids)) \
-                                 .order_by(Semester.order.desc())
+        # If the user is a mentor, include themselves and their students as
+        # persons of interest, then query on those semesters.
+        poi = [self] + self.mentees
+        poi_ids = [p.id for p in poi]
+        return app.db.session.query(Semester) \
+                             .join(enrollment) \
+                             .filter(enrollment.c.user_id.in_(poi_ids)) \
+                             .order_by(Semester.order.desc())
 
     @staticmethod
     @app.login_manager.user_loader
