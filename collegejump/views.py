@@ -462,9 +462,10 @@ def week_page(semester_id, week_num):
     # Select the first assignment if any.
     assignment = week.assignments[0] if week.assignments else None
 
-    # Unless the user is an admin, ensure that the current user is assigned to
-    # the semester before we allow them to view it.
-    if (not current_user.admin) and (week.semester not in current_user.semesters):
+    # The user must be 'interested' in this semester to view it: either they are
+    # an admin, have a mentee enrolled in the semester, or are enrolled
+    # themselves.
+    if week.semester_id not in [s.id for s in current_user.interested_semesters()]:
         return flask.abort(403)
 
     # If there is an assignment, prepare a form to receive submissions.
