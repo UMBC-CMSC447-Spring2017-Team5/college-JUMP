@@ -11,7 +11,7 @@
 {{ common.submission(submission) }}
 {% endfor %}
 
-{% for submission in submissions_to_grade %}
+{% for submission in current_user.submissions_for_feedback(week.assignments[0]) %}
 {{ common.submission(submission,
                      feedback_link=True,
                      returnto=url_for("week_page",

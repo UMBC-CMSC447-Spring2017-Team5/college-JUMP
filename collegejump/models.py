@@ -106,6 +106,21 @@ class User(app.db.Model, UserMixin):
                              .filter(enrollment.c.user_id.in_(poi_ids)) \
                              .order_by(Semester.order.desc())
 
+    def submissions_for_feedback(self, assignment):
+        """Return a generator for all submissions on the assignment in
+        descending order of timestamp which the user has permission to give
+        feedback on. For mentors, this is any submission their mentees have
+        made. For admins, this is all submissions.
+        """
+        if self.admin:
+            return sorted(assignment.submissions, key=lambda s: s.timestamp, reverse=True)
+
+        mentee_ids = [m.id for m in self.mentees]
+        return app.db.session.query(Submission) \
+                             .filter_by(assignment=assignment) \
+                             .filter(Submission.author_id.in_(mentee_ids)) \
+                             .order_by(Submission.timestamp.desc())
+
     @staticmethod
     @app.login_manager.user_loader
     def load_user(user_id):
