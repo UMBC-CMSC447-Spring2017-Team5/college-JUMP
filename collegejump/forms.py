@@ -282,7 +282,7 @@ class AnnouncementForm(FlaskForm):
         validators.required(),
         validators.length(max=models.Announcement.TITLE_MAX_LENGTH)],
                                description="Enter a descriptive title \
-                               for the new anouncement here.")
+                               for the new announcement here.")
 
     content = fields.StringField('Content', [
         validators.required(),
@@ -291,8 +291,9 @@ class AnnouncementForm(FlaskForm):
                                  description="Enter content for the announcement.\
                                All content entered \
         here will be viewable on the home page by all users - including guests. \
-        Use this guide to learn how to manipulate Markdown to write content to this field: \
-        https://daringfireball.net/projects/markdown/basics")
+        Learning to use Markdown will help further customize the content displayed. \
+        Use this guide to learn how to manipulate Markdown: <br> \
+        <a href=https://daringfireball.net/projects/markdown/basics>Markdown Guide</a>")
 
     submit = fields.SubmitField('Submit')
     preview = fields.SubmitField('Preview')
