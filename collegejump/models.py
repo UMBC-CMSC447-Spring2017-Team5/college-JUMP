@@ -93,7 +93,7 @@ class User(app.db.Model, UserMixin):
             # If the user is an admin, show all semesters.
             return Semester.query.order_by(Semester.order.desc())
 
-        elif self.mentees:
+        elif not self.mentees:
             # If the user is a student, show just the enrolled semesters.
             return sorted(self.semesters, key=lambda s: s.order, reverse=True)
 
