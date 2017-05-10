@@ -87,7 +87,7 @@
   <nav id="syllabus-nav">
     <ul class="nav nav-pills nav-stacked">
       {% if current_user.is_authenticated %}
-        {% for semester in current_user.semesters %}
+        {% for semester in current_user.interested_semesters() %}
            <li><h6><b>Semester: {{ semester.name }}</b></h6></li>
          <ul class="nav flex-column">
           {% for week in semester.weeks %}

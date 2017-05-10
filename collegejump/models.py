@@ -83,6 +83,29 @@ class User(app.db.Model, UserMixin):
         copy. Returns True or False."""
         return app.bcrypt.check_password_hash(self.password, plaintext)
 
+    def interested_semesters(self):
+        """Return a generator for all semesters in descending order in which the
+        user is 'interested.' That is, ones in which they are enrolled, ones in
+        which a mentee of their is enrolled, or all of them (if they are an
+        administrator).
+        """
+        if self.admin:
+            # If the user is an admin, show all semesters.
+            return Semester.query.order_by(Semester.order.desc())
+
+        elif self.mentees:
+            # If the user is a student, show just the enrolled semesters.
+            return sorted(self.semesters, key=lambda s: s.order, reverse=True)
+
+        # If the user is a mentor, include themselves and their students as
+        # persons of interest, then query on those semesters.
+        poi = [self] + self.mentees
+        poi_ids = [p.id for p in poi]
+        return app.db.session.query(Semester) \
+                             .join(enrollment) \
+                             .filter(enrollment.c.user_id.in_(poi_ids)) \
+                             .order_by(Semester.order.desc())
+
     @staticmethod
     @app.login_manager.user_loader
     def load_user(user_id):
