@@ -289,11 +289,9 @@ class AnnouncementForm(FlaskForm):
         validators.length(max=models.Announcement.CONTENT_MAX_LENGTH)],
                                  widget=widgets.TextArea(),
                                  description="Enter content for the announcement.\
-                               All content entered \
-        here will be viewable on the home page by all users - including guests. \
-        Learning to use Markdown will help further customize the content displayed. \
-        Use this guide to learn how to manipulate Markdown: <br> \
-        <a href=https://daringfireball.net/projects/markdown/basics>Markdown Guide</a>")
+                               Markdown enabled. Use \
+        <a href=https://daringfireball.net/projects/markdown/basics>this guide</a> \
+        to learn more.")
 
     submit = fields.SubmitField('Submit')
     preview = fields.SubmitField('Preview')
