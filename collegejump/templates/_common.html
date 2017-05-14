@@ -1,4 +1,5 @@
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
 
 {% macro announcement(announcement, link=True, edit_link=False, form_shim=False, smalltext=None) %}
 
@@ -41,7 +42,7 @@
 
 {% endmacro %}
 
-{% macro week(week, answer_form=None, edit_link=False) %}
+{% macro week(week, answer_form=None, edit_link=False, document_removal_links=False) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3>
@@ -92,6 +93,12 @@
            aria-pressed="true">
           {{ document.name }}
         </a>
+        {% if document_removal_links %}
+        {{ utils.form_button(url_for('remove_document',
+                                     document_id=document.id,
+                                     next=request.path),
+                             utils.icon('remove')) }}
+        {% endif %}
       </li>
       {% endfor %}
     </ul>

@@ -423,6 +423,22 @@ def document_page(document_id):
     return flask.send_file(document.file_like(),
                            attachment_filename=document.name,
                            as_attachment=True)
+@app.route('/document/<int:document_id>/remove', methods=["POST"])
+@admin_required
+def remove_document(document_id):
+    # Get the `returnto` or `next` query string, otherwise leave blank.
+    returnto = flask.request.args.get('returnto') \
+            or flask.request.args.get('next') \
+            or flask.url_for('front_page')
+
+    redirectform = forms.RedirectForm(returnto=returnto)
+
+    # Delete the document. We don't know if it exists when this happens.
+    models.Document.query.filter_by(id=document_id).delete()
+    app.db.session.commit()
+
+    # Redirect back to whereever we came from, ensuring the URL is safe.
+    return redirectform.redirect()
 
 @app.route('/database/', methods=['GET', 'POST'])
 @admin_required
