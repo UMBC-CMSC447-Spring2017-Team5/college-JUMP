@@ -11,6 +11,7 @@
 {{ common.submission(submission) }}
 {% endfor %}
 
+{% if week.assignments | length > 0 %}
 {% for submission in current_user.submissions_for_feedback(week.assignments[0]) %}
 {{ common.submission(submission,
                      feedback_link=True,
@@ -18,5 +19,6 @@
                                       semester_id=week.semester_id,
                                       week_num=week.week_num)) }}
 {% endfor %}
+{% endif %}
 
 {% endblock %}

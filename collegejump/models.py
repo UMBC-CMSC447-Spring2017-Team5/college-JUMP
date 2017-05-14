@@ -113,10 +113,7 @@ class User(app.db.Model, UserMixin):
         made. For admins, this is all submissions.
         """
         if self.admin:
-            if assignment.submissions:
-                return sorted(assignment.submissions, key=lambda s: s.timestamp, reverse=True)
-            else:
-                return []
+            return sorted(assignment.submissions, key=lambda s: s.timestamp, reverse=True)
 
         mentee_ids = [m.id for m in self.mentees]
         return app.db.session.query(Submission) \
