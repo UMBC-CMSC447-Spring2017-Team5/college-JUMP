@@ -112,7 +112,9 @@ class WeekForm(FlaskForm):
         description="Students will be presented with a text box, and their \
                 responses sent to their mentors.")
 
-    new_document = FileField()
+    new_document = FileField(description="Add one file for download by students. "
+                                         "Multiple files may be added by submitting "
+                                         "this form multiple times.")
 
     submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
