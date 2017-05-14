@@ -83,15 +83,18 @@
     <hr>
     <h4>Documents</h4>
     <p class="text-info">Click on a file to download it.</p>
-    <div class="row">
+    <ul class="list-inline">
       {% for document in week.documents %}
-      <button class="col-xs-6 col-md-2 btn" 
-      href="{{ url_for("document_page", document_id=document.id) }}"
-      class="btn btn-primary" role="button" aria-pressed="true">
-      {{ document.name }}
-      </button>
+      <li>
+        <a class="btn btn-info" 
+           href="{{ url_for("document_page", document_id=document.id) }}"
+           role="button"
+           aria-pressed="true">
+          {{ document.name }}
+        </a>
+      </li>
       {% endfor %}
-    </div>
+    </ul>
     {% else %}
     <p class="text-muted col-xs-12">No documents to show.</p>
     {% endif %}
