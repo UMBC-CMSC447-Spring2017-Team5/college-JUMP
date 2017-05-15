@@ -523,8 +523,11 @@ def submission_attachment_page(submission_id):
     if submission is None:
         return flask.abort(404)
 
-    # TODO: some day, check permissions. The accessor should be an admin, the
-    # author, or a mentor of the author.
+    # Only let the author, the admins, and the author's mentors download the file.
+    if (not current_user == submission.author) \
+            and (not current_user.admin) \
+            and (current_user not in submission.author.mentors):
+        return flask.abort(403)
 
     return flask.send_file(submission.attachment_file_like(),
                            attachment_filename=submission.filename,
@@ -543,7 +546,7 @@ def feedback_page(submission_id):
     if submission is None:
         return flask.abort(404)
 
-    if current_user not in submission.author.mentors:
+    if (not current_user.admin) and (current_user not in submission.author.mentors):
         return flask.abort(403)
 
     feedback_form = forms.FeedbackForm(returnto=returnto)
