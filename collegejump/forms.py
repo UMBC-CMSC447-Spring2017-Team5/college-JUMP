@@ -149,7 +149,7 @@ class SemesterForm(FlaskForm):
         except NoResultFound:
             pass
 
-class UserInfoForm(FlaskForm):
+class UserForm(FlaskForm):
     name = fields.StringField('Name', [
         validators.required(),
         validators.length(max=models.User.NAME_MAX_LENGTH)],
@@ -182,6 +182,16 @@ class UserInfoForm(FlaskForm):
 
     submit = fields.SubmitField('Submit')
     delete = fields.SubmitField('Delete')
+
+    def __init__(self, *args, require_password=True, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if require_password:
+            self.password.validators.append(validators.required())
+            self.password.flags.required = True
+        else:
+            self.password.validators.append(validators.optional())
+            self.password.flags.required = False
 
     def populate_semesters(self):
         """Populate options for semester enrollment. Must be called after instantiation and before
@@ -254,8 +264,7 @@ class UserInfoForm(FlaskForm):
             if not exists:
                 raise ValidationError('No user exists with email {}'.format(mentor_email))
 
-
-class FirstSetupUserInfoForm(UserInfoForm):
+class FirstSetupUserInfoForm(UserForm):
     setup_key = fields.StringField('Setup Key', [
         validators.required(),
         validators.Regexp('[a-zA-Z0-9]{32}',

@@ -111,11 +111,12 @@ def account_settings_page(user_id):
     # Construct a pre-filled form.
     # Populate semester data in the form. This is separate from the initializer
     # because it requires a database query.
-    form = forms.UserInfoForm(name=user.name,
-                              email=user.email.lower(),
-                              admin=user.admin,
-                              mentors=','.join([m.email for m in user.mentors]),
-                              semesters_enrolled=[s.id for s in user.semesters])
+    form = forms.UserForm(name=user.name,
+                          email=user.email.lower(),
+                          admin=user.admin,
+                          mentors=','.join([m.email for m in user.mentors]),
+                          semesters_enrolled=[s.id for s in user.semesters],
+                          require_password=False) # can change password, don't have to
     form.populate_semesters()
 
     # If the user is not an admin, serve them a limited form. If the user
@@ -396,7 +397,7 @@ def announcement_page(announcement_id=None):
 @admin_required
 def edit_accounts_page():
     # Generate a form for a new user. Since it is a new user, it does not need the delete field.
-    form = forms.UserInfoForm()
+    form = forms.UserForm()
     del form.delete
     form.populate_semesters()
 
