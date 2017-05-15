@@ -100,13 +100,16 @@ def logout_page():
 @app.route('/account/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def account_settings_page(user_id):
-    # Load the user up here before we process the form so that we can use it to
-    user = models.User.query.get(user_id)
-
     # Unless the user is editing their own account, or is an admin, deny
     # access.
-    if (not current_user.admin) and (current_user.id != user.id):
+    if (not current_user.admin) and (current_user.id != user_id):
         return flask.abort(403)
+
+    # Load the user. If we have reached this point, the user is authorized to
+    # edit this account, so if this user ID doesn't exist, throw a NotFound
+    user = models.User.query.get(user_id)
+    if user is None:
+        return flask.abort(404)
 
     # Construct a pre-filled form.
     # Populate semester data in the form. This is separate from the initializer
