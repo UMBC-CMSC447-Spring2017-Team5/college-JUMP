@@ -129,6 +129,16 @@
     <p>{{submission.assignment.instructions }}</p>
     <blockquote>
       {{submission.text}}
+      {% if submission.filedata %}
+      <p>
+        <a class="btn btn-default" 
+           href="{{ url_for("submission_attachment_page", submission_id=submission.id) }}"
+           role="button"
+           aria-pressed="true">
+          {{ submission.filename }}
+        </a>
+      </p>
+      {% endif %}
       <footer>{{submission.author.name}}</footer>
     </blockquote>
 

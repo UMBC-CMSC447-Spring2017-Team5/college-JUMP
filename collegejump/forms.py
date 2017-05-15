@@ -1,3 +1,5 @@
+import datetime
+import os
 from urllib.parse import  urlparse, urljoin
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
@@ -311,6 +313,33 @@ class AnnouncementForm(FlaskForm):
 class AnswerForm(FlaskForm):
     response = fields.TextAreaField('Response')
     submit = fields.SubmitField('Submit')
+
+    attachment = FileField('Attachment', description="Attach a file.")
+
+    def to_submission_model(self, assignment, author, submission=None, timestamp=None):
+        """Create a new submission model and add it to the session, or fill out
+        data in an existing one. Requires a commit afterwards.
+        """
+        new_submission = (submission is None)
+        if new_submission:
+            submission = models.Submission()
+
+        submission.text = self.response.data
+        submission.timestamp = timestamp if timestamp else datetime.datetime.now()
+        submission.author = author
+        submission.assignment = assignment
+
+        if self.attachment.has_file():
+            submission.filename = os.path.basename(self.attachment.data.filename)
+            submission.filedata = self.attachment.data.stream.read()
+        else:
+            submission.filename = None
+            submission.filedata = None
+
+        if new_submission:
+            app.db.session.add(submission)
+
+        return submission
 
 class FeedbackForm(RedirectForm):
     feedback = fields.TextAreaField('Feedback')

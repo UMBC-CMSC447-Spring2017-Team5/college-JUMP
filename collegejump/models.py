@@ -236,9 +236,13 @@ class Document(app.db.Model):
         return io.BytesIO(self.data)
 
 class Submission(app.db.Model):
+    FILENAME_MAX_LENGTH = 64
+
     id = app.db.Column(app.db.Integer, primary_key=True)
 
     text = app.db.Column(app.db.Text)
+    filename = app.db.Column(app.db.String(FILENAME_MAX_LENGTH), nullable=True)
+    filedata = app.db.Column(app.db.LargeBinary, nullable=True)
     timestamp = app.db.Column(app.db.DateTime())
 
     author_id = app.db.Column(app.db.Integer, app.db.ForeignKey('user.id'))
@@ -246,6 +250,10 @@ class Submission(app.db.Model):
 
     assignment_id = app.db.Column(app.db.Integer, app.db.ForeignKey('assignment.id'))
     assignment = app.db.relationship('Assignment', backref='submissions')
+
+    def attachment_file_like(self):
+        """Return a file-like representation of the data of this file."""
+        return io.BytesIO(self.filedata)
 
 class Feedback(app.db.Model):
     id = app.db.Column(app.db.Integer, primary_key=True)

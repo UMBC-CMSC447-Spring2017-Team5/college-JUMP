@@ -428,6 +428,7 @@ def document_page(document_id):
     return flask.send_file(document.file_like(),
                            attachment_filename=document.name,
                            as_attachment=True)
+
 @app.route('/document/<int:document_id>/remove', methods=["POST"])
 @admin_required
 def remove_document(document_id):
@@ -494,13 +495,7 @@ def week_page(semester_id, week_num):
 
     if answer_form and answer_form.validate_on_submit():
         # This is an answer submission, so create a Submission.
-        submission = models.Submission()
-        submission.text = answer_form.response.data
-        submission.timestamp = datetime.datetime.now()
-        submission.author = current_user
-        submission.assignment = assignment
-
-        app.db.session.add(submission)
+        submission = answer_form.to_submission_model(assignment, current_user)
         app.db.session.commit()
         return flask.redirect(flask.url_for("week_page",
                                             semester_id=semester_id,
@@ -520,6 +515,20 @@ def week_page(semester_id, week_num):
                                  submissions=submissions,
                                  submissions_to_grade=submissions_to_grade,
                                  answer_form=answer_form)
+
+@app.route('/submission/<int:submission_id>/attachment')
+@login_required
+def submission_attachment_page(submission_id):
+    submission = models.Submission.query.get(submission_id)
+    if submission is None:
+        return flask.abort(404)
+
+    # TODO: some day, check permissions. The accessor should be an admin, the
+    # author, or a mentor of the author.
+
+    return flask.send_file(submission.attachment_file_like(),
+                           attachment_filename=submission.filename,
+                           as_attachment=True)
 
 @app.route('/submission/<submission_id>', methods=["GET", "POST"])
 @login_required
