@@ -245,6 +245,7 @@ def edit_semester_page(semester_id):
     # new, it doesn't need the delete button or file upload field.
     week_form = forms.WeekForm()
     del week_form.delete
+    del week_form.new_document
     del week_form.assignment_name
     del week_form.assignment_instructions
 
