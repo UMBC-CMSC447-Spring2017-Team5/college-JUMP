@@ -312,9 +312,8 @@ class AnnouncementForm(FlaskForm):
 
 class AnswerForm(FlaskForm):
     response = fields.TextAreaField('Response')
-    submit = fields.SubmitField('Submit')
-
     attachment = FileField('Attachment', description="Attach a file.")
+    submit = fields.SubmitField('Submit')
 
     def to_submission_model(self, assignment, author, submission=None, timestamp=None):
         """Create a new submission model and add it to the session, or fill out
